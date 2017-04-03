@@ -3,7 +3,11 @@ knows you better than your SO
 
 **Important Requirements (continously updated)**
 + Python 2.7
-+ Tensorflow 1.0 (run 'pip install tensorflow')
++ tensorflow 1.0.1 (run 'pip install tensorflow')
++ sklearn
++ matplotlib
++ scipy
++ numpy
 + TBD
 
 > Frontend Components
@@ -11,6 +15,6 @@ knows you better than your SO
 + TBD
 
 > Backend Components
-+ Neural Net (using Tensorflow) to train on user data for preferences
++ skip-gram model to vectorize and train on semantics of words
 + DB to store data securely so it can be trained on collective user data 
 + Webcrawler to find and classify new data using the NN, then feed the user relevant info
