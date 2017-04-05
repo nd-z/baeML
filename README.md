@@ -1,5 +1,4 @@
-![baeML](https://i.imgur.com/02aJtuN.png)
-knows you better than your SO
+![baeML](https://i.imgur.com/rHwT8uD.png)
 
 # Relevant Information/Links
 + [The Skip-gram Model](https://www.tensorflow.org/tutorials/word2vec)
