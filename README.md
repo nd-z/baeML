@@ -1,4 +1,4 @@
-# baeML
+![baeML](https://i.imgur.com/02aJtuN.png)
 knows you better than your SO
 
 # Relevant Information/Links
