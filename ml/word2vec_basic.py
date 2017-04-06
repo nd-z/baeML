@@ -32,7 +32,6 @@ import tensorflow as tf
 # Step 1: Download the data.
 url = 'http://mattmahoney.net/dc/'
 
-
 def maybe_download(filename, expected_bytes):
   """Download a file if not present, and make sure it's the right size."""
   if not os.path.exists(filename):
@@ -56,6 +55,7 @@ def read_data(filename):
 
   return data
 
+'''the use of maybe_download() and read_data() for generating the vocabulary will be replaced by a simpler method that doesnt require reading from a file'''
 vocabulary = read_data(filename)
 print('Data size', len(vocabulary))
 
@@ -83,6 +83,7 @@ def build_dataset(words, n_words):
   
   return data, count, dictionary, reversed_dictionary
 
+'''from the vocabulary, extract @vocabulary_size words which are most common to construct the dataset'''
 data, count, dictionary, reverse_dictionary = build_dataset(vocabulary, vocabulary_size)
 del vocabulary  # Hint to reduce memory.
 
