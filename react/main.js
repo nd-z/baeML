@@ -7,6 +7,6 @@ var test= (
           Hello world
       </h1>
     </div>
-            )
+    )
 
 ReactDOM.render(test, document.getElementById('container'));
