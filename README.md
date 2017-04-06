@@ -2,7 +2,7 @@
 
 # Relevant Information/Links
 + [The Skip-gram Model](https://www.tensorflow.org/tutorials/word2vec)
-+ [Word Embeddings](http://blog.aylien.com/overview-word-embeddings-history-word2vec-cbow-glove/)
++ [Word Embeddings](http://colah.github.io/posts/2014-07-NLP-RNNs-Representations/)
 + [Object Serialization](https://docs.python.org/2/library/pickle.html)
 
 # Project Overview
