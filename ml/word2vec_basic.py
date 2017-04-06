@@ -149,12 +149,16 @@ with graph.as_default():
 
   # Ops and variables pinned to the CPU because of missing GPU implementation
   with tf.device('/cpu:0'):
-    # Look up embeddings for inputs.
+    # Look-up embeddings for inputs.
+    '''the @embeddings matrix is randomly generated such that each word in @vocabulary has its own distinct vector of dimension @embedding_size. The goal is to train on the @embeddings matrix'''
     embeddings = tf.Variable(
         tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+
+    '''associates each word embedding in @embeddings with its word from @train_inputs'''
     embed = tf.nn.embedding_lookup(embeddings, train_inputs)
 
     # Construct the variables for the NCE loss
+    '''weights and biases for each word embedding in @embeddings; training on these'''
     nce_weights = tf.Variable(
         tf.truncated_normal([vocabulary_size, embedding_size],
                             stddev=1.0 / math.sqrt(embedding_size)))
