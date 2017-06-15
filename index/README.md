@@ -1,5 +1,5 @@
 ## TODO List (more will be added)
-+ Login/Landing page 
++ Login/Landing page - in progress 
 + Transition from that to main page
 + Main page w/ layout as described - in progress
 + sidebar/feed/article components - in progress
