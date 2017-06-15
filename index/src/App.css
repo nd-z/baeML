@@ -1,12 +1,24 @@
 .article {
+  display: inline-block;
+
   border: solid;
-  margin-left: 30%;
-  margin-right: 10%;
+  margin-left: 10%;
   padding: 5%;
+  /*float: right;*/
 }
 
 .sidebar {
+  display: inline-block;
   border: solid;
-  margin-left: 10%;
-  margin-right: 70%;
+  /*margin-left: 10%;*/
+  float: left;
+  height: 600px;
+}
+
+#logo {
+  width: 50%;
+}
+
+#profilepic {
+  width: 50%;
 }

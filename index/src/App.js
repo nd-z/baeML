@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-import ButtonToolbar from 'react-bootstrap';
-
+//set up framework for feed
+//tested bootstrap
+//img
 
 class Article extends React.Component {
   render() {
@@ -23,9 +24,12 @@ class Sidebar extends React.Component {
   render() {
     return (
       <div className="sidebar">
-        <h1> Hello, [name] </h1>
-        <p> [img] </p>
-      
+        <img id="logo" src={require('./logo.svg')}  />
+        
+        <h1> Hello, [fb api call for name] </h1>
+        <p> [facebook api call for profile pic] </p>
+        <img id="profilepic" src={require('./testimg.jpg')} />
+        <p> logout [facebook api call] </p>
       </div>
     );
   }
@@ -37,7 +41,7 @@ class Feed extends React.Component {
   render() {
    
     return (
-      <div>
+      <div className="feed">
         <Sidebar />
         <Article />
       </div>
