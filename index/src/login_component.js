@@ -15,6 +15,7 @@ class LoginComponent extends React.Component {
 		this.login = this.login.bind(this);
 	}
 
+	//loads the FB JS SDK
 	componentDidMount() {
 		window.fbAsyncInit = function() {
 	       FB.init({
@@ -34,12 +35,14 @@ class LoginComponent extends React.Component {
 		  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
 
+		//attaches these methods to window so they can be called by FB SDK
 		window['getLoginState'] = this.getLoginState;
 		window['statusChangeCallback'] = this.statusChangeCallback;
 	}
 
+	//calls the API to retrieve info about user, changes loggedIn
+	//and message
 	login() {
-		console.log("success");
 		window.FB.api('/me', (response) => {
 			this.setState({
 				loggedIn: true, 
@@ -48,6 +51,7 @@ class LoginComponent extends React.Component {
 		});
 	}
 
+	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
 			console.log("bring to login page");
@@ -59,14 +63,14 @@ class LoginComponent extends React.Component {
 		}
 	}
 
+	//calls FB API's getLoginStatus
 	getLoginState() { 
-		console.log("hello!");
-		console.log(window.FB);
 		window.FB.getLoginStatus(function(response) {
 			this.statusChangeCallback(response);
 		});
 	}
 
+	//shows either "not logged in", or person's username and the button
 	render () {
 		var greeting;
 		if (this.state.loggedIn)
