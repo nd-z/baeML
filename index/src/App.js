@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-import LoginComponent from './login_component.js'
 //set up framework for feed
 //tested bootstrap
 //img
@@ -40,15 +39,12 @@ class Sidebar extends React.Component {
 class Feed extends React.Component {
 
   render() {
-    return (<div><p>Hello</p>
-        <LoginComponent /></div>
-      )
-    // return (
-    //   <div className="feed">
-    //     <Sidebar />
-    //     <Article />
-    //   </div>
-    // );
+    return (
+      <div className="feed">
+        <Sidebar />
+        <Article />
+      </div>
+    );
   }
 
   

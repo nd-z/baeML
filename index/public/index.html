@@ -19,13 +19,33 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>baeML</title>
   </head>
   <body>
 
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
+    <div id="fb-root"></div>
+      <script>
+      window.fbAsyncInit = function() {
+         FB.init({
+          appId            : '1992517710981460',
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v2.9'
+        });
+        FB.AppEvents.logPageView();
+      };
+
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

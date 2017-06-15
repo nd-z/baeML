@@ -9,11 +9,15 @@ class LoginComponent extends React.Component {
 			loggedIn: false,
 			name: ""
 		}
+
+		this.getLoginState = this.getLoginState.bind(this);
+		this.statusChangeCallback = this.statusChangeCallback.bind(this);
+		this.login = this.login.bind(this);
 	}
 
 	componentDidMount() {
 		window.fbAsyncInit = function() {
-	      FB.init({
+	       FB.init({
 	        appId            : '1992517710981460',
 	        autoLogAppEvents : true,
 	        xfbml            : true,
@@ -22,22 +26,26 @@ class LoginComponent extends React.Component {
 	      FB.AppEvents.logPageView();
 	    };
 
-	(function(d, s, id) {
-	  var js, fjs = d.getElementsByTagName(s)[0];
-	  if (d.getElementById(id)) return;
-	  js = d.createElement(s); js.id = id;
-	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
-	  fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		window['getLoginState'] = this.getLoginState;
+		window['statusChangeCallback'] = this.statusChangeCallback;
 	}
 
 	login() {
 		console.log("success");
-		// FB.api('/me', function(response) {
-		// 	this.setState((response.name) => {
-		// 		return {loggedIn: true, name: response.name};
-		// 	});
-		// });
+		window.FB.api('/me', (response) => {
+			this.setState({
+				loggedIn: true, 
+				name: response.name
+			});
+		});
 	}
 
 	statusChangeCallback(response){
@@ -52,7 +60,9 @@ class LoginComponent extends React.Component {
 	}
 
 	getLoginState() { 
-		FB.getLoginStatus(function(response) {
+		console.log("hello!");
+		console.log(window.FB);
+		window.FB.getLoginStatus(function(response) {
 			this.statusChangeCallback(response);
 		});
 	}
