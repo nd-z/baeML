@@ -1,17 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Link} from 'react-router-dom';
+import createHistory from 'history/createBrowserHistory';
 import './css/login.css';
 
-const FB = window.FB
+// const history = createHistory()
 class LoginComponent extends React.Component {
-	
 	constructor(props) {
 		super(props);
 		this.state = {
 			loggedIn: false,
 			name: ""
 		}
-
 		this.getLoginState = this.getLoginState.bind(this);
 		this.statusChangeCallback = this.statusChangeCallback.bind(this);
 		this.login = this.login.bind(this);
@@ -28,13 +28,13 @@ class LoginComponent extends React.Component {
 		});
 
 		window.fbAsyncInit = function() {
-	       FB.init({
+	       window.FB.init({
 	        appId            : '1992517710981460',
 	        autoLogAppEvents : true,
 	        xfbml            : true,
 	        version          : 'v2.9'
 	      });
-	      FB.AppEvents.logPageView();
+	      window.FB.AppEvents.logPageView();
 	    };
 
 		(function(d, s, id) {
@@ -58,6 +58,7 @@ class LoginComponent extends React.Component {
 				loggedIn: true, 
 				name: response.name
 			});
+			this.props.history.push('/feed');
 		});
 	}
 
@@ -81,6 +82,8 @@ class LoginComponent extends React.Component {
 
 	//renders the landing page
 	render () {
+		if (this.state.loggedIn === true)
+			this.props.history.push('/feed');
 		return (<div className="headerbox">
 				<img src={require('./imgs/logo.png')} ref="logo" alt={"logo"}/>
 				<div className="text-center">

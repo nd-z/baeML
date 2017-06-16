@@ -25,7 +25,6 @@ class Article extends React.Component {
 
 class Sidebar extends React.Component {
 
-
   render() {
     return (
       <div className="col-md-4 sidebar">
@@ -41,6 +40,15 @@ class Sidebar extends React.Component {
 }
 
 class Feed extends React.Component {
+
+  componentDidMount() {
+    var component = ReactDOM.findDOMNode(this);
+    component.style.opacity = 0;
+    window.requestAnimationFrame(function() {
+      component.style.transition = "opacity 2000ms";
+      component.style.opacity = 1;
+    });
+  }
 
   render() {
     return (
