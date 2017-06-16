@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './css/App.css';
+import FbSDK from './fbSDKLoader';
 //set up framework for feed
 //tested bootstrap
 //img
 
+window.FB = FbSDK.loadFbSDK();
 class Article extends React.Component {
   render() {
     return (
@@ -32,9 +34,29 @@ class Sidebar extends React.Component {
         <h1> welcome to your personal news feed,</h1>
         <h1>{this.props.name}</h1>
         <img id="profilepic" src={this.props.imgurl} />
-        <p> logout [facebook api call] </p>
+        <Logout history={this.props.history}/>
       </div>
     );
+  }
+}
+
+class Logout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.fbLogout = this.fbLogout.bind(this);
+  }
+
+  fbLogout(){
+        window.FB.logout(function (response) {
+        });
+        console.log("logout");
+        this.props.history.push('/');
+  }
+
+  render() { 
+    return (<div id="fbLogout">
+    <button className="fb_button fb_button_medium" onClick={(e) => this.fbLogout()}>
+   Logout</button></div>)
   }
 
 }
@@ -46,8 +68,8 @@ class Feed extends React.Component {
       name: "",
       profilepic: ""
     }
-    this.getProfileInfo();
   }
+
   componentDidMount() {
     var component = ReactDOM.findDOMNode(this);
     component.style.opacity = 0;
@@ -55,6 +77,7 @@ class Feed extends React.Component {
       component.style.transition = "opacity 2000ms";
       component.style.opacity = 1;
     });
+    this.getProfileInfo();
   }
 
   getProfileInfo(){
@@ -68,7 +91,6 @@ class Feed extends React.Component {
       this.setState({ 
         profilepic: response.data.url
       });
-      console.log(response.data.url);
     });
   }
 
@@ -76,7 +98,7 @@ class Feed extends React.Component {
     
     return (
       <div className="row">
-        <Sidebar name={this.state.name} imgurl={this.state.profilepic}/>
+        <Sidebar name={this.state.name} imgurl={this.state.profilepic} history={this.props.history}/>
         <Article />
       </div>
     );

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Link} from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory';
+import FbSDK from './fbSDKLoader';
 import './css/login.css';
 
 // const history = createHistory()
@@ -27,23 +28,7 @@ class LoginComponent extends React.Component {
 			logo.style.opacity = 1;
 		});
 
-		window.fbAsyncInit = function() {
-	       window.FB.init({
-	        appId            : '1992517710981460',
-	        autoLogAppEvents : true,
-	        xfbml            : true,
-	        version          : 'v2.9'
-	      });
-	      window.FB.AppEvents.logPageView();
-	    };
-
-		(function(d, s, id) {
-		  var js, fjs = d.getElementsByTagName(s)[0];
-		  if (d.getElementById(id)) return;
-		  js = d.createElement(s); js.id = id;
-		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
-		  fjs.parentNode.insertBefore(js, fjs);
-		}(document, 'script', 'facebook-jssdk'));
+		window.FB = FbSDK.loadFbSDK();
 
 		//attaches these methods to window so they can be called by FB SDK
 		window['getLoginState'] = this.getLoginState;
