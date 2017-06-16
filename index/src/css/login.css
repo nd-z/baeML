@@ -1,0 +1,12 @@
+.fb-login-button { 
+	padding-top: 1.5em;
+ }
+
+.headerbox {
+	padding: 18px;
+    font-size: 1.5em;
+    letter-spacing: .3em;
+    position:absolute;top:35%;
+    left:50%;transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%)
+ }

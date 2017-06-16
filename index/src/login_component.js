@@ -1,4 +1,5 @@
 import React from 'react';
+import './css/login.css';
 
 const FB = window.FB
 class LoginComponent extends React.Component {
@@ -54,7 +55,6 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
-			console.log("bring to login page");
 			this.login(); 
 		} else if (response.status === 'not_authorized') {
 			console.log("login thru fb");
@@ -70,23 +70,23 @@ class LoginComponent extends React.Component {
 		});
 	}
 
-	//shows either "not logged in", or person's username and the button
+	//renders the landing page
 	render () {
-		var greeting;
-		if (this.state.loggedIn)
-			greeting = "Hello there, " + this.state.name;
-		else
-			greeting = "You are not logged in";
-
-		return (<div><p>{greeting}</p><div className="fb-login-button" 
-			data-max-rows="1" 
-			data-size="large" 
-			data-button-type="login_with" 
-			data-show-faces="false" 
-			data-auto-logout-link="false" 
-			data-use-continue-as="false"
-			data-onlogin="getLoginState();">
-			</div></div>)
+		return (<div className="headerbox">
+				<img src={require('./imgs/logo.png')} alt={"logo"}/>
+				<div className="text-center">
+					<p>Knows you better than your SO</p>
+					<div className="fb-login-button" 
+						data-max-rows="1" 
+						data-size="large" 
+						data-button-type="login_with" 
+						data-show-faces="false" 
+						data-auto-logout-link="false" 
+						data-use-continue-as="false"
+						data-onlogin="getLoginState();">
+					</div>
+				</div>
+			</div>)
 	}
 }
 

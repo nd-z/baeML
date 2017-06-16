@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './App.css';
+import './css/App.css';
 //set up framework for feed
 //tested bootstrap
 //img
@@ -28,7 +28,7 @@ class Sidebar extends React.Component {
         
         <h1> Hello, [fb api call for name] </h1>
         <p> [facebook api call for profile pic] </p>
-        <img id="profilepic" src={require('./testimg.jpg')} />
+        <img id="profilepic" src={require('./imgs/testimg.jpg')} />
         <p> logout [facebook api call] </p>
       </div>
     );
