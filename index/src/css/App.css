@@ -1,24 +1,29 @@
 .article {
-  display: inline-block;
-
+  display: block;
   border: solid;
-  margin-left: 10%;
-  padding: 5%;
-  /*float: right;*/
+  margin: 5%;
+  padding-left:1%;
+  padding-right:1%;
+  
 }
 
 .sidebar {
   display: inline-block;
-  border: solid;
-  /*margin-left: 10%;*/
-  float: left;
   height: 600px;
+  text-align: center;
+}
+
+.sidebar > h1 {
+  font-style: normal;
+  font-size: 1.5em;
 }
 
 #logo {
-  width: 50%;
+  padding-top: 5%;
+  width: 25%;
 }
 
 #profilepic {
-  width: 50%;
+  text-align: left;
+  width: 25%;
 }

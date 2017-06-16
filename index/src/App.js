@@ -8,10 +8,15 @@ import './css/App.css';
 class Article extends React.Component {
   render() {
     return (
-      <div className="article">
-        <h1> this represents an article </h1>
-        <p> read more about the article at this LINK </p>
-
+      <div className="col-md-8">
+        <div className="article">
+          <h1> this represents an article </h1>
+          <p> read more about the article at this LINK </p>
+        </div>
+        <div className="article">
+          <h1> this represents an article </h1>
+          <p> read more about the article at this LINK </p>
+        </div>
       </div>
     );
   }
@@ -23,10 +28,9 @@ class Sidebar extends React.Component {
 
   render() {
     return (
-      <div className="sidebar">
-        <img id="logo" src={require('./logo.svg')}  />
-        
-        <h1> Hello, [fb api call for name] </h1>
+      <div className="col-md-4 sidebar">
+        <img id="logo" src={require('./imgs/logo.png')}  />
+        <h1> welcome to your personal news feed</h1>
         <p> [facebook api call for profile pic] </p>
         <img id="profilepic" src={require('./imgs/testimg.jpg')} />
         <p> logout [facebook api call] </p>
@@ -40,7 +44,7 @@ class Feed extends React.Component {
 
   render() {
     return (
-      <div className="feed">
+      <div className="row">
         <Sidebar />
         <Article />
       </div>
