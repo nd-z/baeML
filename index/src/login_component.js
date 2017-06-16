@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './css/login.css';
 
 const FB = window.FB
@@ -18,6 +19,14 @@ class LoginComponent extends React.Component {
 
 	//loads the FB JS SDK
 	componentDidMount() {
+		// fade in the logo
+		var logo = ReactDOM.findDOMNode(this.refs.logo);
+		logo.style.opacity = 0;
+		window.requestAnimationFrame(function() {
+			logo.style.transition = "opacity 2500ms";
+			logo.style.opacity = 1;
+		});
+
 		window.fbAsyncInit = function() {
 	       FB.init({
 	        appId            : '1992517710981460',
@@ -73,9 +82,10 @@ class LoginComponent extends React.Component {
 	//renders the landing page
 	render () {
 		return (<div className="headerbox">
-				<img src={require('./imgs/logo.png')} alt={"logo"}/>
+				<img src={require('./imgs/logo.png')} ref="logo" alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
+					<p id="small">Login below to start getting recommendations</p>
 					<div className="fb-login-button" 
 						data-max-rows="1" 
 						data-size="large" 

@@ -2,8 +2,12 @@
 	padding-top: 1.5em;
  }
 
+#small {
+	font-size: .9em;
+	letter-spacing: 0;
+}
+
 .headerbox {
-	padding: 18px;
     font-size: 1.5em;
     letter-spacing: .3em;
     position:absolute;top:35%;
