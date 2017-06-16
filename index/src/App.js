@@ -29,9 +29,9 @@ class Sidebar extends React.Component {
     return (
       <div className="col-md-4 sidebar">
         <img id="logo" src={require('./imgs/logo.png')}  />
-        <h1> welcome to your personal news feed</h1>
-        <p> [facebook api call for profile pic] </p>
-        <img id="profilepic" src={require('./imgs/testimg.jpg')} />
+        <h1> welcome to your personal news feed,</h1>
+        <h1>{this.props.name}</h1>
+        <img id="profilepic" src={this.props.imgurl} />
         <p> logout [facebook api call] </p>
       </div>
     );
@@ -40,7 +40,14 @@ class Sidebar extends React.Component {
 }
 
 class Feed extends React.Component {
-
+  constructor(props){
+    super(props);
+    this.state = {
+      name: "",
+      profilepic: ""
+    }
+    this.getProfileInfo();
+  }
   componentDidMount() {
     var component = ReactDOM.findDOMNode(this);
     component.style.opacity = 0;
@@ -50,10 +57,26 @@ class Feed extends React.Component {
     });
   }
 
+  getProfileInfo(){
+    window.FB.api('/me', (response) => {
+      this.setState({ 
+        name: response.name
+      });
+    });
+    
+    window.FB.api('/me/picture?type=large', (response) => {
+      this.setState({ 
+        profilepic: response.data.url
+      });
+      console.log(response.data.url);
+    });
+  }
+
   render() {
+    
     return (
       <div className="row">
-        <Sidebar />
+        <Sidebar name={this.state.name} imgurl={this.state.profilepic}/>
         <Article />
       </div>
     );
