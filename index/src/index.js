@@ -1,21 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch, Route, Link, BrowserRouter } from 'react-router-dom';
+import { Switch, Route, BrowserRouter} from 'react-router-dom';
 import Feed from './App';
 import LoginComponent from './login_component.js';
 
 const Main = () => (
-  <main>
+  <BrowserRouter>
     <Switch>
       <Route exact path='/' component={LoginComponent}/>
-      <Route path='/feed' component={Feed}/>
+      <Route exact path='/feed' component={Feed}/>
+      <Route render={
+        function() {
+          return (<p> Not Found </p>)
+        }
+      }/>
     </Switch>
-  </main>
-)
+  </BrowserRouter>)
 
 ReactDOM.render(
-	<BrowserRouter>
-  	<Main />
-  	</BrowserRouter>,
+  	<Main />,
   document.getElementById('root'),
 );
