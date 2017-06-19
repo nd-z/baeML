@@ -1,21 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Switch, Route, Link, BrowserRouter } from 'react-router-dom';
-import Feed from './App';
-import LoginComponent from './login_component.js';
+import React from 'react'
+import { render } from 'react-dom'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import App from './components/App'
+import reducer from './reducers'
+import Root from './components/Root'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { compose } from 'redux'
+import { autoRehydrate, persistStore } from 'redux-persist'
 
-const Main = () => (
-  <main>
-    <Switch>
-      <Route exact path='/' component={LoginComponent}/>
-      <Route path='/feed' component={Feed}/>
-    </Switch>
-  </main>
+const store = compose (
+	autoRehydrate()
+	)(createStore)(reducer);
+persistStore(store);
+
+render(
+  <Root store={store} />,
+  document.getElementById('root')
 )
-
-ReactDOM.render(
-	<BrowserRouter>
-  	<Main />
-  	</BrowserRouter>,
-  document.getElementById('root'),
-);
