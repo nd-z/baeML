@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "AsyncStorage": "^0.1.5",
     "history": "^4.6.2",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.0",

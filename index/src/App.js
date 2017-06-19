@@ -78,6 +78,7 @@ class Feed extends React.Component {
       component.style.opacity = 1;
     });
     this.getProfileInfo();
+    window.onpopstate = this.onBackButtonEvent;
   }
 
   getProfileInfo(){
@@ -92,6 +93,9 @@ class Feed extends React.Component {
         profilepic: response.data.url
       });
     });
+  }
+  onBackButtonEvent(e){
+    window.location.reload();
   }
 
   render() {
