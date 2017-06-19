@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { Switch, Router, Route, BrowserRouter } from 'react-router-dom'
 import App from './App'
 import Feed from './App';
-import LoginComponent from '../login_component.js';
+import LoginComponent from '../containers/login_component.js';
 
 const Main = () => (
   <main>

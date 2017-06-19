@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Link} from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory';
-import './css/login.css';
+import '../css/login.css';
 
 class LoginComponent extends React.Component {
+	/*call this.props.login*/
+	
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -14,6 +16,7 @@ class LoginComponent extends React.Component {
 		this.getLoginState = this.getLoginState.bind(this);
 		this.statusChangeCallback = this.statusChangeCallback.bind(this);
 		this.login = this.login.bind(this);
+
 	}
 
 	//calls the API to retrieve info about user, changes loggedIn
@@ -89,7 +92,7 @@ class LoginComponent extends React.Component {
 	//renders the landing page
 	render () {
 		return (<div className="headerbox">
-				<img src={require('./imgs/logo.png')} ref="logo" alt={"logo"}/>
+				<img src={require('../imgs/logo.png')} ref="logo" alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
 					<p id="small">Login below to start getting recommendations</p>

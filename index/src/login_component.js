@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Link} from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory';
-import './css/login.css';
+import '../../css/login.css';
 
 class LoginComponent extends React.Component {
 	constructor(props) {
