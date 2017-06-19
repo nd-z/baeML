@@ -9,8 +9,9 @@
 
 .sidebar {
   display: inline-block;
-  height: 600px;
+  
   text-align: center;
+  padding-left: 3%;
 }
 
 .sidebar > h1 {
