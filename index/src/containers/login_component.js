@@ -1,15 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import {Link} from 'react-router-dom';
-import createHistory from 'history/createBrowserHistory';
 import '../css/login.css';
 
+//fb login button
 function LoginButton(props){
 	return(
 		<button onClick={props.onClick} className="fbButton">Continue with Facebook</button>
 		)
 }
 
+//displays the logo
 function Logo(props) { 
 	return (<div>
 			{!props.loggedIn ? 
@@ -26,6 +25,7 @@ function Logo(props) {
 }
 
 class LoginComponent extends React.Component {
+	previousLocation = this.props.location
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -39,12 +39,15 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
+            console.log("sup")
+            this.setState({loggedIn: true});
 			this.props.history.push('/feed');
 		} else {
 			this.setState({loggedIn: false});
 		}
 	}
 
+	//handles logging into FB 
 	login() {
 		window.FB.login((response) => {
 			if (response.status === 'connected'){
@@ -55,7 +58,6 @@ class LoginComponent extends React.Component {
 
 	//calls FB API's getLoginStatus
 	getLoginState() { 
-		console.log(window.FB)
 		window.FB.getLoginStatus(function(response) {
 			window.statusChangeCallback(response);
 		});
@@ -76,6 +78,8 @@ class LoginComponent extends React.Component {
                 version          : 'v2.9'
               });
               window.FB.AppEvents.logPageView();
+
+              //get login state after FB SDK is initialized 
               this.getLoginState();
             };
             (function(d, s, id) {
@@ -89,8 +93,11 @@ class LoginComponent extends React.Component {
 
 	//renders the landing page
 	render () {
+
+		//handles reloading the login page after user logout since state is pushed via location state
+		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
 		return (
-			<Logo loggedIn={this.state.loggedIn} onLogin={this.login}/>
+			<Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/>
 		)
 	}
 }
