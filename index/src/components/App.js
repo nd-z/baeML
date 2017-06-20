@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../css/App.css';
-import FbSDK from '../containers/fbSDKLoader';
 //set up framework for feed
 //tested bootstrap
 //img
