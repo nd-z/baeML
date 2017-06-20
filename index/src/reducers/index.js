@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import visibilityFilter from './visibilityFilter'
 
 const reducer = combineReducers({
 })

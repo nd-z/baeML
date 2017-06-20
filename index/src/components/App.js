@@ -5,7 +5,6 @@ import '../css/App.css';
 //tested bootstrap
 //img
 
-window.FB = FbSDK.loadFbSDK();
 function Article() {
     return (
       <div className="col-md-8">
@@ -25,7 +24,7 @@ function Article() {
 function Sidebar(props) {
     return (
       <div className="col-md-4 sidebar">
-        <img id="logo" alt="baeML logo" src={require('./imgs/logo.png')}  />
+        <img id="logo" alt="baeML logo" src={require('../imgs/logo.png')}  />
         <h1> welcome to your personal news feed,</h1>
         <h1>{props.name}</h1>
         <img id="profilepic" alt="Profile pic" src={props.imgurl} />
