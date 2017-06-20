@@ -1,12 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { Provider } from 'react-redux'
 import { Switch, Route, BrowserRouter } from 'react-router-dom'
 import Feed from './App';
 import LoginComponent from '../containers/login_component.js';
-import { loadState, saveState } from './localStorage.js';
-import { createStore } from 'redux';
-import { feed } from './App';
 
 // const persistedState = loadState();
 // const store = createStore(
@@ -16,6 +11,7 @@ import { feed } from './App';
 // store.subscribe(() => {
 //   saveState(store.getState());
 // })
+
 const Main = () => (
   <main>
     <Switch>
@@ -31,18 +27,18 @@ const Main = () => (
 )
 
 const Root = ({ store }) => (
-  <Provider store={store}>
+  // <Provider store={store}>
     <BrowserRouter>
       <Main />
     </BrowserRouter>
-  </Provider>
+  // </Provider>
 )
 
 
 
 
-Root.propTypes = {
-  store: PropTypes.object.isRequired
-}
+// Root.propTypes = {
+//   store: PropTypes.object.isRequired
+// }
 
 export default Root

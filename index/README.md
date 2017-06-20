@@ -8,6 +8,6 @@
 + ~~Logout functionality - DONE~~
 
 ## BUG FIXES
-+ refreshing the feed breaks FB login
++ ~~refreshing the feed breaks FB login~~ (still double check this though)
 + ~~should not be able to go back to landing page after login~~
 + ~~page somewhat loads before recognizing user is logged in~~

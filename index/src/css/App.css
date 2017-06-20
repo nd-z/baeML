@@ -27,4 +27,17 @@
 #profilepic {
   text-align: left;
   width: 25%;
+  margin: 1% 2%;
+}
+
+.fbButton {
+  border: none;
+  background-color: #4267B2;
+  font: 'Lucida Grande', 'Tahoma';
+  color: #fff;
+  text-align: center;
+  margin-top: 1em;
+  font-size: 16px;
+  border-radius: 5px;
+  width: 10%;
 }

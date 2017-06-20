@@ -39,7 +39,7 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
-            console.log("sup")
+            console.log(response)
             this.setState({loggedIn: true});
 			this.props.history.push('/feed');
 		} else {
