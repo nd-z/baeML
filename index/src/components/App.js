@@ -44,7 +44,7 @@ class Logout extends React.Component {
         if (response.status === 'connected') {
             window.FB.logout((response) => {});
             console.log("logout");
-            this.props.history.push('/');
+            this.props.history.push('/', {loggedIn: false});
           }
         });
   }
@@ -124,7 +124,7 @@ class Feed extends React.Component {
   }
 
   render() {
-    
+    console.log(this.props)
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} history={this.props.history}/>

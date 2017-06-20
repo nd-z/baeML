@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Provider } from 'react-redux'
-import { Switch, Router, Route, BrowserRouter } from 'react-router-dom'
-import App from './App'
+import { Switch, Route, BrowserRouter } from 'react-router-dom'
 import Feed from './App';
 import LoginComponent from '../containers/login_component.js';
 
