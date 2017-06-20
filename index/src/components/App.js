@@ -72,7 +72,31 @@ class Feed extends React.Component {
       component.style.transition = "opacity 2000ms";
       component.style.opacity = 1;
     });
-    this.getProfileInfo();
+
+    //if window.FB is defined, then don't need to reload SDK
+    if (window.FB === undefined){
+      window.fbAsyncInit = function() {
+               window.FB.init({
+                appId            : '1992517710981460',
+                autoLogAppEvents : true,
+                xfbml            : true,
+                cookie           : true,
+                status         : true,
+                version          : 'v2.9'
+              });
+              window.FB.AppEvents.logPageView();
+              this.getProfileInfo();
+            };
+            (function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s); js.id = id;
+              js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+    } else { 
+      this.getProfileInfo();
+    }
     window.onpopstate = this.onBackButtonEvent;
   }
 
@@ -89,6 +113,7 @@ class Feed extends React.Component {
       });
     });
   }
+
   onBackButtonEvent(e){
     window.location.reload();
   }
@@ -102,7 +127,6 @@ class Feed extends React.Component {
       </div>
     );
   }
-
   
 }
 export default Feed;

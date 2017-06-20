@@ -1,12 +1,9 @@
 import React from 'react';
-<<<<<<< HEAD
 import ReactDOM from 'react-dom';
 import {Link} from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory';
 import '../../css/login.css';
-=======
 import './css/login.css';
->>>>>>> 70d6b541c4e591e594d94d5f0f4166e0b183f02e
 
 function LoginButton(props){
 	return(
