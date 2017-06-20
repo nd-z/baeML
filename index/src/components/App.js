@@ -40,10 +40,13 @@ class Logout extends React.Component {
   }
 
   fbLogout(){
-        window.FB.logout(function (response) {
+      window.FB.getLoginStatus((response) => { 
+        if (response.status === 'connected') {
+            window.FB.logout((response) => {});
+            console.log("logout");
+            this.props.history.push('/');
+          }
         });
-        console.log("logout");
-        this.props.history.push('/');
   }
 
   render() { 
@@ -61,9 +64,13 @@ class Feed extends React.Component {
       name: "",
       profilepic: ""
     }
+    this.getProfileInfo = this.getProfileInfo.bind(this);
   }
 
   componentDidMount() {
+
+    window['getProfileInfo'] = this.getProfileInfo
+
     var component = ReactDOM.findDOMNode(this);
     component.style.opacity = 0;
     window.requestAnimationFrame(function() {
