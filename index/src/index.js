@@ -1,23 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Switch, Route, BrowserRouter} from 'react-router-dom';
-import Feed from './App';
-import LoginComponent from './login_component.js';
+import React from 'react'
+import { render } from 'react-dom'
+import Root from './components/Root'
 
-const Main = () => (
-  <BrowserRouter>
-    <Switch>
-      <Route exact path='/' component={LoginComponent}/>
-      <Route exact path='/feed' component={Feed}/>
-      <Route render={
-        function() {
-          return (<p> Not Found </p>)
-        }
-      }/>
-    </Switch>
-  </BrowserRouter>)
-
-ReactDOM.render(
-  	<Main />,
-  document.getElementById('root'),
-);
+render(
+  <Root />,
+  document.getElementById('root')
+)
