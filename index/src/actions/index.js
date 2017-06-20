@@ -1,13 +1,18 @@
-/**actions for articles**/
-export const setLike = (id) => ({
-	type: 'LIKE',
-	id
-})
+/**action types**/
+export const LOGIN = 'LOGIN'
 
-export const setDislike = (id) => ({
-	type: 'DISLIKE',
-	id
-})
+/**other constants**/
+export const Preference ={	
+	LIKE: 'LIKE',
+	DISLIKE: 'DISLIKE'
+}
 
 
-/**login**/
+/**login action creator**/
+function attemptLogin(loggedIn, name) {
+	return {
+		type: LOGIN, 
+		loggedIn,
+		name
+	}
+}

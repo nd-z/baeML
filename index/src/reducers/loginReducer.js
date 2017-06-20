@@ -1,33 +1,29 @@
-const initialState = new Immutable.Map({
-  email: '',
-  password: '',
-  isLoggingIn: false,
-  isLoggedIn: false,
-  error: null
-});
+import { combineReducers } from 'redux'
+import {
+  LOGIN
+} from '../index.js'
 
-export default function user(state = initialState, action) {
+const initialState = {
+  visibilityFilter: VisibilityFilters.SHOW_ALL,
+  todos: []
+}
+
+function todos(state = [], action) {
   switch (action.type) {
-    case LOGIN_ATTEMPT:
-      return state.merge({
-        isLoggingIn: true,
-        isLoggedIn: false,
-        email: action.email,
-        password: action.password // Note you shouldn't store user's password in real apps
-      });
-    case LOGGED_FAILED:
-      return state.merge({
-        error: action.error,
-        isLoggingIn: false,
-        isLoggedIn: false
-      });
-    case LOGGED_SUCCESSFULLY:
-      return state.merge({
-        error: null,
-        isLoggingIn: false,
-        isLoggedIn: true
-      });
-      break;
+    case LOGIN:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false
+        }
+      ]
+    
     default:
-      return state;
+      return state
   }
+}
+
+
+
+export default todoApp

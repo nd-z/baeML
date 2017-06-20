@@ -7,8 +7,7 @@ import FbSDK from '../containers/fbSDKLoader';
 //img
 
 window.FB = FbSDK.loadFbSDK();
-class Article extends React.Component {
-  render() {
+function Article() {
     return (
       <div className="col-md-8">
         <div className="article">
@@ -21,23 +20,19 @@ class Article extends React.Component {
         </div>
       </div>
     );
-  }
 }
 
 
-class Sidebar extends React.Component {
-
-  render() {
+function Sidebar(props) {
     return (
       <div className="col-md-4 sidebar">
-        <img id="logo" src={require('../imgs/logo.png')}  />
+        <img id="logo" alt="baeML logo" src={require('./imgs/logo.png')}  />
         <h1> welcome to your personal news feed,</h1>
-        <h1>{this.props.name}</h1>
-        <img id="profilepic" src={this.props.imgurl} />
-        <Logout history={this.props.history}/>
+        <h1>{props.name}</h1>
+        <img id="profilepic" alt="Profile pic" src={props.imgurl} />
+        <Logout history={props.history}/>
       </div>
     );
-  }
 }
 
 class Logout extends React.Component {

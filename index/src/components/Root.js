@@ -11,6 +11,11 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={LoginComponent}/>
       <Route path='/feed' component={Feed}/>
+      <Route render={
+        function() {
+          return (<p> Not Found </p>)
+        }
+      }/>
     </Switch>
   </main>
 )
