@@ -19,20 +19,38 @@ class WebCrawler(object):
             return True;
         return False
 
-    def crawl(self, SeedUrl):
+    def crawl(self, SeedUrl, keywords):
         tocrawl=[SeedUrl]
         links_on_page=[]
         page=tocrawl.pop()
         #print 'Crawled:'+page
         pagesource=urllib2.urlopen(page)
         s=pagesource.read()
+        #print s
         soup=BeautifulSoup.BeautifulSoup(s)
-        links=soup.findAll('a',href=True)   
+        links=soup.findAll('a',href=True)
+        #print links 
 
         for l in links:
-            if self.isValidUrl(l['href']):
+            skiplink = False
+
+            for word in keywords:
+                str_l = str(l)
+                if str_l.find(word) == -1:
+                    #print('no match')
+                    skiplink = True
+                    break
+
+            if skiplink==True:
+                skiplink = False
+                continue
+            else:
                 links_on_page.append(l['href'])
 
+            '''
+            if self.isValidUrl(l['href']):
+                links_on_page.append(l['href'])
+            '''
         return links_on_page
 
         ''' this was for crawling other links
@@ -52,5 +70,6 @@ class WebCrawler(object):
         '''
 
 crawler = WebCrawler()
-links = crawler.crawl('https://www.nytimes.com')
+keywords = ['global', 'warming']
+links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=bs&form=QBLH', keywords)
 print links
