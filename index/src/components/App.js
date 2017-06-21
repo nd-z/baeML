@@ -1,32 +1,55 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../css/App.css';
-
+import axios from 'axios';
 
 class Article extends React.Component {
+
   constructor(props){
     super(props);
     this.state = {
       loaded_article: false,
-      liked: false
+      liked: false,
+      article_id: 11111, //dummy var
+      user_id: 22222 //dummy var
     };
 
     // This binding is necessary to make `this` work in the callback
     this.like = this.like.bind(this);
     this.dislike = this.dislike.bind(this);
   }
-  
+
+  //called when the like button is pressed; sends article & preference to database
   like() {
-    this.setState({liked: true});
-    alert('liked');
+    this.setState((prevState) => {
+      return {liked: true}; //state changed next time it is rendered
+    });
+    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/like')
+    .then(function (response) {
+      alert('liked'); //good
+    })
+    .catch(function (error) {
+      alert('error');
+    });
+    
   }
+  //called when the dislike button is pressed; sends data to database
   dislike(){
-    this.setState({liked: false});
-    alert('disliked');
+    this.setState((prevState) => {
+      return {liked: false}; //state changed next time it is rendered
+    });
+    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/dislike')
+    .then(function (response) {
+      alert('disliked'); //good
+    })
+    .catch(function (error) {
+      alert('error');
+    });    
 
   }
+
   render() {
-    return (
+    return ( //TODO: if liked  / disliked, modify appearance accordingly
       <div className="col-md-8">
         <div className="article">
           <h1> this represents an article </h1>
