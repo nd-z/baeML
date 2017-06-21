@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types'
 import '../css/App.css';
 import axios from 'axios';
 
@@ -52,8 +53,9 @@ class Article extends React.Component {
     return ( //TODO: if liked  / disliked, modify appearance accordingly
       <div className="col-md-8">
         <div className="article">
-          <h1> this represents an article </h1>
-          <p> read more about the article at this LINK <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
+          <h1> {this.props.title} </h1>
+          <p> {this.props.summary} </p>
+          <p> read more about the article at this <a href={this.props.link}>LINK</a> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
           <button type="button" className="btn like" aria-label="Like" onClick={this.like}>
             <span className="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
           </button>
@@ -66,8 +68,22 @@ class Article extends React.Component {
   }
 }
 
+function ArticleContainer(props){
+  return (
+    <ul className='article-list'>{props.articles.map((article, index) => {
+      return (
+        <li key={index} className='article-item'>
+          <Article title={article.title} link={article.link} summary={article.summary}/>
+        </li>
+        )
+    })}
+    </ul>
+    )
+}
 
-
+ArticleContainer.propTypes = {
+  articles: PropTypes.array.isRequired,
+}
 
 function Sidebar(props) {
     return (
@@ -128,7 +144,6 @@ class Feed extends React.Component {
     
     //if undefined, then reload SDK and call API from there
     if (window.FB === undefined){
-
       window.fbAsyncInit = () => {
         window.FB.init({
           appId      : '1992517710981460',
@@ -165,10 +180,12 @@ class Feed extends React.Component {
 
     }
     
-  
-
   //retrieves the profile information
   getProfileInfo() {
+    //scale profile pic to screen resolution
+    var size = Math.round(window.screen.width*.37);
+    
+    console.log('/me/picture?height=' + size + '&width=' + size)
     //update name in feed
     window.FB.api('/me', (response) => { 
       this.setState({
@@ -177,7 +194,7 @@ class Feed extends React.Component {
     });
 
     //update picture on feed
-    window.FB.api('/me/picture?type=large', (response) => {
+    window.FB.api('/me/picture?height=' + size + '&width=' + size, (response) => {
       this.setState({ 
         profilepic: response.data.url
       });
@@ -196,7 +213,11 @@ class Feed extends React.Component {
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} history={this.props.history}/>
-        <Article />
+        <ArticleContainer articles={[{
+          "title": "example",
+          "link": "http://www.cs.cornell.edu/courses/cs2112/2016fa/",
+          "summary": "dexter kozen!!!!"
+        }]} />
       </div>
     );
   }
