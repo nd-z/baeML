@@ -51,11 +51,11 @@
 }
 
 #profilepic {
-  padding-top: 10%;
-  text-align: left;
   width: 60%;
   margin: 1% 2%;
+  margin-top: 10%; 
   margin-bottom: 10%;
+  border-radius: 50%;
 }
 
 .fbButton {
@@ -68,11 +68,4 @@
   font-size: 16px;
   border-radius: 5px;
   width: 10%;
-}
-
-/**loading page**/
-#loadingScreen {
-  font-size: 2em;
-  margin-top: 2em;
-  text-align: center;
 }

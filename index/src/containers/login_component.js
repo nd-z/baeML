@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/login.css';
+import '../css/index.css'
 
 //fb login button
 function LoginButton(props){
@@ -11,12 +12,16 @@ function LoginButton(props){
 //displays the logo
 function Logo(props) { 
 	return (<div className="headerbox">
+ 			{!props.loggedIn ? 
+			<div >
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
 					<p id="small">Login below to start getting recommendations</p>
 					<LoginButton onClick={props.onLogin}/>
 				</div>
+			</div> : 
+ 			<img src={require('../imgs/loading.gif')} alt={"loading"}/>}
 			</div>)
 }
 
@@ -35,7 +40,6 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
-            console.log(response)
             this.setState({loggedIn: true});
 			this.props.history.push('/feed');
 		} else {
@@ -82,7 +86,7 @@ class LoginComponent extends React.Component {
               var js, fjs = d.getElementsByTagName(s)[0];
               if (d.getElementById(id)) return;
               js = d.createElement(s); js.id = id;
-              js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&version=v2.9&appId=1992517710981460";
+              js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
               fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));
 	}
