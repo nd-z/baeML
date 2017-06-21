@@ -77,7 +77,7 @@ class LoginComponent extends React.Component {
                 status     		 : true,
                 version          : 'v2.9'
               });
-              window.FB.AppEvents.logPageView();
+             
 
               //get login state after FB SDK is initialized 
               this.getLoginState();
@@ -86,14 +86,13 @@ class LoginComponent extends React.Component {
               var js, fjs = d.getElementsByTagName(s)[0];
               if (d.getElementById(id)) return;
               js = d.createElement(s); js.id = id;
-              js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
+              js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&version=v2.9&appId=1992517710981460";
               fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));
 	}
 
 	//renders the landing page
 	render () {
-
 		//handles reloading the login page after user logout since state is pushed via location state
 		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
 		return (
