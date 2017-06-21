@@ -10,17 +10,13 @@ function LoginButton(props){
 
 //displays the logo
 function Logo(props) { 
-	return (<div>
-			{!props.loggedIn ? 
-			<div className="headerbox">
+	return (<div className="headerbox">
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
 					<p id="small">Login below to start getting recommendations</p>
 					<LoginButton onClick={props.onLogin}/>
 				</div>
-			</div> : 
-			<p>Loading your feed...</p>}
 			</div>)
 }
 

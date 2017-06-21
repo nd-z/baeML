@@ -73,8 +73,10 @@ function Sidebar(props) {
     return (
       <div className="col-md-4 sidebar">
         <img id="logo" alt="baeML logo" src={require('../imgs/logo.png')}  />
-        <h1> welcome to your news feed,</h1>
-        <h1>{props.name}</h1>
+        <div>
+          <h1> welcome to your news feed,</h1>
+          <h1>{props.name}</h1>
+        </div>
         <img id="profilepic" alt="Profile pic" src={props.imgurl} />
         <Logout history={props.history}/>
       </div>

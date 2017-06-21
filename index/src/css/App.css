@@ -37,20 +37,25 @@
   padding-left: 3%;
 }
 
-.sidebar > h1 {
+.sidebar > div > h1 {
   font-style: normal;
-  font-size: 1.5em;
+  font-size: 1.8em;
+  color: gray;
+  line-height: 0.5em;
 }
 
 #logo {
   padding-top: 5%;
   width: 25%;
+  padding-bottom: 15%;
 }
 
 #profilepic {
+  padding-top: 10%;
   text-align: left;
-  width: 25%;
+  width: 60%;
   margin: 1% 2%;
+  margin-bottom: 10%;
 }
 
 .fbButton {
