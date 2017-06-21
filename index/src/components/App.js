@@ -1,7 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import '../css/App.css';
+import '../css/index.css'
 import axios from 'axios';
 
 class Article extends React.Component {
@@ -130,20 +130,19 @@ class Feed extends React.Component {
       loading: true,
       name: "",
       profilepic: "",
+      articles: [{
+          "title": "example",
+          "link": "http://www.cs.cornell.edu/courses/cs2112/2016fa/",
+          "summary": "dexter kozen!!!!"
+        }]
     };
   }
 
   componentDidMount() {
-    var component = ReactDOM.findDOMNode(this);
-    component.style.opacity = 0;
-    window.requestAnimationFrame(function() {
-      component.style.transition = "opacity 2000ms";
-      component.style.opacity = 1;
-    });
     window['getProfileInfo'] = this.getProfileInfo
-    
     //if undefined, then reload SDK and call API from there
     if (window.FB === undefined){
+      console.log("wut")
       window.fbAsyncInit = () => {
         window.FB.init({
           appId      : '1992517710981460',
@@ -152,28 +151,19 @@ class Feed extends React.Component {
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.9' // use graph api version 2.9
         });
-
+        this.getProfileInfo();
         (function(d, s, id) {
           var js, fjs = d.getElementsByTagName(s)[0];
           if (d.getElementById(id)) return;
           js = d.createElement(s); js.id = id;
-          js.src = "https://connect.facebook.net/en_US/all.js#xfbml=1&version=v2.9&appId=1992517710981460";
+          js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
           fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
-
-        
-        window.FB.getLoginStatus((response) => {
-          if (response.status === 'connected') { // the user is logged in and has authenticated the app
-            this.getProfileInfo();
-          } else {
-            alert('Error logging in. Please refresh the page and try again.');
-            window.location.reload();
-          }
-        });
       }
-    } else { //if directed from login, just call directly from the API
+    } else {
       this.getProfileInfo();
     }
+
     window.addEventListener('popstate', function () {
     window.location.reload();});
     window.addEventListener('error', function() {alert('Error loading page. Please refresh.')});
@@ -184,20 +174,25 @@ class Feed extends React.Component {
   getProfileInfo() {
     //scale profile pic to screen resolution
     var size = Math.round(window.screen.width*.37);
-    
-    console.log('/me/picture?height=' + size + '&width=' + size)
-    //update name in feed
-    window.FB.api('/me', (response) => { 
-      this.setState({
-        name: response.name
-      });
-    });
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') { // the user is logged in and has authenticated the app
+        //update name in feed
+        window.FB.api('/me', (response) => { 
+          this.setState({
+            name: response.name
+          });
+        });
 
-    //update picture on feed
-    window.FB.api('/me/picture?height=' + size + '&width=' + size, (response) => {
-      this.setState({ 
-        profilepic: response.data.url
-      });
+        //update picture on feed
+        window.FB.api('/me/picture?height=' + size + '&width=' + size, (response) => {
+          this.setState({ 
+            profilepic: response.data.url
+          });
+        });
+      } else {
+        alert('Error logging in. Please refresh the page and try again.');
+        window.location.reload();
+      }
     });
     setTimeout(() => this.setState({ loading: false }), 500); 
   }
@@ -206,18 +201,14 @@ class Feed extends React.Component {
   render() {
     if (this.state.loading){
       return(
-        <p id="loadingScreen">Loading your personalized newsfeed...</p>
+        <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/>
       );
     }
 
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} history={this.props.history}/>
-        <ArticleContainer articles={[{
-          "title": "example",
-          "link": "http://www.cs.cornell.edu/courses/cs2112/2016fa/",
-          "summary": "dexter kozen!!!!"
-        }]} />
+        <ArticleContainer articles={this.state.articles} />
       </div>
     );
   }
