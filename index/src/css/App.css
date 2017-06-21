@@ -1,12 +1,35 @@
+/**article**/
 .article {
   display: block;
   border: solid;
+  border-radius:25px;
   margin: 5%;
   padding-left:1%;
   padding-right:1%;
+  position: relative; /**cannot be static**/
   
 }
+.btn {
+  border: none;
+  color: black;
+  background: none;
+}
 
+.like{
+  position: absolute;
+  bottom: 20px;
+  right: 60px;
+  color:green;
+}
+.dislike{
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  color:red;
+}
+
+
+/**sidebar**/
 .sidebar {
   display: inline-block;
   
@@ -42,6 +65,7 @@
   width: 10%;
 }
 
+/**loading page**/
 #loadingScreen {
   font-size: 2em;
   margin-top: 2em;

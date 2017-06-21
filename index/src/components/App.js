@@ -3,20 +3,47 @@ import ReactDOM from 'react-dom';
 import '../css/App.css';
 
 
-function Article() {
+class Article extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      loaded_article: false,
+      liked: false
+    };
+
+    // This binding is necessary to make `this` work in the callback
+    this.like = this.like.bind(this);
+    this.dislike = this.dislike.bind(this);
+  }
+  
+  like() {
+    this.setState({liked: true});
+    alert('liked');
+  }
+  dislike(){
+    this.setState({liked: false});
+    alert('disliked');
+
+  }
+  render() {
     return (
       <div className="col-md-8">
         <div className="article">
           <h1> this represents an article </h1>
-          <p> read more about the article at this LINK </p>
-        </div>
-        <div className="article">
-          <h1> this represents an article </h1>
-          <p> read more about the article at this LINK </p>
+          <p> read more about the article at this LINK <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
+          <button type="button" className="btn like" aria-label="Like" onClick={this.like}>
+            <span className="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+          </button>
+          <button type="button" className="btn dislike" aria-label="Dislike" onClick={this.dislike}>
+            <span className="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+          </button>
         </div>
       </div>
     );
+  }
 }
+
+
 
 
 function Sidebar(props) {
@@ -100,6 +127,7 @@ class Feed extends React.Component {
             this.getProfileInfo();
           } else {
             alert('Error logging in. Please refresh the page and try again.');
+            window.location.reload();
           }
         });
       }
@@ -108,7 +136,7 @@ class Feed extends React.Component {
     }
     window.addEventListener('popstate', function () {
     window.location.reload();});
-    window.addEventListener('error', function() {alert('error')});
+    window.addEventListener('error', function() {alert('Error loading page. Please refresh.')});
 
     }
     
