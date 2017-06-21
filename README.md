@@ -15,14 +15,16 @@
 + matplotlib
 + scipy
 + numpy
++ BeautifulSoup
 + TBD
 
 ## Frontend Components
 + Basic UI allowing user login with Facebook
++ API to dictate communication between frontend and backend controllers
 + TBD
 
 ## Backend Components
-+ skip-gram model to vectorize and train on semantics of words
++ Skip-gram model to vectorize and train on semantics of words
 + DB to store serialized networks for each user (to be revised as seen fit)
 + Webcrawler to find and classify new data using the model, then feed the user relevant info
 
