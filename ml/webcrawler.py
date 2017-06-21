@@ -21,7 +21,21 @@ class WebCrawler(object):
 
     def crawl(self, SeedUrl):
         tocrawl=[SeedUrl]
-        crawled=[]
+        links_on_page=[]
+        page=tocrawl.pop()
+        #print 'Crawled:'+page
+        pagesource=urllib2.urlopen(page)
+        s=pagesource.read()
+        soup=BeautifulSoup.BeautifulSoup(s)
+        links=soup.findAll('a',href=True)   
+
+        for l in links:
+            if self.isValidUrl(l['href']):
+                links_on_page.append(l['href'])
+
+        return links_on_page
+
+        ''' this was for crawling other links
         while tocrawl:
             page=tocrawl.pop()
             print 'Crawled:'+page
@@ -35,6 +49,8 @@ class WebCrawler(object):
                         tocrawl.append(l['href'])
                 crawled.append(page)   
         return crawled
+        '''
 
 crawler = WebCrawler()
-crawler.crawl('http://www.princeton.edu/main/')
+links = crawler.crawl('https://www.nytimes.com')
+print links
