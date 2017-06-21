@@ -14,21 +14,26 @@ class WebCrawler(object):
             r'(?::\d+)?' # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
+    def grabContent(self, Url):
+        page = Url
+        pagesource = urllib2.urlopen(page)
+        s = pagesource.read()
+        soup = BeautifulSoup.BeautifulSoup(s)
+
+        #TODO modify to grab content off an article webpage for keyword clustering
+
     def isValidUrl(self, url):
         if self.regex.match(url) is not None:
             return True;
         return False
 
     def crawl(self, SeedUrl, keywords):
-        tocrawl=[SeedUrl]
-        links_on_page=[]
-        page=tocrawl.pop()
-        #print 'Crawled:'+page
-        pagesource=urllib2.urlopen(page)
-        s=pagesource.read()
-        #print s
-        soup=BeautifulSoup.BeautifulSoup(s)
-        links=soup.findAll('a',href=True)
+        links_on_page = []
+        page = SeedUrl
+        pagesource = urllib2.urlopen(page)
+        s = pagesource.read()
+        soup = BeautifulSoup.BeautifulSoup(s)
+        links = soup.findAll('a',href=True)
         #print links 
 
         for l in links:
@@ -47,27 +52,13 @@ class WebCrawler(object):
             else:
                 links_on_page.append(l['href'])
 
-            '''
-            if self.isValidUrl(l['href']):
-                links_on_page.append(l['href'])
-            '''
-        return links_on_page
+        ret = []
+        for l in links_on_page:
+            if self.isValidUrl(l):
+                ret.append(l)
 
-        ''' this was for crawling other links
-        while tocrawl:
-            page=tocrawl.pop()
-            print 'Crawled:'+page
-            pagesource=urllib2.urlopen(page)
-            s=pagesource.read()
-            soup=BeautifulSoup.BeautifulSoup(s)
-            links=soup.findAll('a',href=True)        
-            if page not in crawled:
-                for l in links:
-                    if self.isValidUrl(l['href']):
-                        tocrawl.append(l['href'])
-                crawled.append(page)   
-        return crawled
-        '''
+        return ret
+
 
 crawler = WebCrawler()
 keywords = ['global', 'warming']

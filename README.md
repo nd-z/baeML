@@ -4,6 +4,7 @@
 + [The Skip-gram Model](https://www.tensorflow.org/tutorials/word2vec)
 + [Word Embeddings](http://colah.github.io/posts/2014-07-NLP-RNNs-Representations/)
 + [Object Serialization](https://docs.python.org/2/library/pickle.html)
++ [BeautifulSoup Documentation](https://www.crummy.com/software/BeautifulSoup/bs3/documentation.html#Parsing%20HTML)
 
 # Project Overview
 ![Project Overview](https://i.imgur.com/NZzHoOD.png)
