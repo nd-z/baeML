@@ -10,7 +10,7 @@ class Article extends React.Component {
     super(props);
     this.state = {
       loaded_article: false,
-      liked: false,
+      rating: 10,
       article_id: 11111, //dummy var
       user_id: 22222 //dummy var
     };
@@ -18,6 +18,7 @@ class Article extends React.Component {
     // This binding is necessary to make `this` work in the callback
     this.like = this.like.bind(this);
     this.dislike = this.dislike.bind(this);
+    this.setRating = this.setRating.bind(this);
   }
 
   //called when the like button is pressed; sends article & preference to database
@@ -49,19 +50,32 @@ class Article extends React.Component {
 
   }
 
+  //TODO API call
+  setRating(rating){
+    console.log(rating);
+    this.setState({
+      rating: rating
+      });
+    
+  }
+
   render() {
+    const ratings = [1,2,3,4,5,6,7,8,9,10]
     return ( //TODO: if liked  / disliked, modify appearance accordingly
       <div className="col-md-8">
         <div className="article">
           <h1> {this.props.title} </h1>
           <p> {this.props.summary} </p>
           <p> read more about the article at this <a href={this.props.link}>LINK</a> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
-          <button type="button" className="btn like" aria-label="Like" onClick={this.like}>
-            <span className="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-          </button>
-          <button type="button" className="btn dislike" aria-label="Dislike" onClick={this.dislike}>
-            <span className="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
-          </button>
+          
+          <div className='ratings-container' className='text-right'>
+            <p > Rate this article: </p>{
+            ratings.map((rating, index)=> {
+            return(
+              <button className='rating' key={index} onClick={(e) => this.setRating(rating)}>{rating}</button>
+              )
+          })
+          }</div>
         </div>
       </div>
     );

@@ -28,6 +28,19 @@
   color:red;
 }
 
+.ratings-container{
+  margin-right: 4%;
+  margin-bottom: 4%;
+}
+
+.rating{
+  border: none;
+}
+
+.rating:hover{
+  transition-duration: 0.4s;
+  opacity: 0.8;
+}
 
 /**sidebar**/
 .sidebar {
@@ -61,7 +74,7 @@
 .fbButton {
   border: none;
   background-color: #4267B2;
-  font: 'Lucida Grande', 'Tahoma';
+  font: "Lucida Grande", "Tahoma";
   color: #fff;
   text-align: center;
   margin-top: 1em;
