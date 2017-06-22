@@ -14,11 +14,14 @@ class WebCrawler(object):
             r'(?::\d+)?' # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
-    def grabContent(self, Url):
-        page = Url
-        pagesource = urllib2.urlopen(page)
+    def grabContent(self, url):
+        req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
+
+        pagesource = urllib2.urlopen(req)
         s = pagesource.read()
         soup = BeautifulSoup.BeautifulSoup(s)
+        paragraphs = soup.findAll('p')
+        return paragraphs
 
         #TODO modify to grab content off an article webpage for keyword clustering
 
@@ -29,8 +32,9 @@ class WebCrawler(object):
 
     def crawl(self, SeedUrl, keywords):
         links_on_page = []
-        page = SeedUrl
-        pagesource = urllib2.urlopen(page)
+        req = urllib2.Request(SeedUrl, headers={'User-Agent' : "Magic Browser"}) 
+
+        pagesource = urllib2.urlopen(req)
         s = pagesource.read()
         soup = BeautifulSoup.BeautifulSoup(s)
         links = soup.findAll('a',href=True)
@@ -63,4 +67,6 @@ class WebCrawler(object):
 crawler = WebCrawler()
 keywords = ['global', 'warming']
 links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=bs&form=QBLH', keywords)
-print links
+#print links
+paragraphs = crawler.grabContent(links[1])
+print paragraphs
