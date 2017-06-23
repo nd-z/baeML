@@ -16,52 +16,65 @@ class Article extends React.Component {
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.like = this.like.bind(this);
-    this.dislike = this.dislike.bind(this);
+    // this.like = this.like.bind(this);
+    // this.dislike = this.dislike.bind(this);
     this.setRating = this.setRating.bind(this);
   }
 
-  //called when the like button is pressed; sends article & preference to database
-  like() {
-    this.setState((prevState) => {
-      return {liked: true}; //state changed next time it is rendered
-    });
-    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/like')
-    .then(function (response) {
-      alert('liked'); //good
-    })
-    .catch(function (error) {
-      alert('error');
-    });
+  // //called when the like button is pressed; sends article & preference to database
+  // like() {
+  //   this.setState((prevState) => {
+  //     return {liked: true}; //state changed next time it is rendered
+  //   });
+  //   axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/like')
+  //   .then(function (response) {
+  //     alert('liked'); //good
+  //   })
+  //   .catch(function (error) {
+  //     alert('error');
+  //   });
     
-  }
+  // }
   //called when the dislike button is pressed; sends data to database
-  dislike(){
-    this.setState((prevState) => {
-      return {liked: false}; //state changed next time it is rendered
-    });
-    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/dislike')
+  // dislike(){
+  //   this.setState((prevState) => {
+  //     return {liked: false}; //state changed next time it is rendered
+  //   });
+  //   axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/dislike')
+  //   .then(function (response) {
+  //     alert('disliked'); //good
+  //   })
+  //   .catch(function (error) {
+  //     alert('error');
+  //   });    
+
+  // }
+
+  //TODO API call
+  setRating(rating){
+    this.setState({
+      rating: rating
+      });
+    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/rate', {
+      rating: {rating}
+    })
     .then(function (response) {
-      alert('disliked'); //good
+      if (response.status === 201) {
+        console.log('rated'); //good
+      }
+      else{
+        alert ('rip');
+      }
+
     })
     .catch(function (error) {
       alert('error');
     });    
-
-  }
-
-  //TODO API call
-  setRating(rating){
-    console.log(rating);
-    this.setState({
-      rating: rating
-      });
-    
   }
 
   render() {
     const ratings = [1,2,3,4,5,6,7,8,9,10]
-    return ( //TODO: if liked  / disliked, modify appearance accordingly
+    return (
       <div className="col-md-8">
         <div className="article">
           <h1> {this.props.title} </h1>
@@ -69,13 +82,18 @@ class Article extends React.Component {
           <p> read more about the article at this <a href={this.props.link}>LINK</a> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
           
           <div className='ratings-container' className='text-right'>
-            <p > Rate this article: </p>{
+            <p> Rate this article: </p> <span> <form>{
             ratings.map((rating, index)=> {
             return(
-              <button className='rating' key={index} onClick={(e) => this.setRating(rating)}>{rating}</button>
+
+                <label>
+                   <input name="rating-scale" class="radio-btn" type="radio" key={index} onClick={(e) => this.setRating(rating)}/>
+                   <p>{rating}</p>
+                </label>
+                
               )
           })
-          }</div>
+          }</form></span></div>
         </div>
       </div>
     );
@@ -175,7 +193,8 @@ class Feed extends React.Component {
           fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
       }
-    } else {
+    } 
+    else {
       this.getProfileInfo();
     }
 
@@ -190,6 +209,7 @@ class Feed extends React.Component {
     //scale profile pic to screen resolution
     var size = Math.round(window.screen.width*.37);
     window.FB.getLoginStatus((response) => {
+      console.log('hehhehehehehehehhe')
       if (response.status === 'connected') { // the user is logged in and has authenticated the app
         //update name in feed
         window.FB.api('/me', (response) => { 
@@ -215,8 +235,7 @@ class Feed extends React.Component {
 
   render() {
     if (this.state.loading){
-      console.log("trueeee")
-      console.log("jeje")
+
       return(
         <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/>
       );
