@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import '../css/login.css';
 import '../css/index.css'
 
@@ -37,6 +38,23 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
+
+			//TESTING THE BACKEND
+					axios.get('http://localhost:3333/api/login/init', {
+		      
+		    })
+		    .then(function (response) {
+		      if (response.status === 200) {
+		        console.log('rated'); //good
+		      }
+		      else{
+		        alert ('rip');
+		      }
+
+		    })
+		    .catch(function (error) {
+		      alert('error');
+		    });
             this.setState({loggedIn: true});
 			this.props.history.push('/feed');
 		} else {
