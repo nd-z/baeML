@@ -156,6 +156,7 @@ class Feed extends React.Component {
     window['getProfileInfo'] = this.getProfileInfo
     //if undefined, then reload SDK and call API from there
     if (window.FB === undefined){
+
       console.log("wut")
       window.fbAsyncInit = () => {
         window.FB.init({
@@ -200,7 +201,8 @@ class Feed extends React.Component {
         //update picture on feed
         window.FB.api('/me/picture?height=' + size + '&width=' + size, (response) => {
           this.setState({ 
-            profilepic: response.data.url
+            profilepic: response.data.url,
+            loading: false
           });
         });
       } else {
@@ -208,12 +210,13 @@ class Feed extends React.Component {
         window.location.reload();
       }
     });
-    setTimeout(() => this.setState({ loading: false }), 500); 
   }
 
 
   render() {
     if (this.state.loading){
+      console.log("trueeee")
+      console.log("jeje")
       return(
         <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/>
       );

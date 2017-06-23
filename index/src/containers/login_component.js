@@ -11,17 +11,14 @@ function LoginButton(props){
 
 //displays the logo
 function Logo(props) { 
-	return (<div className="headerbox">
- 			{!props.loggedIn ? 
-			<div >
+	console.log(props.loggedIn)
+	return (<div className="headerbox"> 
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
 					<p id="small">Login below to start getting recommendations</p>
 					<LoginButton onClick={props.onLogin}/>
 				</div>
-			</div> : 
- 			<img src={require('../imgs/loading.gif')} alt={"loading"}/>}
 			</div>)
 }
 
@@ -94,9 +91,13 @@ class LoginComponent extends React.Component {
 	//renders the landing page
 	render () {
 		//handles reloading the login page after user logout since state is pushed via location state
+		console.log('here')
 		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
-		return (
-			<Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/>
+		return ( <div> 
+			{ !loggedIn ? <Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/> 
+			:  <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/> 
+			}
+			</div>
 		)
 	}
 }
