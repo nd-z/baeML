@@ -16,41 +16,10 @@ class Article extends React.Component {
     };
 
     // This binding is necessary to make `this` work in the callback
-    // this.like = this.like.bind(this);
-    // this.dislike = this.dislike.bind(this);
     this.setRating = this.setRating.bind(this);
   }
 
-  // //called when the like button is pressed; sends article & preference to database
-  // like() {
-  //   this.setState((prevState) => {
-  //     return {liked: true}; //state changed next time it is rendered
-  //   });
-  //   axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/like')
-  //   .then(function (response) {
-  //     alert('liked'); //good
-  //   })
-  //   .catch(function (error) {
-  //     alert('error');
-  //   });
-    
-  // }
-  //called when the dislike button is pressed; sends data to database
-  // dislike(){
-  //   this.setState((prevState) => {
-  //     return {liked: false}; //state changed next time it is rendered
-  //   });
-  //   axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/dislike')
-  //   .then(function (response) {
-  //     alert('disliked'); //good
-  //   })
-  //   .catch(function (error) {
-  //     alert('error');
-  //   });    
 
-  // }
-
-  //TODO API call
   setRating(rating){
     this.setState({
       rating: rating
