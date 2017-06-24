@@ -3,9 +3,10 @@ HOST: http://polls.apiblueprint.org/
 
 # baeML
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+API allowing users to retrieve articles from the database and indicate their preferences.
 
 ## Login [/login]
+To retrieve personalized feed
 ### Login User [POST]
 + Request (application/json)
 
@@ -16,6 +17,7 @@ Polls is a simple API allowing consumers to view polls and vote in them.
     + Body
 
 ## First Time Login [/init]
+Initialize by querying page likes and to begin personalizing articlese 
 ### Initialize User [POST]
 + Request (application/json)
 
