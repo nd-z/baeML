@@ -55,8 +55,8 @@ class Article extends React.Component {
             ratings.map((rating, index)=> {
             return(
 
-                <label>
-                   <input name="rating-scale" class="radio-btn" type="radio" key={index} onClick={(e) => this.setRating(rating)}/>
+                <label key={index}>
+                   <input  name="rating-scale" className="radio-btn" type="radio" key={index} onClick={(e) => this.setRating(rating)}/>
                    <p>{rating}</p>
                 </label>
                 
