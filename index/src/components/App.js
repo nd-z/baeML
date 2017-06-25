@@ -146,7 +146,6 @@ class Feed extends React.Component {
     //if undefined, then reload SDK and call API from there
     if (window.FB === undefined){
 
-      console.log("wut")
       window.fbAsyncInit = () => {
         window.FB.init({
           appId      : '1992517710981460',
@@ -180,7 +179,6 @@ class Feed extends React.Component {
     //scale profile pic to screen resolution
     var size = Math.round(window.screen.width*.37);
     window.FB.getLoginStatus((response) => {
-      console.log('hehhehehehehehehhe')
       if (response.status === 'connected') { // the user is logged in and has authenticated the app
         //update name in feed
         window.FB.api('/me', (response) => { 

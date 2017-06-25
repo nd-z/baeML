@@ -12,7 +12,6 @@ function LoginButton(props){
 
 //displays the logo
 function Logo(props) { 
-	console.log(props.loggedIn)
 	return (<div className="headerbox"> 
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
@@ -51,49 +50,30 @@ class LoginComponent extends React.Component {
 			if (response.status === 'connected'){
 				var userID = response.authResponse.userID
 				/**log user into our server**/
-				axios.post('https://private-cb421-baeml.apiary-mock.com/login', {
-					user_ID: userID
+				axios.post('http://localhost:3333/api/login/', {
+					user_ID: userID,
 				})
 				.then(function (response) { 
 					if (response.status === 200) { //returning user
 		        		console.log('contacted server'); 
 		        	}
-		        	else if (response.status == 404) { //create new user
-		        		console.log('new user');
-		        		axios.post('https://private-cb421-baeml.apiary-mock.com/init', {
-							user_ID: userID
-						})
-						.then(function (response) {
-
-						})
-						.catch(function (error) {
-
-						});
-		        	}
-
 		    	})
 				.catch(function (error) {
-				alert('error');
+					console.log('new user');
+		        		axios.post('http://localhost:3333/api/init/', {
+							user_ID: userID,
+							token: response.authResponse.accessToken,
+							size: Math.round(window.screen.width*.37)
+						})
+						.then(function (response) {
+							console.log("hi")
+							this.props.history.push('/feed', response.data);
+						})
 				});
-			this.props.history.push('/feed');
+			
 		}
 		}, {scope: 'public_profile,email'});
 	}
-
-	//PUT THIS FUNCTION IN BACK END TO RETRIEVE LIKES, SAVE LIKES IN DB -> GENERATE ARTICLES IN BACKEND
-	// createNewUser() {
-	// 	window.FB.api(
-	// 		"/me/likes",
-	// 		function (response) {
-	// 			if (response && !response.error) {
-	// 				pages = response.data //list of page nodes
-	// 				pageNames = []
-	// 				for (i = 0; i < pages.length; i++) {
-	// 					pageNames.append(pages[i].name)
-	// 				}
-	// 			}
-	// 		}
-	// 	);
 
 	// }
 	//calls FB API's getLoginStatus
@@ -134,7 +114,6 @@ class LoginComponent extends React.Component {
 	//renders the landing page
 	render () {
 		//handles reloading the login page after user logout since state is pushed via location state
-		console.log('here')
 		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
 		return ( <div> 
 			{ !loggedIn ? <Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/> 
