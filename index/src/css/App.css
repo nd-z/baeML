@@ -15,7 +15,7 @@
   background: none;
 }
 
-.like{
+/*.like{
   position: absolute;
   bottom: 20px;
   right: 60px;
@@ -26,20 +26,23 @@
   bottom: 20px;
   right: 30px;
   color:red;
-}
+}*/
 
 .ratings-container{
-  margin-right: 4%;
-  margin-bottom: 4%;
+  position: absolute;
+  margin-right: 8%;
+  margin-bottom: 6%;
+  display: inline-block;
 }
 
 .rating{
   border: none;
+
 }
 
-.rating:hover{
-  transition-duration: 0.4s;
-  opacity: 0.8;
+label {
+  color: rgb(186,85,211);
+  margin-right: 1%;
 }
 
 /**sidebar**/

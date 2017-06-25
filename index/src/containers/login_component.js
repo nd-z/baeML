@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import '../css/login.css';
 import '../css/index.css'
 
@@ -11,17 +12,13 @@ function LoginButton(props){
 
 //displays the logo
 function Logo(props) { 
-	return (<div className="headerbox">
- 			{!props.loggedIn ? 
-			<div >
+	return (<div className="headerbox"> 
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
 					<p id="small">Login below to start getting recommendations</p>
 					<LoginButton onClick={props.onLogin}/>
 				</div>
-			</div> : 
- 			<img src={require('../imgs/loading.gif')} alt={"loading"}/>}
 			</div>)
 }
 
@@ -51,11 +48,34 @@ class LoginComponent extends React.Component {
 	login() {
 		window.FB.login((response) => {
 			if (response.status === 'connected'){
-				this.props.history.push('/feed');
-			}
+				var userID = response.authResponse.userID
+				/**log user into our server**/
+				axios.post('http://localhost:3333/api/login/', {
+					user_ID: userID,
+				})
+				.then(function (response) { 
+					if (response.status === 200) { //returning user
+		        		console.log('contacted server'); 
+		        	}
+		    	})
+				.catch(function (error) {
+					console.log('new user');
+		        		axios.post('http://localhost:3333/api/init/', {
+							user_ID: userID,
+							token: response.authResponse.accessToken,
+							size: Math.round(window.screen.width*.37)
+						})
+						.then(function (response) {
+							console.log("hi")
+							this.props.history.push('/feed', response.data);
+						})
+				});
+			
+		}
 		}, {scope: 'public_profile,email'});
 	}
 
+	// }
 	//calls FB API's getLoginStatus
 	getLoginState() { 
 		window.FB.getLoginStatus(function(response) {
@@ -95,8 +115,11 @@ class LoginComponent extends React.Component {
 	render () {
 		//handles reloading the login page after user logout since state is pushed via location state
 		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
-		return (
-			<Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/>
+		return ( <div> 
+			{ !loggedIn ? <Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/> 
+			:  <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/> 
+			}
+			</div>
 		)
 	}
 }

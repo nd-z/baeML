@@ -1,0 +1,83 @@
+FORMAT: 1A
+HOST: https://private-cb421-baeml.apiary-mock.com/
+
+# baeML
+
+API allowing users to retrieve articles from the database and indicate their preferences.
+
+## Login [/login]
+To retrieve personalized feed
+### Login User [POST /login]
++ Request (application/json)
+
+        {
+            "user_ID": userID //set user in backend
+        }
++ Response 200 (text/plain)
+
+    + Body
+    
+            Ok
+        
++ Response 404 (text/plain)
+
+    + Body
+
+            Adding user
+
+## First Time Login [/init]
+Initialize by querying page likes and to begin personalizing articles
+
+### Initialize User [POST]
++ Request (application/json)
+
+        {
+            "user_ID": userID //create new user in db
+        }
+
++ Response 201 (text/plain)
+    
+    + Body
+    
+            Ok
+
+## Article Collection [/article]
+### Retrieve Article [GET]
++ Request (application/json)
+
++ Response 201 
+
+### Rate Article [POST /article/{user_id}/{article_id}/rate]
++ Request (application/json)
+
+    + Headers
+    
+    + Body
+    
+            {
+                "rating": rating
+            }
+
++ Response 201 (text/plain)
+    
+    + Body 
+            
+            Ok, rating added
+
+
+
+### Retrieve Articles List [GET /list]
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "articles": [
+                    {
+                        "title": "Why is ReactJS so annoying",
+                        "link": "http://link",
+                        
+                        ...
+                    },
+                    ...
+                ]
+            }
