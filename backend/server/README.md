@@ -3,8 +3,8 @@
 
 ## Required pip packages:
 + Django
-+ Djangorestframework
++ Djangorestfrsamework
 + Django_facebook
 + django-cors-headers
 
-Alternatively, run the script to just autoinstall all this 
+Alternatively, run the server.sh script to just autoinstall all this and start the server
