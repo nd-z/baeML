@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://private-cb421-baeml.apiary-mock.com/
 
 # baeML
 
@@ -7,43 +7,47 @@ API allowing users to retrieve articles from the database and indicate their pre
 
 ## Login [/login]
 To retrieve personalized feed
-### Login User [POST]
+### Login User [POST /login]
 + Request (application/json)
 
-+ Response 201 (application/json)
-
-    + Headers
-
-    + Body
-
-## First Time Login [/init]
-Initialize by querying page likes and to begin personalizing articlese 
-### Initialize User [POST]
-+ Request (application/json)
-
-+ Response 201 (application/json)
-
-    + Headers
+        {
+            "user_ID": userID //set user in backend
+        }
++ Response 200 (text/plain)
 
     + Body
     
-            {
-                "page_likes": [
-                    {
-                        "id": "10000000000"
-                    }, {
-                        "id": "10000000000"
-                    }, ...
-                ]
-            }
+            Ok
+        
++ Response 404 (text/plain)
+
+    + Body
+
+            Adding user
+
+## First Time Login [/init]
+Initialize by querying page likes and to begin personalizing articles
+
+### Initialize User [POST]
++ Request (application/json)
+
+        {
+            "user_ID": userID //create new user in db
+        }
+
++ Response 201 (text/plain)
+    
+    + Body
+    
+            Ok
 
 ## Article Collection [/article]
 ### Retrieve Article [GET]
 + Request (application/json)
 
-+ Response 201
++ Response 201 
 
-### Rate Article [POST]
+### Rate Article [POST /article/{user_id}/{article_id}/rate]
 + Request (application/json)
 
     + Headers
@@ -54,93 +58,26 @@ Initialize by querying page likes and to begin personalizing articlese
                 "rating": rating
             }
 
-+ Response 201 (application/json)
-
-    + Headers
++ Response 201 (text/plain)
     
+    + Body 
+            
+            Ok, rating added
+
+
+
+### Retrieve Articles List [GET /list]
++ Response 200 (application/json)
     + Body
     
             {
                 "articles": [
                     {
                         "title": "Why is ReactJS so annoying",
+                        "link": "http://link",
+                        
                         ...
                     },
                     ...
-                ]
-            }
-
-
-## Questions Collection [/questions]
-
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
-
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
-
-    + Body
-
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
                 ]
             }
