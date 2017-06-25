@@ -49,27 +49,53 @@ class LoginComponent extends React.Component {
 	login() {
 		window.FB.login((response) => {
 			if (response.status === 'connected'){
-				console.log("getting!!")
-			//TESTING THE BACKEND
-					axios.get('http://localhost:3333/api/login/test', {
-		    })
-		    .then(function (response) {
-		      if (response.status === 201) {
-		        console.log('contacted server'); //good
-``		      }
-		      else{
-		        alert ('rip');
-		      }
+				var userID = response.authResponse.userID
+				/**log user into our server**/
+				axios.post('https://private-cb421-baeml.apiary-mock.com/login', {
+					user_ID: userID
+				})
+				.then(function (response) { 
+					if (response.status === 200) { //returning user
+		        		console.log('contacted server'); 
+		        	}
+		        	else if (response.status == 404) { //create new user
+		        		console.log('new user');
+		        		axios.post('https://private-cb421-baeml.apiary-mock.com/init', {
+							user_ID: userID
+						})
+						.then(function (response) {
 
-		    })
-		    .catch(function (error) {
-		      alert('error');
-		    });
-				this.props.history.push('/feed');
-			}
+						})
+						.catch(function (error) {
+
+						});
+		        	}
+
+		    	})
+				.catch(function (error) {
+				alert('error');
+				});
+			this.props.history.push('/feed');
+		}
 		}, {scope: 'public_profile,email'});
 	}
 
+	//PUT THIS FUNCTION IN BACK END TO RETRIEVE LIKES, SAVE LIKES IN DB -> GENERATE ARTICLES IN BACKEND
+	// createNewUser() {
+	// 	window.FB.api(
+	// 		"/me/likes",
+	// 		function (response) {
+	// 			if (response && !response.error) {
+	// 				pages = response.data //list of page nodes
+	// 				pageNames = []
+	// 				for (i = 0; i < pages.length; i++) {
+	// 					pageNames.append(pages[i].name)
+	// 				}
+	// 			}
+	// 		}
+	// 	);
+
+	// }
 	//calls FB API's getLoginStatus
 	getLoginState() { 
 		window.FB.getLoginStatus(function(response) {

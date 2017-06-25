@@ -7,6 +7,7 @@ import axios from 'axios';
 class Article extends React.Component {
 
   constructor(props){
+  	//fetch article
     super(props);
     this.state = {
       loaded_article: false,
@@ -24,8 +25,9 @@ class Article extends React.Component {
     this.setState({
       rating: rating
       });
-    axios.post('http://private-61500-baeml.apiary-mock.com/{user_id}/{article_id}/rate', {
-      rating: {rating}
+
+    axios.post('http://private-cb421-baeml.apiary-mock.com/article/{user_id}/{article_id}/rate', {
+    	"rating": {rating}
     })
     .then(function (response) {
       if (response.status === 201) {
