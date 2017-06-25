@@ -242,7 +242,7 @@ class SkipGram(object):
 		        print(log_str)
 		  final_embeddings = normalized_embeddings.eval()
 		  return final_embeddings, self.reverse_dictionary, similarity
-
+'''
 try:
 	# pylint: disable=g-import-not-at-top
 	from sklearn.manifold import TSNE
@@ -256,3 +256,4 @@ try:
   	model.plot_with_labels(low_dim_embs, labels)
 except ImportError:
 	print('Please install sklearn, matplotlib, and scipy to show embeddings.')
+'''
