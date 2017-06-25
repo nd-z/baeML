@@ -38,23 +38,6 @@ class LoginComponent extends React.Component {
 	//query status of user, either prompts to login or proceeds
 	statusChangeCallback(response){
 		if (response.status === 'connected') {
-
-			//TESTING THE BACKEND
-					axios.get('http://localhost:3333/api/login/init', {
-		      
-		    })
-		    .then(function (response) {
-		      if (response.status === 200) {
-		        console.log('rated'); //good
-		      }
-		      else{
-		        alert ('rip');
-		      }
-
-		    })
-		    .catch(function (error) {
-		      alert('error');
-		    });
             this.setState({loggedIn: true});
 			this.props.history.push('/feed');
 		} else {
@@ -66,6 +49,22 @@ class LoginComponent extends React.Component {
 	login() {
 		window.FB.login((response) => {
 			if (response.status === 'connected'){
+				console.log("getting!!")
+			//TESTING THE BACKEND
+					axios.get('http://localhost:3333/api/login/test', {
+		    })
+		    .then(function (response) {
+		      if (response.status === 201) {
+		        console.log('contacted server'); //good
+``		      }
+		      else{
+		        alert ('rip');
+		      }
+
+		    })
+		    .catch(function (error) {
+		      alert('error');
+		    });
 				this.props.history.push('/feed');
 			}
 		}, {scope: 'public_profile,email'});
