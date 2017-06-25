@@ -5,49 +5,71 @@ HOST: https://private-cb421-baeml.apiary-mock.com/
 
 API allowing users to retrieve articles from the database and indicate their preferences.
 
-## Login [/login]
+## Login [/api/login]
 To retrieve personalized feed
-### Login User [POST /login]
+### Login User [POST /api/login]
 + Request (application/json)
 
         {
-            "user_ID": userID //set user in backend
+            "user_ID": userID, //set user in backend
         }
-+ Response 200 (text/plain)
++ Response 200 (application/json)
 
     + Body
-    
+        
             Ok
         
-+ Response 404 (text/plain)
++ Response 204 (text/plain)
 
     + Body
 
             Adding user
-
-## First Time Login [/init]
-Initialize by querying page likes and to begin personalizing articles
-
-### Initialize User [POST]
+            
+### First Time Login [POST /api/init]
 + Request (application/json)
 
         {
-            "user_ID": userID //create new user in db
+            "user_ID": userID, //create new user in db
+            "size": profile_pic_size,
+            "token": accessToken
         }
 
-+ Response 201 (text/plain)
++ Response 201 (application/json)
     
     + Body
     
-            Ok
+        Ok
+        
+### Get Data [GET /api/load]
++ Request (application/json)
 
-## Article Collection [/article]
+        {
+            "user_ID": userID
+        }
+
++ Response 201 (application/json)
+    
+    + Body
+        {
+            "name": name,
+            "propic": profilepicurl,
+            "articles": [
+                { 
+                    "title": "Python babby snek languini",
+                    "link": "python.org"
+                    "summary": "....."
+                },
+                {...}
+                ]
+        }
+
+## Article Collection [/api/article]
 ### Retrieve Article [GET]
 + Request (application/json)
 
 + Response 201 
 
-### Rate Article [POST /article/{user_id}/{article_id}/rate]
+### Rate Article [POST /api/article/{user_id}/{article_id}/rate]
 + Request (application/json)
 
     + Headers
@@ -66,7 +88,7 @@ Initialize by querying page likes and to begin personalizing articles
 
 
 
-### Retrieve Articles List [GET /list]
+### Retrieve Articles List [GET /api/list]
 + Response 200 (application/json)
     + Body
     
