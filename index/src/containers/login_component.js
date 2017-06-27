@@ -53,19 +53,19 @@ class LoginComponent extends React.Component {
 				axios.post('http://localhost:3333/api/login/', {
 					user_ID: userID,
 				})
-				.then(function (response) { 
+				.then((response) => { 
 					if (response.status === 200) { //returning user
 		        		console.log('contacted server'); 
 		        	}
 		    	})
-				.catch(function (error) {
+				.catch((error) => {
 					console.log('new user');
 		        		axios.post('http://localhost:3333/api/init/', {
 							user_ID: userID,
 							token: response.authResponse.accessToken,
 							size: Math.round(window.screen.width*.37)
 						})
-						.then(function (response) {
+						.then((response) => {
 							console.log("hi")
 							this.props.history.push('/feed', response.data);
 						})
