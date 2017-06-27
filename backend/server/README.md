@@ -6,6 +6,9 @@
 + Create user named admin, 'CREATE USER admin;'
 + Create database named "baeML_db" 'CREATE DATABASE baeML_db;'
 
+## Required pip packages for DB:
++ psycopg2
+
 ## Required pip packages:
 + Django
 + Djangorestfrsamework
