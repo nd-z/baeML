@@ -23,10 +23,10 @@
 ## Frontend Components
 + Basic UI allowing user login with Facebook
 + API to dictate communication between frontend and backend controllers
-+ TBD
++ ReactJS
 
 ## Backend Components
 + Skip-gram model to vectorize and train on semantics of words
-+ DB to store serialized networks for each user (to be revised as seen fit)
++ Django backend with PostgreSQL DB
 + Webcrawler to find and classify new data using the model, then feed the user relevant info
 
