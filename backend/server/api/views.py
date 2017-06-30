@@ -10,6 +10,17 @@ from facebook_api_handler import FacebookAPI
 class UsersView(APIView):
 	serializer_class = UserSerializer
 
+	def get(self, request):
+		user_fbid = request.GET.get('user_ID')
+		try:
+			print(user_fbid)
+			entry = Users.objects.get(user_fbid=user_fbid)
+			response = {'name': entry.name, 'propic': entry.propic_link}
+			return JsonResponse(response, status=200)
+		except:
+			print("ahhh")
+			return HttpResponse(status=204)
+
 	def post(self, request):
 	    print("lol")
 	    req = json.loads(request.body)
@@ -23,7 +34,7 @@ class UsersView(APIView):
 	    propic_link = facebook.get(link="me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']    
 	    name = facebook.get(link="/me")['name']
 
-	    newUser = Users(user_fbid=user_id, name=name, token=extended_token, propic_link=propic_link)
+	    newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
 	    newUser.save()
 
 	    response = {'name': name, 'propic': propic_link}

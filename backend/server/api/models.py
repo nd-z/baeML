@@ -4,9 +4,8 @@ import psycopg2 #adapater
 #Each model has an automatic field named 'id' which increments automatically
 
 class Users(models.Model):
-    user_fbid = models.BigIntegerField()
+    user_fbid = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=45)
-    token = models.CharField(max_length=200)
     propic_link = models.URLField(max_length=400)
 
 class article(models.Model):

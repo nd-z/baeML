@@ -21,7 +21,6 @@ class FacebookAPI(object):
             query.appendlist('fields', fields)
         query_dict['access_token'] = self.access_token     
         url = self.base_url + link + "?" + query_dict.urlencode()
-        print(url)
         return self.request(url)
 
     def request(self, url):
