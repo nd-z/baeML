@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import ArticleRetriever
+from .models import Users
 
 #TODO AHHHHHHH
-class ArticleRetrieverSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ArticleRetriever
-        fields = ('user_id', 'articles')
-        read_only_fields = ('user_id')
+        model = Users
+        fields = ('id', 'user_fbid', 'name', 'token', 'propic_link')
+    	
