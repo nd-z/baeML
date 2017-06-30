@@ -6,6 +6,7 @@
 + [Object Serialization](https://docs.python.org/2/library/pickle.html)
 + [BeautifulSoup Documentation](https://www.crummy.com/software/BeautifulSoup/bs3/documentation.html#Parsing%20HTML)
 + [Synonym Clustering](http://cs229.stanford.edu/proj2013/DaoKellerBejnood-AlternateEquivalentSubstitutes.pdf)
++ TBD
 
 # Project Overview
 ![Project Overview](https://i.imgur.com/NZzHoOD.png)
