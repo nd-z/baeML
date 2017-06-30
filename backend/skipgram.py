@@ -1,17 +1,20 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from six.moves import urllib
+from six.moves import xrange  # pylint: disable=redefined-builtin
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 
 import collections
 import math
 import os
 import random
 import zipfile
-
+import sklearn
 import numpy as np
-from six.moves import urllib
-from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
+import pickle
 
 class SkipGram(object):
 	def __init__(self):
@@ -19,6 +22,7 @@ class SkipGram(object):
 		self.count = None
 		self.dictionary = None
 		self.reverse_dictionary = None
+		self.final_embeddings = None
 		self.batch = None
 		self.labels = None
 		self.data_index = 0
@@ -229,6 +233,7 @@ class SkipGram(object):
 		      average_loss = 0
 
 		    # Note that this is expensive (~20% slowdown if computed every 500 steps)
+		    '''
 		    if step % 10000 == 0:
 		      sim = similarity.eval()
 		      for i in xrange(valid_size):
@@ -240,20 +245,44 @@ class SkipGram(object):
 		          close_word = self.reverse_dictionary[nearest[k]]
 		          log_str = '%s %s,' % (log_str, close_word)
 		        print(log_str)
+		    '''
 		  final_embeddings = normalized_embeddings.eval()
-		  return final_embeddings, self.reverse_dictionary, similarity
-'''
+		  self.final_embeddings = final_embeddings
+		  print(len(self.reverse_dictionary))
+		  print(len(final_embeddings))
+		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
+		  #print(self.reverse_dictionary)
+		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
+
+	def cluster(self, final_embeddings, dict_length):
+			#reduce dimension to perform kmeans
+			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+			#TODO rectify this number
+			cap = 500
+			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
+			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
+			return clustered_synonyms
+
+
+
+''' UNCOMMENT IF YOU NEED TO RETRAIN model = SkipGram()
+final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
+
+output = open('model.pkl', 'wb')
+pickle.dump(model, output) '''
+
+file = open('./model.pkl', 'rb')
+model = pickle.load(file)
+reverse_dictionary = model.reverse_dictionary
+final_embeddings = model.final_embeddings
+
 try:
 	# pylint: disable=g-import-not-at-top
-	from sklearn.manifold import TSNE
   	import matplotlib.pyplot as plt
-  	model = SkipGram()
-  	final_embeddings, reverse_dictionary, similarity = model.train()
   	tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
-  	plot_only = 500
+  	plot_only = 750
   	low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only, :])
   	labels = [reverse_dictionary[i] for i in xrange(plot_only)]
   	model.plot_with_labels(low_dim_embs, labels)
 except ImportError:
 	print('Please install sklearn, matplotlib, and scipy to show embeddings.')
-'''
