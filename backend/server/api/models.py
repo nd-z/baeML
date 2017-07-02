@@ -20,6 +20,11 @@ class Tags(models.Model):
 class Keywords(models.Model): 
 	keyword = models.CharField(max_length=45)
 
+class PklModels(models.Model):
+	user_fbid = models.BigIntegerField(primary_key=True)
+	#TODO check if this is okay
+	pkl_model = models.FileField(upload_to='pkl_models/'+str(user_fbid)+'/')
+
 
 #uh what is this
 # def main():
