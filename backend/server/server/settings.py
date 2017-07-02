@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'api'
 ]
 
+MEDIA_ROOT = '/home/media'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

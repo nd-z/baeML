@@ -11,8 +11,9 @@ from skipgram import SkipGram
 also main communication point w/ frontend'''
 class BackendHandler(object):
 	def __init__(self):
-		#initialize a crawler
-		#self.crawler = WebCrawler()
+		#initialize a crawler and default model
+		self.crawler = WebCrawler()
+		self.def_model = SkipGram()
 
 	def getUserModel(userid):
 		#TODO: grab model data from database w/ userid
