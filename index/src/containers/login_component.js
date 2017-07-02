@@ -78,7 +78,7 @@ class LoginComponent extends React.Component {
 				});
 			
 		}
-		}, {scope: 'public_profile,email'});
+		}, {scope: 'public_profile,user_likes'});
 	}
 
 	// }

@@ -18,9 +18,9 @@ class FacebookAPI(object):
         if params != None:
             query_dict.update(params)
         if fields != None:
-            query.appendlist('fields', fields)
+            query_dict.appendlist('fields', fields)
         query_dict['access_token'] = self.access_token     
-        url = self.base_url + link + "?" + query_dict.urlencode()
+        url = self.base_url + self.version + link + "?" + query_dict.urlencode()
         return self.request(url)
 
     def request(self, url):
