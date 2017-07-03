@@ -270,7 +270,7 @@ final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.tra
 
 output = open('model.pkl', 'wb')
 pickle.dump(model, output) '''
-
+'''
 file = open('./model.pkl', 'rb')
 model = pickle.load(file)
 reverse_dictionary = model.reverse_dictionary
@@ -285,4 +285,4 @@ try:
   	labels = [reverse_dictionary[i] for i in xrange(plot_only)]
   	model.plot_with_labels(low_dim_embs, labels)
 except ImportError:
-	print('Please install sklearn, matplotlib, and scipy to show embeddings.')
+	print('Please install sklearn, matplotlib, and scipy to show embeddings.')'''
