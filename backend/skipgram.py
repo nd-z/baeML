@@ -265,11 +265,12 @@ class SkipGram(object):
 
 
 
-''' UNCOMMENT IF YOU NEED TO RETRAIN model = SkipGram()
+'''UNCOMMENT IF YOU NEED TO RETRAIN''' 
+model = SkipGram()
 final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
 
 output = open('model.pkl', 'wb')
-pickle.dump(model, output) '''
+pickle.dump(model, output)
 '''
 file = open('./model.pkl', 'rb')
 model = pickle.load(file)
