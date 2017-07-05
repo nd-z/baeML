@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
-bash ./dependencies.sh
-python manage.py runserver localhost:3333
+if [[ "$1" == "--install" ]]; then
+  bash ./dependencies.sh
+fi
+
+brew services start postgresql
+python manage.py migrate
+python manage.py makemigrations
+python manage.py runserver
