@@ -268,7 +268,7 @@ class SkipGram(object):
 			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
 			return clustered_synonyms
 
-'''Retraining and creating a compressed pickled model'''
+#==Retraining and creating a compressed pickled model==
 
 '''
 We are using the last compression & pickle modules from the last config
@@ -285,28 +285,27 @@ Compression Module: cpickle, bz2, level 9 (without print statements)
 Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
 Size: 250MB -> 75.5 MB
 '''
-# print (datetime.datetime.now())
+'''
 model = SkipGram()
 final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
  
-# output = gzip.open('model.pklz', 'wb')
 output = bz2.BZ2File('model.pkl.bz2', 'wb', compresslevel=9)
 cPickle.dump(model, output)
 output.close()
-# print (datetime.datetime.now())
 
-
-''' UNCOMMENT IF YOU NEED TO RETRAIN model = SkipGram()
-final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
-
-output = open('model.pkl', 'wb')
-pickle.dump(model, output) '''
 '''
-file = open('./model.pkl', 'rb')
-model = pickle.load(file)
+
+#==Loading saved skipgram model==
+'''
+file = bz2.BZ2File('./model.pkl.bz2', 'rb')
+model = cPickle.load(file)
+file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
+'''
 
+#==Plotting clusters==
+'''
 try:
 	# pylint: disable=g-import-not-at-top
   	import matplotlib.pyplot as plt
@@ -316,4 +315,5 @@ try:
   	labels = [reverse_dictionary[i] for i in xrange(plot_only)]
   	model.plot_with_labels(low_dim_embs, labels)
 except ImportError:
-	print('Please install sklearn, matplotlib, and scipy to show embeddings.')'''
+	print('Please install sklearn, matplotlib, and scipy to show embeddings.')
+'''
