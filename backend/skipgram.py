@@ -15,6 +15,10 @@ import sklearn
 import numpy as np
 import tensorflow as tf
 import pickle
+import cPickle
+import gzip
+import datetime
+import bz2
 
 class SkipGram(object):
 	def __init__(self):
@@ -34,9 +38,10 @@ class SkipGram(object):
 			filename, _ = urllib.request.urlretrieve(url + filename, filename)
 		statinfo = os.stat(filename)
 		if statinfo.st_size == expected_bytes:
-			print('Found and verified', filename)
+			pass
+			#print('Found and verified', filename)
 		else:
-			print(statinfo.st_size)
+			#print(statinfo.st_size)
 			raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
 
 		return filename
@@ -117,12 +122,12 @@ class SkipGram(object):
 		#if no specific vocabulary entered, use default vocabulary data
 		#this looks kinda ugly but we can fix it later
 		if filename is None:
-			print('all good')
+			# print('all good')
 			filename = self.maybe_download('text8.zip', 31344016)
 
 		'''the use of maybe_download() and read_data() for generating the vocabulary will be replaced by a simpler method that doesnt require reading from a file'''
 		vocabulary = self.read_data(filename)
-		print('Data size', len(vocabulary))
+		# print('Data size', len(vocabulary))
 		
 		# Step 2: Build the dictionary and replace rare words with UNK token.
 		vocabulary_size = 100000
@@ -130,15 +135,15 @@ class SkipGram(object):
 		self.data, self.count, self.dictionary, self.reverse_dictionary = self.build_dataset(vocabulary, vocabulary_size)
 		del vocabulary  # Hint to reduce memory.
 
-		print('Most common words (+UNK)', self.count[:5])
-		print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
+		# print('Most common words (+UNK)', self.count[:5])
+		# print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
 
 		self.data_index = 0
 
 		self.batch, self.labels = self.generate_batch(batch_size=8, num_skips=2, skip_window=1)
-		for i in range(8):
-		  print(self.batch[i], self.reverse_dictionary[self.batch[i]],
-		        '->', self.labels[i, 0], self.reverse_dictionary[self.labels[i, 0]])
+		# for i in range(8):
+		#   print(self.batch[i], self.reverse_dictionary[self.batch[i]],
+		#         '->', self.labels[i, 0], self.reverse_dictionary[self.labels[i, 0]])
 
 		# Step 4: Build and train a skip-gram model.
 
@@ -212,7 +217,7 @@ class SkipGram(object):
 		with tf.Session(graph=graph) as session:
 		  # We must initialize all variables before we use them.
 		  init.run()
-		  print('Initialized')
+		  # print('Initialized')
 
 		  average_loss = 0
 		  for step in xrange(num_steps):
@@ -229,7 +234,7 @@ class SkipGram(object):
 		      if step > 0:
 		        average_loss /= 2000
 		      # The average loss is an estimate of the loss over the last 2000 batches.
-		      print('Average loss at step ', step, ': ', average_loss)
+		      # print('Average loss at step ', step, ': ', average_loss)
 		      average_loss = 0
 
 		    # Note that this is expensive (~20% slowdown if computed every 500 steps)
@@ -248,8 +253,8 @@ class SkipGram(object):
 		    '''
 		  final_embeddings = normalized_embeddings.eval()
 		  self.final_embeddings = final_embeddings
-		  print(len(self.reverse_dictionary))
-		  print(len(final_embeddings))
+		  # print(len(self.reverse_dictionary))
+		  # print(len(final_embeddings))
 		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
 		  #print(self.reverse_dictionary)
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
@@ -263,6 +268,32 @@ class SkipGram(object):
 			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
 			return clustered_synonyms
 
+'''Retraining and creating a compressed pickled model'''
+
+'''
+We are using the last compression & pickle modules from the last config
+
+Compression Module: pickle, gzip (without print statements)
+Time: 16:47:12.076797 -> 17:00:38.599300 (13 min)
+Size: 250MB -> 90 MB
+
+Compression Module: cpickle, gzip (without print statements)
+Time: 17:12:12.884811 -> 17:22:09.276334 (10 min)
+Size: 250MB -> 89.9 MB
+
+Compression Module: cpickle, bz2, level 9 (without print statements)
+Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
+Size: 250MB -> 75.5 MB
+'''
+# print (datetime.datetime.now())
+model = SkipGram()
+final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
+ 
+# output = gzip.open('model.pklz', 'wb')
+output = bz2.BZ2File('model.pkl.bz2', 'wb', compresslevel=9)
+cPickle.dump(model, output)
+output.close()
+# print (datetime.datetime.now())
 
 
 ''' UNCOMMENT IF YOU NEED TO RETRAIN model = SkipGram()
