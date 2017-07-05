@@ -1,5 +1,5 @@
-from baeML.backend.webcrawler import WebCrawler
-#from baeML.backend.skipgram import Skipgram
+#from baeML.backend.webcrawler import WebCrawler
+#from baeML.backend.skipgram import SkipGram
 import pickle
 
 class MainHandler(object):
