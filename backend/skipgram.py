@@ -258,11 +258,14 @@ class SkipGram(object):
 		  print(self.reverse_dictionary)
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
 
+	#new algorithm: kmeans with 10 clusters; results in broad categories, but also diverse topics for keywords
+	#moreover, if we run into problems with a cluster being too diverse, we can run kmeans on that cluster again
+	#it's effectively a base-10 log operation
 	def cluster(self, final_embeddings, dict_length):
 			#reduce dimension to perform kmeans
 			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 			#TODO rectify this number
-			cap = 500
+			cap = 5000
 			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
 			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
 			return clustered_synonyms
