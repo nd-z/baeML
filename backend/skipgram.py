@@ -15,6 +15,10 @@ import sklearn
 import numpy as np
 import tensorflow as tf
 import pickle
+import cPickle
+import gzip
+import datetime
+import bz2
 
 class SkipGram(object):
 	def __init__(self):
@@ -251,7 +255,7 @@ class SkipGram(object):
 		  print(len(self.reverse_dictionary))
 		  print(len(final_embeddings))
 		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
-		  #print(self.reverse_dictionary)
+		  print(self.reverse_dictionary)
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
 
 	def cluster(self, final_embeddings, dict_length):
@@ -263,20 +267,33 @@ class SkipGram(object):
 			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
 			return clustered_synonyms
 
-
-
-'''UNCOMMENT IF YOU NEED TO RETRAIN''' 
-model = SkipGram()
-final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train()
-
-output = open('model.pkl', 'wb')
-pickle.dump(model, output)
+#==Retrain and create a compressed pickled model==
 '''
-file = open('./model.pkl', 'rb')
-model = pickle.load(file)
+We are using the last compression & pickle modules from the last config
+
+Compression Module: pickle, gzip (without print statements)
+Time: 16:47:12.076797 -> 17:00:38.599300 (13 min)
+Size: 250MB -> 90 MB
+
+Compression Module: cpickle, gzip (without print statements)
+Time: 17:12:12.884811 -> 17:22:09.276334 (10 min)
+Size: 250MB -> 89.9 MB
+=======
+Compression Module: cpickle, bz2, level 9 (without print statements)
+Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
+Size: 250MB -> 75.5 MB
+'''
+'''
+
+#==Load saved skipgram model==
+'''
+file = bz2.BZ2File('./model.pkl.bz2', 'rb')
+model = cPickle.load(file)
+file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
-
+#==Plot clusters. Output: tsne.png==
+'''
 try:
 	# pylint: disable=g-import-not-at-top
   	import matplotlib.pyplot as plt
@@ -286,4 +303,5 @@ try:
   	labels = [reverse_dictionary[i] for i in xrange(plot_only)]
   	model.plot_with_labels(low_dim_embs, labels)
 except ImportError:
-	print('Please install sklearn, matplotlib, and scipy to show embeddings.')'''
+	print('Please install sklearn, matplotlib, and scipy to show embeddings.')
+'''
