@@ -38,10 +38,9 @@ class SkipGram(object):
 			filename, _ = urllib.request.urlretrieve(url + filename, filename)
 		statinfo = os.stat(filename)
 		if statinfo.st_size == expected_bytes:
-			pass
-			#print('Found and verified', filename)
+			print('Found and verified', filename)
 		else:
-			#print(statinfo.st_size)
+			print(statinfo.st_size)
 			raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
 
 		return filename
@@ -122,12 +121,12 @@ class SkipGram(object):
 		#if no specific vocabulary entered, use default vocabulary data
 		#this looks kinda ugly but we can fix it later
 		if filename is None:
-			# print('all good')
+			print('all good')
 			filename = self.maybe_download('text8.zip', 31344016)
 
 		'''the use of maybe_download() and read_data() for generating the vocabulary will be replaced by a simpler method that doesnt require reading from a file'''
 		vocabulary = self.read_data(filename)
-		# print('Data size', len(vocabulary))
+		print('Data size', len(vocabulary))
 		
 		# Step 2: Build the dictionary and replace rare words with UNK token.
 		vocabulary_size = 100000
@@ -135,15 +134,15 @@ class SkipGram(object):
 		self.data, self.count, self.dictionary, self.reverse_dictionary = self.build_dataset(vocabulary, vocabulary_size)
 		del vocabulary  # Hint to reduce memory.
 
-		# print('Most common words (+UNK)', self.count[:5])
-		# print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
+		print('Most common words (+UNK)', self.count[:5])
+		print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
 
 		self.data_index = 0
 
 		self.batch, self.labels = self.generate_batch(batch_size=8, num_skips=2, skip_window=1)
-		# for i in range(8):
-		#   print(self.batch[i], self.reverse_dictionary[self.batch[i]],
-		#         '->', self.labels[i, 0], self.reverse_dictionary[self.labels[i, 0]])
+		for i in range(8):
+		  print(self.batch[i], self.reverse_dictionary[self.batch[i]],
+		        '->', self.labels[i, 0], self.reverse_dictionary[self.labels[i, 0]])
 
 		# Step 4: Build and train a skip-gram model.
 
@@ -217,7 +216,7 @@ class SkipGram(object):
 		with tf.Session(graph=graph) as session:
 		  # We must initialize all variables before we use them.
 		  init.run()
-		  # print('Initialized')
+		  print('Initialized')
 
 		  average_loss = 0
 		  for step in xrange(num_steps):
@@ -234,7 +233,7 @@ class SkipGram(object):
 		      if step > 0:
 		        average_loss /= 2000
 		      # The average loss is an estimate of the loss over the last 2000 batches.
-		      # print('Average loss at step ', step, ': ', average_loss)
+		      print('Average loss at step ', step, ': ', average_loss)
 		      average_loss = 0
 
 		    # Note that this is expensive (~20% slowdown if computed every 500 steps)
@@ -253,10 +252,10 @@ class SkipGram(object):
 		    '''
 		  final_embeddings = normalized_embeddings.eval()
 		  self.final_embeddings = final_embeddings
-		  # print(len(self.reverse_dictionary))
-		  # print(len(final_embeddings))
+		  print(len(self.reverse_dictionary))
+		  print(len(final_embeddings))
 		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
-		  #print(self.reverse_dictionary)
+		  print(self.reverse_dictionary)
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
 
 	def cluster(self, final_embeddings, dict_length):
@@ -268,8 +267,7 @@ class SkipGram(object):
 			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
 			return clustered_synonyms
 
-#==Retraining and creating a compressed pickled model==
-
+#==Retrain and create a compressed pickled model==
 '''
 We are using the last compression & pickle modules from the last config
 
@@ -295,7 +293,7 @@ output.close()
 
 '''
 
-#==Loading saved skipgram model==
+#==Load saved skipgram model==
 '''
 file = bz2.BZ2File('./model.pkl.bz2', 'rb')
 model = cPickle.load(file)
@@ -304,7 +302,7 @@ reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
 '''
 
-#==Plotting clusters==
+#==Plot clusters. Output: tsne.png==
 '''
 try:
 	# pylint: disable=g-import-not-at-top
