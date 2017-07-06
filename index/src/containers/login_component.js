@@ -6,6 +6,7 @@ import '../css/index.css'
 //fb login button
 function LoginButton(props){
 	return(
+		props.isDisabled ? <p id="small">This may take a few minutes, you will be automatically redirected.</p> :
 		<button onClick={props.onClick} className="fbButton">Continue with Facebook</button>
 		)
 }
@@ -16,8 +17,8 @@ function Logo(props) {
 				<img src={require('../imgs/logo.png')} alt={"logo"}/>
 				<div className="text-center">
 					<p>Knows you better than your SO</p>
-					<p id="small">Login below to start getting recommendations</p>
-					<LoginButton onClick={props.onLogin}/>
+					<p id="small">{props.textDisplay}</p>
+					<LoginButton onClick={props.onLogin} isDisabled={props.isDisabled}/>
 				</div>
 			</div>)
 }
@@ -28,8 +29,11 @@ class LoginComponent extends React.Component {
 		super(props);
 		this.state = {
 			loggedIn: true,
+			isDisabled: false,
+			textDisplay: "Login below to start getting recommendations"
 		}
 		this.login = this.login.bind(this);
+		this.displayError = this.displayError.bind(this);
 		this.getLoginState = this.getLoginState.bind(this);
 		this.statusChangeCallback = this.statusChangeCallback.bind(this);
 	}
@@ -48,6 +52,11 @@ class LoginComponent extends React.Component {
 	login() {
 		window.FB.login((response) => {
 			if (response.status === 'connected'){
+				console.log("should disable")
+				this.setState({
+					isDisabled: true,
+					textDisplay: "Setting up your feed..."
+				})
 				var userID = response.authResponse.userID
 				var accessToken = response.authResponse.accessToken
 				/**log user into our server**/
@@ -74,11 +83,18 @@ class LoginComponent extends React.Component {
 		        	}
 		    	})
 				.catch((error) => {
-					window.alert(error)
+					this.displayError();
 				});
 			
 		}
 		}, {scope: 'public_profile,user_likes'});
+	}
+
+	displayError(){
+		this.setState({
+						isDisabled: false,
+						textDisplay: "An error occurred in retrieving your feed, please try again later."
+		})
 	}
 
 	// }
@@ -120,10 +136,15 @@ class LoginComponent extends React.Component {
 	//renders the landing page
 	render () {
 		//handles reloading the login page after user logout since state is pushed via location state
+		const loadingGif = (<img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/>);
 		const loggedIn = (this.props.location.state === undefined) ? this.state.loggedIn : this.props.location.state.loggedIn;
 		return ( <div> 
-			{ !loggedIn ? <Logo loggedIn={loggedIn} onLogin={this.login} location={this.props.location}/> 
-			:  <img className="headerbox" src={require('../imgs/loading.gif')} alt={"loading"}/> 
+			{ !loggedIn ? <Logo loggedIn={loggedIn} 
+								onLogin={this.login} 
+								isDisabled={this.state.isDisabled} 
+								textDisplay={this.state.textDisplay}
+								location={this.props.location}/> 
+			: loadingGif
 			}
 			</div>
 		)
