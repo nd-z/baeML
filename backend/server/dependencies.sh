@@ -35,6 +35,7 @@ pip install Djangorestframework
 pip install Django_facebook
 pip install django-cors-headers
 pip install Pillow
+pip install psycopg2
 
 echo -e "${GREEN}Installing ML Dependencies...${BLACK}"
 pip install tensorflow

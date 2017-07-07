@@ -1,12 +1,31 @@
 #from baeML.backend.webcrawler import WebCrawler
 #from baeML.backend.skipgram import SkipGram
-import pickle
+import cPickle
+import bz2
 
 class MainHandler(object):
 	def __init__(self):
-		file = open('../model.pkl', 'rb')
-		self.default_model = pickle.load(file) #loads a random model for the user's first login
+		file = bz2.BZ2File('./model.pkl.bz2', 'rb')
+		self.default_model = cPickle.load(file) #loads a random model for the user's first login
 		self.crawler = WebCrawler()
+
+#when given new keywords from init,
+    def post(self, request, user_id):
+		req = json.loads(request.body)
+		user_id = user_id
+		keywords = req['keywords']
+		#add to database
+
+		#update ML module (andy's ML <=> db helper function)
+		#give pickled model to db
+
+#when asked for next article, frontend goes directly to here
+	def get(self, request, user_id):
+		user_id = user_id
+		#figure out how we're storing the articles (read vs unread)
+		#feed database keywords, newest first, to webcrawler
+		#ask webcralwer to return articles and store in db
+		#frontend should get articles from main, which fetches newest article from db
 
 	def getDefaultModel(self):
 		return self.default_model
