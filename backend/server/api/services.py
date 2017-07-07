@@ -4,9 +4,9 @@ import threading
 
 class LikesRetriever(object):
     userPageLimit = 25
-    feedPostLimit = 100
+    feedPostLimit = 50
     categories=['News & Media Website', 'Newspaper']
-    page_limit = 3
+    page_limit = 5
 
     def __init__(self, user_id, name, facebook):
         self.user_id = user_id
@@ -73,11 +73,12 @@ class ThreadRunner(threading.Thread, LikesRetriever):
     def run(self):
         if self.threadType is "category":
             allLikes = self.response['data']
-            for page in allLikes:
-                page_id = page['id']
-                page_info = self.facebook.get(link="/" + page_id, fields='category,id')['category']
-                if page_info in LikesRetriever.categories:
-                    #TODO go thru all the pages and see what they've liked? seems EXTREMELY consuming --> multithreading?
+
+            #create list of ids to query
+            idList = ''.join([page['id']+"," for page in allLikes])[:-1]
+            response = self.facebook.get(link="/", params={"ids":idList}, fields='category')
+            for page_id in response:
+                if response[page_id]['category'] in LikesRetriever.categories:
                     self.liked_pages.append(page_id)
         elif self.threadType is "feed":
             threads = []
@@ -96,9 +97,11 @@ class ThreadRunner(threading.Thread, LikesRetriever):
             [thread.join() for thread in threads]     
 
         elif self.threadType is "likes":
-            for post in self.response:
-                likes = self.facebook.get(link="/"+post['id'] + "/likes", params={"limit":1000})['data']
-                if self.user_dict in likes:
+            likeIds = ''.join([post['id']+"," for post in self.response])[:-1]
+            likes = self.facebook.get(link="/likes", params={"ids":likeIds, "limit":1000})
+            for post_id in likes:
+                print post_id
+                if self.user_dict in likes[post_id]['data']:
                     post = self.facebook.get(link="/" + post['id'], fields='link,message')
                     if 'link' in post:
                         self.liked_posts.append({"message":post['message'], "link":post['link']})

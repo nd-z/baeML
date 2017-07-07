@@ -92,8 +92,8 @@ class LoginComponent extends React.Component {
 
 	displayError(){
 		this.setState({
-						isDisabled: false,
-						textDisplay: "An error occurred in retrieving your feed, please try again later."
+			isDisabled: false,
+			textDisplay: "An error occurred in retrieving your feed, please try again later."
 		})
 	}
 
