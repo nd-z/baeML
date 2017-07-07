@@ -6,12 +6,12 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
-
+import requests
 
 class UsersView(APIView):
     serializer_class = UserSerializer
 
-    #/login
+    #/api/login
     def get(self, request):
 
         #commented out to test initializing user
@@ -36,20 +36,19 @@ class UsersView(APIView):
         size = str(req['size'])
 
         facebook = FacebookAPI(access_token)
-        
-        propic_link = facebook.get(link="/me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']    
+
+        propic_link = facebook.get(link="/me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']
         me = facebook.get(link="/me")
         name = me['name']
 
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         newUser.save()
 
-        helper = LikesRetriever(user_id, name, facebook)
-        helper.get_likes()
+        #helper = LikesRetriever(user_id, name, facebook)
+        #assuming helper.get_likes is a dict {keywords:[], links:[]}
+        #TODO send keywords to the db by post to the server
+        # post_data = {'keywords': helper.get_likes()['keywords']}
+        # post_response = requests.post('http://localhost:3333/api/users/' + user_id + '/keywords', data=post_data)
 
         response = {'name': name, 'propic': propic_link}
-        return JsonResponse(response, status=201)                
-
-
-
-
+        return JsonResponse(response, status=201)
