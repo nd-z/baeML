@@ -1,11 +1,13 @@
 #from baeML.backend.webcrawler import WebCrawler
-#from baeML.backend.skipgram import SkipGram
-import pickle
+from baeML.backend.skipgram import SkipGram
+import bz2
+import cPickle
 
 class MainHandler(object):
 	def __init__(self):
-		file = open('../model.pkl', 'rb')
-		self.default_model = pickle.load(file) #loads a random model for the user's first login
+		file = bz2.BZ2File('../model.pkl.bz2', 'rb')
+		model = cPickle.load(file)
+		file.close()
 		self.crawler = WebCrawler()
 
 	def getDefaultModel(self):

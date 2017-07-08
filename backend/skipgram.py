@@ -290,11 +290,13 @@ Size: 250MB -> 75.5 MB
 
 #==Load saved skipgram model==
 '''
+'''
 file = bz2.BZ2File('./model.pkl.bz2', 'rb')
 model = cPickle.load(file)
 file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
+'''
 #==Plot clusters. Output: tsne.png==
 '''
 try:

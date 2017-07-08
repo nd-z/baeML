@@ -27,6 +27,7 @@ class SkipGram(object):
 		self.dictionary = None
 		self.reverse_dictionary = None
 		self.final_embeddings = None
+		self.clustered_synonyms = None
 		self.batch = None
 		self.labels = None
 		self.data_index = 0
@@ -252,20 +253,29 @@ class SkipGram(object):
 		    '''
 		  final_embeddings = normalized_embeddings.eval()
 		  self.final_embeddings = final_embeddings
-		  print(len(self.reverse_dictionary))
-		  print(len(final_embeddings))
 		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
-		  print(self.reverse_dictionary)
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
 
-	def cluster(self, final_embeddings, dict_length):
+	def cluster(self, final_embeddings):
 			#reduce dimension to perform kmeans
 			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 			#TODO rectify this number
 			cap = 5000
 			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
-			clustered_synonyms = KMeans(n_clusters=10, random_state=0).fit(low_dim_embs)
-			return clustered_synonyms
+			clustered_synonyms = KMeans(n_clusters=10, random_state=0, algorithm='elkan').fit(low_dim_embs)
+
+			self.clustered_synonyms = clustered_synonyms
+
+			return clustered_synonyms, final_embeddings
+
+	def re_cluster(self, final_embeddings, clustered_synonyms, target_embedding):
+			labels = clustered_synonyms.labels_
+
+			#find label of target_embedding
+
+			#find the starting index of that label in labels
+			#for each index with that label number, append an embedding from the corresponding index in final_embeddings to a new matrix
+			#cluster
 
 #==Retrain and create a compressed pickled model==
 '''
@@ -292,6 +302,12 @@ model = cPickle.load(file)
 file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
+print('beginning clustering')
+
+import time
+start_time = time.time()
+clusters = model.cluster(final_embeddings, len(reverse_dictionary))
+print("--- %s seconds ---" % (time.time() - start_time))
 #==Plot clusters. Output: tsne.png==
 '''
 try:
