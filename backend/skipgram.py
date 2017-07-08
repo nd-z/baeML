@@ -287,11 +287,13 @@ Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
 Size: 250MB -> 75.5 MB
 '''
 '''
-
 #==Load saved skipgram model==
 '''
-file = bz2.BZ2File('./model.pkl.bz2', 'rb')
-model = cPickle.load(file)
+current_dir = os.path.dirname(__file__) 
+rel_path = "model.pkl.bz2"
+abs_file_path = os.path.join(current_dir, rel_path) #using abs path because current working directory is different from the actual package dir
+file = bz2.BZ2File(abs_file_path, 'rb')
+model = cPickle.load(file) #finds the file but not the skipgram attribute
 file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
