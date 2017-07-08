@@ -1,5 +1,8 @@
-#from baeML.backend.webcrawler import WebCrawler
-#from baeML.backend.skipgram import SkipGram
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
+from webcrawler import *
+from skipgram import SkipGram
 import cPickle
 import bz2
 
