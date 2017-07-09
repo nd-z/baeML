@@ -1,6 +1,6 @@
 from django.db import models
 
-#Each model has an automatic field named 'id' which increments automatically?????
+#Each model has an automatic field named 'id' which increments automatically
 
 class Users(models.Model):
     user_fbid = models.BigIntegerField(primary_key=True)
