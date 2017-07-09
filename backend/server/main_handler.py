@@ -1,5 +1,4 @@
-import os
-import sys
+
 import modules.skipgram
 import modules.webcrawler
 from modules.webcrawler import WebCrawler
