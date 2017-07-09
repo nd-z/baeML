@@ -1,18 +1,20 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
-from webcrawler import *
-from skipgram import SkipGram
+import modules.skipgram
+import modules.webcrawler
+from modules.webcrawler import WebCrawler
+from modules.skipgram import SkipGram
 import cPickle
 import bz2
 
 class MainHandler(object):
     def __init__(self):
-		file = bz2.BZ2File('../model.pkl.bz2', 'rb')
+		file = bz2.BZ2File(os.path.join('./modules', 'model.pkl.bz2'), 'rb')
 		self.default_model = cPickle.load(file) #loads a random model for the user's first login
 		self.crawler = WebCrawler()
 
 #when given new keywords from init,
+#CHANAGE FROM POST REQUEST TO JUST A NORMAL FUNCTION
     def post(self, request, user_id):
 		req = json.loads(request.body)
 		user_id = user_id
