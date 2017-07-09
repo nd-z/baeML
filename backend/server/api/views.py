@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
-import requests
 
 class UsersView(APIView):
     serializer_class = UserSerializer
@@ -44,11 +43,7 @@ class UsersView(APIView):
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         newUser.save()
 
-        #helper = LikesRetriever(user_id, name, facebook)
-        #assuming helper.get_likes is a dict {keywords:[], links:[]}
-        #TODO send keywords to the db by post to the server
-        # post_data = {'keywords': helper.get_likes()['keywords']}
-        # post_response = requests.post('http://localhost:3333/api/users/' + user_id + '/keywords', data=post_data)
-
+        helper = LikesRetriever(user_id, facebook)
+        
         response = {'name': name, 'propic': propic_link}
         return JsonResponse(response, status=201)
