@@ -1,6 +1,7 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
+import main_handler
 
 class LikesRetriever(object):
     userPageLimit = 25
@@ -8,16 +9,14 @@ class LikesRetriever(object):
     categories=['News & Media Website', 'Newspaper']
     page_limit = 5
 
-    def __init__(self, user_id, name, facebook):
+    def __init__(self, user_id, facebook):
         self.user_id = user_id
-        self.name = name
         self.facebook = facebook
         self.liked_pages = []
         self.liked_posts = []
 
     def get_likes(self):    
         #========= Get Likes =========
-            user_dict = {"id": self.user_id, "name": self.name}
             threads = []
 
             #== Get Liked Pages and Filter==
@@ -25,7 +24,7 @@ class LikesRetriever(object):
             res = self.facebook.get(link="/me/likes", params={"limit": self.userPageLimit})
             hasNextPage = True  
             while hasNextPage is True:
-                thread = ThreadRunner(res, self.facebook, "category", None, self.liked_pages, self.liked_posts)
+                thread = ThreadRunner(res, self.facebook, "category", self.liked_pages, self.liked_posts)
                 threads.append(thread)
                 if 'paging' in res:
                     cursor_next = res['paging']['cursors']['after']
@@ -46,7 +45,7 @@ class LikesRetriever(object):
 
             for page in self.liked_pages:
                 feed_res = self.facebook.get(link="/" + page + "/feed", params={"limit":self.feedPostLimit})
-                threads.append(ThreadRunner(feed_res, self.facebook, "feed", user_dict, self.liked_pages, self.liked_posts))
+                threads.append(ThreadRunner(feed_res, self.facebook, "feed", self.liked_pages, self.liked_posts))
 
             #run the threads
             [thread.start() for thread in threads]
@@ -57,16 +56,19 @@ class LikesRetriever(object):
             if not self.liked_posts:
                 #TODO return error
                 pass    
-            
+            else:
+                handler = MainHandler()
+                handler.getKeywords(self.liked_posts, self.user_id)
+                #m
             #TODO get stuff from ML module with likes info
 
+#delegate most of the work to multithreading to speed things up 
 class ThreadRunner(threading.Thread, LikesRetriever):
-    def __init__(self, response, facebook, threadType, user_dict, liked_pages, liked_posts):
+    def __init__(self, response, facebook, threadType, liked_pages, liked_posts):
         threading.Thread.__init__(self)
         self.response = response
         self.facebook = facebook
         self.threadType = threadType
-        self.user_dict = user_dict
         self.liked_pages = liked_pages
         self.liked_posts = liked_posts
     
@@ -77,15 +79,23 @@ class ThreadRunner(threading.Thread, LikesRetriever):
             #create list of ids to query
             idList = ''.join([page['id']+"," for page in allLikes])[:-1]
             response = self.facebook.get(link="/", params={"ids":idList}, fields='category')
+
+            #check which pages are in the appropriate category
             for page_id in response:
                 if response[page_id]['category'] in LikesRetriever.categories:
                     self.liked_pages.append(page_id)
+        
         elif self.threadType is "feed":
             threads = []
             hasNextPage = True
             feedPageCount = 0
+
+            #limit to page_limit of feed pages
             while feedPageCount <= LikesRetriever.page_limit and hasNextPage is True:
-                threads.append(ThreadRunner(self.response['data'], self.facebook, "likes", self.user_dict, self.liked_pages, self.liked_posts))
+                #start threads for retrieving likes
+                threads.append(ThreadRunner(self.response['data'], self.facebook, "likes", self.liked_pages, self.liked_posts))
+                
+                #get next pages and start new threads per feed page
                 if 'paging' in self.response:
                     page_id = self.extractPageID(self.response['paging']['next'])
                     cursor_next = self.response['paging']['cursors']['after']
@@ -93,22 +103,25 @@ class ThreadRunner(threading.Thread, LikesRetriever):
                 else: 
                     hasNextPage = False
                 feedPageCount+=1
+
             [thread.start() for thread in threads]
             [thread.join() for thread in threads]     
 
         elif self.threadType is "likes":
+            #get all likes
             likeIds = ''.join([post['id']+"," for post in self.response])[:-1]
-            likes = self.facebook.get(link="/likes", params={"ids":likeIds, "limit":1000})
-            for post_id in likes:
-                print post_id
-                if self.user_dict in likes[post_id]['data']:
-                    post = self.facebook.get(link="/" + post['id'], fields='link,message')
-                    if 'link' in post:
-                        self.liked_posts.append({"message":post['message'], "link":post['link']})
-                    else:    
-                        self.liked_posts.append(post['message'])
+            likes = self.facebook.get(link="/", params={"ids":likeIds}, fields='likes.summary(true).fields(name).limit(1),message,link')
 
-    #workaround for now to get pageID
+            #check each post to see if the user has liked the post
+            for post_id in likes:
+                if likes[post_id]['likes']['summary']['has_liked']:
+                    print "ayus"
+                    if 'link' in post:
+                        #TODO get article content w/ webcrawler + get rid of words using 
+                        pass            
+                    self.liked_posts.append(likes[post_id]['message'])
+
+    #workaround for now to get pageID from an API call response
     def extractPageID(self, link):
         link = link.replace(self.facebook.base_url + self.facebook.version + "/", "")
         link = link[0:link.index("/")]
