@@ -1,6 +1,7 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
+import main_handler
 
 class LikesRetriever(object):
     userPageLimit = 25
@@ -8,9 +9,8 @@ class LikesRetriever(object):
     categories=['News & Media Website', 'Newspaper']
     page_limit = 5
 
-    def __init__(self, user_id, name, facebook):
+    def __init__(self, user_id, facebook):
         self.user_id = user_id
-        self.name = name
         self.facebook = facebook
         self.liked_pages = []
         self.liked_posts = []
@@ -56,7 +56,10 @@ class LikesRetriever(object):
             if not self.liked_posts:
                 #TODO return error
                 pass    
-            
+            else:
+                handler = MainHandler()
+                handler.getKeywords(self.liked_posts, self.user_id)
+                #m
             #TODO get stuff from ML module with likes info
 
 #delegate most of the work to multithreading to speed things up 
