@@ -4,6 +4,7 @@ import urllib2
 from urlparse import urlparse
 import BeautifulSoup
 
+
 class WebCrawler(object):
     def __init__(self):
         self.regex = re.compile(

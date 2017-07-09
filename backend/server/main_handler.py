@@ -9,25 +9,24 @@ import bz2
 
 class MainHandler(object):
     def __init__(self):
-		file = bz2.BZ2File(os.path.join('./modules', 'model.pkl.bz2'), 'rb')
+		file = bz2.BZ2File('./modules/default_skipgram.pkl.bz','rb')
 		self.default_model = cPickle.load(file) #loads a random model for the user's first login
 		self.crawler = WebCrawler()
 
 #when given new keywords from init,
-#CHANAGE FROM POST REQUEST TO JUST A NORMAL FUNCTION
-    def post(self, request, user_id):
+    def addKeywords(self, keywords_list, user_id):
 		req = json.loads(request.body)
 		user_id = user_id
-		keywords = req['keywords']
+		keywords = keywords_list
 		#add to database
 
 		#update ML module (andy's ML <=> db helper function)
 		#give pickled model to db
 
 #when asked for next article, frontend goes directly to here
-    def get(self, request, user_id):
+    def getArticles(self, user_id):
 		user_id = user_id
-		#figure out how we're storing the articles (read vs unread)
+		#TODO add read vs unread field to db. mark articles as read so we don't repeat.
 		#feed database keywords, newest first, to webcrawler
 		#ask webcralwer to return articles and store in db
 		#frontend should get articles from main, which fetches newest article from db
@@ -58,3 +57,4 @@ class MainHandler(object):
 		return content
 
 mh = MainHandler()
+

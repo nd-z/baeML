@@ -14,11 +14,7 @@ import zipfile
 import sklearn
 import numpy as np
 import tensorflow as tf
-import pickle
-import cPickle
-import gzip
 import datetime
-import bz2
 
 class SkipGram(object):
 	def __init__(self):
