@@ -13,15 +13,22 @@ class MainHandler(object):
 		self.default_model = cPickle.load(file) #loads a random model for the user's first login
 		self.crawler = WebCrawler()
 
+		#what to do with tags model
+
 #when given new keywords from init,
     def addKeywords(self, keywords_list, user_id):
-		req = json.loads(request.body)
-		user_id = user_id
-		keywords = keywords_list
+        user_id = user_id
+        keyword_list = keywords_list
+
+		# keywords = Keywords(id='''get the user's id based on fb id)''', keyword=???)
+        # keywords.save()
+
+
 		#add to database
 
 		#update ML module (andy's ML <=> db helper function)
 		#give pickled model to db
+		#call filtering method
 
 #when asked for next article, frontend goes directly to here
     def getArticles(self, user_id):
