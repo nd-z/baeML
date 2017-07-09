@@ -134,6 +134,8 @@ class SkipGram(object):
 		self.data, self.count, self.dictionary, self.reverse_dictionary = self.build_dataset(vocabulary, vocabulary_size)
 		del vocabulary  # Hint to reduce memory.
 
+		print(dictionary)
+
 		print('Most common words (+UNK)', self.count[:5])
 		print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
 
@@ -292,6 +294,8 @@ model = cPickle.load(file)
 file.close()
 reverse_dictionary = model.reverse_dictionary
 final_embeddings = model.final_embeddings
+print(reverse_dictionary)
+
 #==Plot clusters. Output: tsne.png==
 '''
 try:
