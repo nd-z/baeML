@@ -17,15 +17,15 @@ class PklModels(models.Model):
 class article(models.Model): #stores one article per user per row
 							 #used to optimize, if users have the same interest
 
-	user_fbid = models.IntegerField()
+	user_fbid = models.IntegerField()a 
 	article_name = models.CharField(max_length=45)
 	# article_id = models.IntegerField()
-	article_conent = PickledObjectField()
+	article_content = PickledObjectField()
 	user_rating = models.SmallIntegerField()
-	article_link = models.URLField(max_length=400)
 
 class Tags(models.Model): #stores the number for the keyword, maps keyword to article like a hash table
 	keyword_id = models.IntegerField()
+	article_link = models.URLField(max_length=400)
 	article_id = models.IntegerField()	
 
 class Keywords(models.Model):  #has a field keyword id by default
