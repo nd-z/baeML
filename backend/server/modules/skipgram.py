@@ -267,26 +267,8 @@ class SkipGram(object):
 			return clustered_synonyms
 
 
-#==Retrain and create a compressed pickled model==
-'''
-We are using the last compression & pickle modules from the last config
-
-Compression Module: pickle, gzip (without print statements)
-Time: 16:47:12.076797 -> 17:00:38.599300 (13 min)
-Size: 250MB -> 90 MB
-
-Compression Module: cpickle, gzip (without print statements)
-Time: 17:12:12.884811 -> 17:22:09.276334 (10 min)
-Size: 250MB -> 89.9 MB
-=======
-Compression Module: cpickle, bz2, level 9 (without print statements)
-Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
-Size: 250MB -> 75.5 MB
-'''
-'''
 
 #==Load saved skipgram model==
-'''
 '''
 file = bz2.BZ2File('./model.pkl.bz2', 'rb')
 model = cPickle.load(file)

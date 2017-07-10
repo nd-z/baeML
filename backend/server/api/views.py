@@ -1,4 +1,4 @@
-from .models import Users
+from .models import Users, PklModels
 from .services import LikesRetriever
 from .serializers import UserSerializer
 from rest_framework.decorators import api_view
@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
+from .. import main_handler
 
 class UsersView(APIView):
     serializer_class = UserSerializer
@@ -43,7 +44,19 @@ class UsersView(APIView):
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         newUser.save()
 
+        #get default skigram model for user
+        mh = main_handler.MainHandler()
+        userSkipGramModel = PklModels()
+        userSkipGramModel.user_fbid = user_id
+        userSkipGramModel.pkl_model = mh.getDefaultModel()
+        userSkipGramModel.user_keywords = []
+        userSkipGramModel.save()
+
+        #Retrieve likes and add keywords, assumes keywords are in a list already
         helper = LikesRetriever(user_id, facebook)
-        
+        mh.addKeywords(helper.getLikes()['keyword_list'], user_id)
+        mh.addTrainingData(helper.getLikes()['training_data'], user_id)
+
+
         response = {'name': name, 'propic': propic_link}
         return JsonResponse(response, status=201)

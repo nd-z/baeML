@@ -57,9 +57,8 @@ class LikesRetriever(object):
                 #TODO return error
                 pass    
             else:
-                handler = MainHandler()
-                handler.getKeywords(self.liked_posts, self.user_id)
-                #m
+                
+                #return the keyword list AND liked *content* so we can interact with mainhandler in views.py (see the filler code)
             #TODO get stuff from ML module with likes info
 
 #delegate most of the work to multithreading to speed things up 
