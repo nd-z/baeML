@@ -1,7 +1,7 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
-import main_handler
+from .. import main_handler
 
 class LikesRetriever(object):
     userPageLimit = 25
@@ -13,7 +13,8 @@ class LikesRetriever(object):
         self.user_id = user_id
         self.facebook = facebook
         self.liked_pages = []
-        self.liked_posts = []
+        self.keywords = []
+        self.content = []
 
     def get_likes(self):    
         #========= Get Likes =========
@@ -24,7 +25,7 @@ class LikesRetriever(object):
             res = self.facebook.get(link="/me/likes", params={"limit": self.userPageLimit})
             hasNextPage = True  
             while hasNextPage is True:
-                thread = ThreadRunner(res, self.facebook, "category", self.liked_pages, self.liked_posts)
+                thread = ThreadRunner(res, self.facebook, "category", self.liked_pages, self.keywords, self.content)
                 threads.append(thread)
                 if 'paging' in res:
                     cursor_next = res['paging']['cursors']['after']
@@ -45,31 +46,40 @@ class LikesRetriever(object):
 
             for page in self.liked_pages:
                 feed_res = self.facebook.get(link="/" + page + "/feed", params={"limit":self.feedPostLimit})
-                threads.append(ThreadRunner(feed_res, self.facebook, "feed", self.liked_pages, self.liked_posts))
+                threads.append(ThreadRunner(feed_res, self.facebook, "feed", self.liked_pages, self.keywords, self.content))
 
             #run the threads
             [thread.start() for thread in threads]
             [thread.join() for thread in threads]    
 
-            print self.liked_posts
+            print self.keywords
 
-            if not self.liked_posts:
+            if not self.keywords:
                 #TODO return error
                 pass    
             else:
-                
+                 #get default skigram model for user
+                mh = main_handler.MainHandler()
+                userSkipGramModel = PklModels()
+                userSkipGramModel.user_fbid = user_id
+                userSkipGramModel.pkl_model = mh.getDefaultModel()
+                userSkipGramModel.user_keywords = []
+                userSkipGramModel.save()
                 #return the keyword list AND liked *content* so we can interact with mainhandler in views.py (see the filler code)
-            #TODO get stuff from ML module with likes info
+                mh.addKeywords(self.keywords, user_id)
+                mh.addTrainingData(helper.getLikes()['training_data'], user_id)
+
 
 #delegate most of the work to multithreading to speed things up 
 class ThreadRunner(threading.Thread, LikesRetriever):
-    def __init__(self, response, facebook, threadType, liked_pages, liked_posts):
+    def __init__(self, response, facebook, threadType, liked_pages, keywords, liked_posts):
         threading.Thread.__init__(self)
         self.response = response
         self.facebook = facebook
         self.threadType = threadType
         self.liked_pages = liked_pages
-        self.liked_posts = liked_posts
+        self.keywords = keywords
+        self.content = liked_posts
     
     def run(self):
         if self.threadType is "category":
@@ -92,7 +102,7 @@ class ThreadRunner(threading.Thread, LikesRetriever):
             #limit to page_limit of feed pages
             while feedPageCount <= LikesRetriever.page_limit and hasNextPage is True:
                 #start threads for retrieving likes
-                threads.append(ThreadRunner(self.response['data'], self.facebook, "likes", self.liked_pages, self.liked_posts))
+                threads.append(ThreadRunner(self.response['data'], self.facebook, "likes", self.liked_pages, self.keywords, self.content))
                 
                 #get next pages and start new threads per feed page
                 if 'paging' in self.response:
@@ -116,7 +126,8 @@ class ThreadRunner(threading.Thread, LikesRetriever):
                 if likes[post_id]['likes']['summary']['has_liked']:
                     print "ayus"
                     if 'link' in post:
-                        #TODO get article content w/ webcrawler + get rid of words using 
+                        #TODO get article content w/ webcrawler + get rid of words using filter
+                        #put it into keywords
                         pass            
                     self.liked_posts.append(likes[post_id]['message'])
 
