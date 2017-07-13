@@ -20,10 +20,28 @@ class WebCrawler(object):
         pagesource = urllib2.urlopen(req)
         s = pagesource.read()
         soup = BeautifulSoup.BeautifulSoup(s)
-        paragraphs = soup.findAll('p')
+        
+        #remove style components; step 1 of cleanup
+        for i in soup.findAll(['script', 'style']):
+            i.extract()
+    
+        soup.prettify('UTF-8')
+        
+        unprocessedParagraphs = soup.findAll('p')
+        
+        #clean out tags
+        paragraphs = []
+        for p in unprocessedParagraphs:
+            processedParagraph = re.sub(r'<.*?>', '', unicode(p).encode("utf-8"));
+            
+            #check that string is not empty
+            if processedParagraph and not processedParagraph == 'None':
+                paragraphs.append(processedParagraph)
+        
         return paragraphs
 
         #TODO modify to grab content off an article webpage for keyword clustering
+        #Actual TODO: filter out gunk
 
     def isValidUrl(self, url):
         if self.regex.match(url) is not None:
@@ -63,11 +81,10 @@ class WebCrawler(object):
 
         return ret
 
-'''
+
 crawler = WebCrawler()
 keywords = ['global', 'warming']
 links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=bs&form=QBLH', keywords)
 #print links
 paragraphs = crawler.grabContent(links[3])
 print paragraphs
-'''
