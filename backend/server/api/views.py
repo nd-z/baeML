@@ -7,11 +7,10 @@ from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
 
-
 class UsersView(APIView):
     serializer_class = UserSerializer
 
-    #/login
+    #/api/login
     def get(self, request):
 
         #commented out to test initializing user
@@ -36,20 +35,15 @@ class UsersView(APIView):
         size = str(req['size'])
 
         facebook = FacebookAPI(access_token)
-        
-        propic_link = facebook.get(link="/me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']    
+
+        propic_link = facebook.get(link="/me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']
         me = facebook.get(link="/me")
         name = me['name']
 
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         newUser.save()
 
-        helper = LikesRetriever(user_id, name, facebook)
-        helper.get_likes()
-
+        helper = LikesRetriever(user_id, facebook)
+        
         response = {'name': name, 'propic': propic_link}
-        return JsonResponse(response, status=201)                
-
-
-
-
+        return JsonResponse(response, status=201)
