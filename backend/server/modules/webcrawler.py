@@ -33,7 +33,7 @@ class WebCrawler(object):
         #clean out tags
         paragraphs = []
         for p in unprocessedParagraphs:
-            processedParagraph = re.sub(r'<.*?>', '', unicode(p).encode("utf-8"));
+            processedParagraph = re.sub(r'<.*?>', '', unicode(p));
             
             #check that string is not empty
             if processedParagraph and not processedParagraph == 'None':
@@ -88,4 +88,5 @@ keywords = ['global', 'warming']
 links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=bs&form=QBLH', keywords)
 #print links
 paragraphs = crawler.grabContent(links[3])
+
 print paragraphs
