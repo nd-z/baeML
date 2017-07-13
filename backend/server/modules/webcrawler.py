@@ -3,6 +3,7 @@ import httplib
 import urllib2
 from urlparse import urlparse
 import BeautifulSoup
+import unicodedata
 
 
 class WebCrawler(object):
@@ -82,6 +83,15 @@ class WebCrawler(object):
 
         return ret
 
+    #normalizes unicode strings into plain ascii
+    @staticmethod
+    def normalizeParagraphs(unicodeStrings):
+        normalized = []
+
+        for unicodeStr in unicodeStrings:
+            normalized.append(unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore'))
+
+        return normalized
 
 crawler = WebCrawler()
 keywords = ['global', 'warming']
@@ -89,4 +99,4 @@ links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=
 #print links
 paragraphs = crawler.grabContent(links[3])
 
-print paragraphs
+print WebCrawler.normalizeParagraphs(paragraphs)
