@@ -1,10 +1,13 @@
-
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+import django
+django.setup()
 import modules.skipgram
 import modules.webcrawler
 from modules.webcrawler import WebCrawler
 from modules.skipgram import SkipGram
-from api.models import PklModels
-import requestsu
+from api.models import *
+import requests
 import cPickle
 import bz2
 import zipfile
@@ -18,7 +21,7 @@ class MainHandler(object):
 
 #TODO: TEST
     def addTrainingData(self, training_data, user_id):
-         try:
+        try:
             skipgram_model = getUserModel(user_id)
 
         except PklModels.DoesNotExist:
@@ -80,8 +83,8 @@ class MainHandler(object):
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
         final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename)
-        getUserModel(user_id) = model #update db model
-        getUserModel(user_id).save()
+        PklModels.objects.get(user_fbid=user_id).pkl_model = model #update db model
+        PklModels.objects.get(user_fbid=user_id).pkl_model.save()
 
     def getLinks(self, keywords):
         query = 'http://www.bing.com/search?q='
@@ -93,4 +96,13 @@ class MainHandler(object):
     def getLinkContent(self, link):
         content = self.crawler.grabContent(link)
         return content
+
+'''Testing'''
+mh = MainHandler()
+userSkipGramModel = PklModels()
+userSkipGramModel.user_fbid = 1363412733775461
+userSkipGramModel.pkl_model = mh.getDefaultModel()
+# userSkipGramModel.user_keywords = []
+# userSkipGramModel.save()
+# mh.addTrainingData()
 

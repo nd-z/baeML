@@ -17,9 +17,9 @@ class PklModels(models.Model):
 class article(models.Model): #stores one article per user per row
 							 #used to optimize, if users have the same interest
 
-	user_fbid = models.IntegerField()a 
+	user_fbid = models.IntegerField()
 	article_name = models.CharField(max_length=45)
-	# article_id = models.IntegerField()
+	article_id = models.IntegerField()
 	article_content = PickledObjectField()
 	user_rating = models.SmallIntegerField()
 
