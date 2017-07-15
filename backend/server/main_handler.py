@@ -82,6 +82,7 @@ class MainHandler(object):
 #TODO TEST
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
+        #add check for byte size
         final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
         PklModels.objects.get(user_fbid=user_id).pkl_model = model #update db model
         PklModels.objects.get(user_fbid=user_id).pkl_model.save()
@@ -95,7 +96,7 @@ class MainHandler(object):
 
     def getLinkContent(self, link):
         content = self.crawler.grabContent(link)
-        return content
+        return content #list of paragraphs
 
 '''Testing'''
 mh = MainHandler()
