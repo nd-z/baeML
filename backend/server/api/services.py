@@ -1,7 +1,6 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
-from .. import main_handler
 
 class LikesRetriever(object):
     userPageLimit = 25
@@ -58,16 +57,7 @@ class LikesRetriever(object):
                 #TODO return error
                 pass    
             else:
-                 #get default skigram model for user
-                mh = main_handler.MainHandler()
-                userSkipGramModel = PklModels()
-                userSkipGramModel.user_fbid = user_id
-                userSkipGramModel.pkl_model = mh.getDefaultModel()
-                userSkipGramModel.user_keywords = []
-                userSkipGramModel.save()
-                #return the keyword list AND liked *content* so we can interact with mainhandler in views.py (see the filler code)
-                mh.addKeywords(self.keywords, user_id)
-                mh.addTrainingData(helper.getLikes()['training_data'], user_id)
+                return self.keywords, self.content
 
 
 #delegate most of the work to multithreading to speed things up 

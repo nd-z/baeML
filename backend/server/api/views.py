@@ -6,7 +6,12 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
-from .. import main_handler
+import sys
+import os
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+print path
+sys.path.append(path)
+import main_handler
 
 class UsersView(APIView):
     serializer_class = UserSerializer
