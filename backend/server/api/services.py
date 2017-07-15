@@ -1,8 +1,18 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
+import re
+import sys
+import os
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'modules')
+sys.path.append(path)
+from webcrawler import WebCrawler
+from filter_set import FilterSetContainer
 
-class LikesRetriever(object):
+FilterSetContainer()
+
+class ArticleRetriever(object):
+    webcrawler = WebCrawler()
     userPageLimit = 25
     feedPostLimit = 50
     categories=['News & Media Website', 'Newspaper']
@@ -14,6 +24,8 @@ class LikesRetriever(object):
         self.liked_pages = []
         self.keywords = []
         self.content = []
+
+    def 
 
     def get_likes(self):    
         #========= Get Likes =========
@@ -52,13 +64,13 @@ class LikesRetriever(object):
             [thread.join() for thread in threads]    
 
             print self.keywords
+            print self.content
 
             if not self.keywords:
                 #TODO return error
                 pass    
             else:
                 return self.keywords, self.content
-
 
 #delegate most of the work to multithreading to speed things up 
 class ThreadRunner(threading.Thread, LikesRetriever):
@@ -115,11 +127,28 @@ class ThreadRunner(threading.Thread, LikesRetriever):
             for post_id in likes:
                 if likes[post_id]['likes']['summary']['has_liked']:
                     print "ayus"
-                    if 'link' in post:
-                        #TODO get article content w/ webcrawler + get rid of words using filter
-                        #put it into keywords
-                        pass            
-                    self.liked_posts.append(likes[post_id]['message'])
+                    if 'link' in likes[post_id]:
+                        #get link content and filter
+                        linkParagraphs = LikesRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
+                        for paragraph in linkParagraphs:
+                            self.content.append(self.filterWords(paragraph))
+                    #otherwise just filter the message body
+                    self.keywords.append(self.filterWords(likes[post_id]['message']))
+
+    '''
+    Takes in a string and filters out common words using the pickled set
+    '''
+    def filterWords(self, text):
+        #get only alphanumeric characters
+        alnum = re.compile('([^\s\w]|_)+')
+        alnumText = alnum.sub('', text).lower()
+        print alnumText
+        #filter
+        words = alnumText.split(' ')
+        for word in words:
+            if word in FilterSetContainer.filtered_set:
+                words.remove(word)
+        return words                
 
     #workaround for now to get pageID from an API call response
     def extractPageID(self, link):
