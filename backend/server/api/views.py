@@ -9,7 +9,6 @@ import json
 import sys
 import os
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-print path
 sys.path.append(path)
 import main_handler
 
@@ -48,6 +47,9 @@ class UsersView(APIView):
 
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         newUser.save()
+
+        retriever = LikesRetriever(user_id, facebook)
+        retriever.get_likes()
 
         response = {'name': name, 'propic': propic_link}
         return JsonResponse(response, status=201)
