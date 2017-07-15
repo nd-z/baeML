@@ -7,20 +7,20 @@ class Users(models.Model):
     user_fbid = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=45)
     propic_link = models.URLField(max_length=400)
-
+    articles = models.TextField(null=True) #TODO store a list in the db
 
 class PklModels(models.Model):
 	user_fbid = models.BigIntegerField(primary_key=True)
 	pkl_model = PickledObjectField() #automatically pickles and unpickles the skipgram model
 	user_keywords = PickledObjectField() 
+	text_corpus = PickledObjectField()
 
 class article(models.Model): #stores one article per user per row
 							 #used to optimize, if users have the same interest
-
 	user_fbid = models.IntegerField()
 	article_name = models.CharField(max_length=45)
-	# article_id = models.IntegerField()
-	article_conent = PickledObjectField()
+	article_id = models.IntegerField()
+	article_content = PickledObjectField()
 	user_rating = models.SmallIntegerField()
 	article_link = models.URLField(max_length=400)
 
