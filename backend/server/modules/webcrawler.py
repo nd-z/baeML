@@ -92,7 +92,7 @@ class WebCrawler(object):
             normalized.append(unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore'))
 
         return normalized
-
+'''
 crawler = WebCrawler()
 keywords = ['global', 'warming']
 links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=bs&form=QBLH', keywords)
@@ -100,3 +100,4 @@ links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=
 paragraphs = crawler.grabContent(links[3])
 
 print WebCrawler.normalizeParagraphs(paragraphs)
+'''
