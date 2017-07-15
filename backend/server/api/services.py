@@ -1,7 +1,9 @@
 from facebook_api_handler import FacebookAPI
 import math
 import threading
-from .. import main_handler
+import sys
+sys.path.append('/Users/az/Desktop/projects/baeML/backend/server')
+import main_handler
 
 class LikesRetriever(object):
     userPageLimit = 25

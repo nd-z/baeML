@@ -6,8 +6,9 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from facebook_api_handler import FacebookAPI
 import json
-from .. import main_handler
-
+import sys
+sys.path.append('/Users/az/Desktop/projects/baeML/backend/server')
+import main_handler
 class UsersView(APIView):
     serializer_class = UserSerializer
 

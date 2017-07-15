@@ -262,22 +262,55 @@ class SkipGram(object):
 			#reduce dimension to perform kmeans
 			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 			#TODO rectify this number
-			cap = 5000
+			cap = 25000
 			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
-			clustered_synonyms = KMeans(n_clusters=10, random_state=0, algorithm='elkan').fit(low_dim_embs)
+			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
 
 			self.clustered_synonyms = clustered_synonyms
 
 			return clustered_synonyms, final_embeddings
 
-	def re_cluster(self, final_embeddings, clustered_synonyms, target_embedding):
+	def re_cluster(self, final_embeddings, clustered_synonyms, target_keyword, reverse_dictionary):
+			#we assume that the reverse dictionary gives us the index
+			#of the word in the embeddings matrix
+
+			#find the keyword embedding
+			index = reverse_dictionary[target_keyword]
+			target_embedding = final_embeddings[index]
+
+			print(target_keyword + ': ' + str(target_embedding))
+
 			labels = clustered_synonyms.labels_
 
 			#find label of target_embedding
+			target_label = labels[index]
 
 			#find the starting index of that label in labels
+			start = 0
+
+			for i in range(len(labels)):
+				if labels[i] == target_label:
+					start = i
+					break
+
 			#for each index with that label number, append an embedding from the corresponding index in final_embeddings to a new matrix
+			new_embeddings = []
+
+			#TODO MUST BUILD A NEW REVERSE DICTIONARY FOR FUTURE CASCADING CLUSTERING
+			new_reverse_dictionary = None
+			while start < len(labels):
+				if labels[start] == target_label:
+					#to_append is just a row vector
+					to_append = final_embeddings[start]
+					new_embeddings = np.append(new_embeddings, [to_append], axis=0)
+				start += 1
+
 			#cluster
+			low_dim_embs = tsne.fit_transform(new_embeddings)
+			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
+
+			return clustered_synonyms, new_embeddings, new_reverse_dictionary
+
 
 #==Retrain and create a compressed pickled model==
 '''
@@ -295,22 +328,22 @@ Compression Module: cpickle, bz2, level 9 (without print statements)
 Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
 Size: 250MB -> 75.5 MB
 '''
-'''
+
 
 #==Load saved skipgram model==
-'''
-# file = bz2.BZ2File('./model.pkl.bz2', 'rb')
-# model = cPickle.load(file)
-# file.close()
-# reverse_dictionary = model.reverse_dictionary
-# final_embeddings = model.final_embeddings
 
-# print('beginning clustering')
+file = bz2.BZ2File('./model.pkl.bz2', 'rb')
+model = cPickle.load(file)
+file.close()
+reverse_dictionary = model.reverse_dictionary
+final_embeddings = model.final_embeddings
 
-# import time
-# start_time = time.time()
-# clusters = model.cluster(final_embeddings, len(reverse_dictionary))
-# print("--- %s seconds ---" % (time.time() - start_time))
+print('beginning clustering')
+
+import time
+start_time = time.time()
+clusters = model.cluster(final_embeddings)
+print("--- %s seconds ---" % (time.time() - start_time))
 #==Plot clusters. Output: tsne.png==
 '''
 try:
