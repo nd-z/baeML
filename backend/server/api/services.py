@@ -1,4 +1,5 @@
 from facebook_api_handler import FacebookAPI
+from filter_set import FilterSetContainer
 import math
 import threading
 import re
@@ -7,7 +8,10 @@ import os
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'modules')
 sys.path.append(path)
 from webcrawler import WebCrawler
-from filter_set import FilterSetContainer
+
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sys.path.append(path)
+import main_handler
 
 FilterSetContainer()
 
@@ -25,7 +29,11 @@ class ArticleRetriever(object):
         self.keywords = []
         self.content = []
 
-    def 
+    def returnArticles(self):
+        mainHandler = MainHandler()
+        keywords, content = self.get_likes()
+        mainHandler.addKeywords(keywords, self.user_id)
+        mainHandler.addTrainingData(content, self.user_id)
 
     def get_likes(self):    
         #========= Get Likes =========
