@@ -255,31 +255,51 @@ class SkipGram(object):
 		    '''
 		  final_embeddings = normalized_embeddings.eval()
 		  self.final_embeddings = final_embeddings
-		  clustered_synonyms = self.cluster(final_embeddings, len(self.reverse_dictionary))
+		  clustered_synonyms, final_embeddings, low_dim_embs = self.cluster(final_embeddings, len(self.reverse_dictionary))
 		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
 
+	# the direct result of clustering the first time is
+	#a KMeans object containing the labeled word vectors (in 2D space)
+	#the original final_embeddings matrix, which we will likely not need but is kept for now
+	#the reduced-dimension low_dim_embs matrix, which has the same rows as final_embeddings, but only two cols
+	# in short, cluster() transforms final_embeddings -> low_dim_embs; and clusters low_dim_embs -> synonyms
 	def cluster(self, final_embeddings):
 			#reduce dimension to perform kmeans
 			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 			#TODO rectify this number
-			cap = 25000
+			cap = 12000
+
+			#this 'flattens' the words so they can be represented as 2D vectors
 			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
+
+			#now we cluster those words with kmeans
 			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
 
 			self.clustered_synonyms = clustered_synonyms
 
-			return clustered_synonyms, final_embeddings
+			return clustered_synonyms, final_embeddings, low_dim_embs
 
-	def re_cluster(self, final_embeddings, clustered_synonyms, target_keyword, reverse_dictionary):
-			#we assume that the reverse dictionary gives us the index
+	# this should be called ONLY after already calling cluster on the original final_embeddings
+	#because it returns low_dim_embs, aka nx2 dimensional matrix of word vectors
+	#which we will use to extract vectors of the same label, and re-cluster
+	# this is NOT a recursive method; the caller will need to check the size of the new dictionary
+	#to decide when to stop calling re_cluster()
+	# NOTE: the first time you call re_cluster(), reverse_dictionary will be the same reverse_dictionary
+	#you get from calling train(); re_clustering afterwards, use the new_reverse_dictionary returned
+	def re_cluster(self, low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary):
+			#we must assume that the reverse dictionary gives us the index
 			#of the word in the embeddings matrix
 
+			#NOTE: index-to-word is reverse_dictionary
+			#      word-to-index is dictionary
+
 			#find the keyword embedding
-			index = reverse_dictionary[target_keyword]
-			target_embedding = final_embeddings[index]
+			index = dictionary[target_keyword]
+			target_embedding = low_dim_embs[index]
 
 			print(target_keyword + ': ' + str(target_embedding))
 
+			#labels is a index-to-index correspondence of each word vector's label/cluster
 			labels = clustered_synonyms.labels_
 
 			#find label of target_embedding
@@ -287,29 +307,48 @@ class SkipGram(object):
 
 			#find the starting index of that label in labels
 			start = 0
-
 			for i in range(len(labels)):
 				if labels[i] == target_label:
 					start = i
 					break
 
-			#for each index with that label number, append an embedding from the corresponding index in final_embeddings to a new matrix
+			#for each index with that label number, append an embedding from the corresponding index in low_dim_embs to a new matrix
 			new_embeddings = []
 
-			#TODO MUST BUILD A NEW REVERSE DICTIONARY FOR FUTURE CASCADING CLUSTERING
-			new_reverse_dictionary = None
+			#we must also build a new reverse dictionary representing the word:index pairs
+
+			#build a new reverse dictionary to keep indices consistent with the new clustered_synonyms.labels_
+			#aka this is to ensure we can still match the ith label with the ith word in new_reverse_dictionary,
+			#as well as the ith row in the new_embeddings matrix
+			new_reverse_dictionary = dict()
+			new_dictionary = dict()
+			index = 0
+
+			to_append = low_dim_embs[start]
+			word = reverse_dictionary[start]
+			new_embeddings = [to_append]
+			new_reverse_dictionary[index] = word
+			new_dictionary[word] = index
+			index += 1
+			start += 1
+
 			while start < len(labels):
 				if labels[start] == target_label:
-					#to_append is just a row vector
-					to_append = final_embeddings[start]
+					#to_append is just a row vector representing the embedded word
+					to_append = low_dim_embs[start]
+
+					#TODO verify that this is correct
+					word = reverse_dictionary[start]
 					new_embeddings = np.append(new_embeddings, [to_append], axis=0)
+					new_reverse_dictionary[index] = word
+					new_dictionary[word] = index
+					index += 1
 				start += 1
 
 			#cluster
-			low_dim_embs = tsne.fit_transform(new_embeddings)
-			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
+			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(new_embeddings)
 
-			return clustered_synonyms, new_embeddings, new_reverse_dictionary
+			return clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary
 
 
 #==Retrain and create a compressed pickled model==
@@ -336,14 +375,23 @@ file = bz2.BZ2File('./model.pkl.bz2', 'rb')
 model = cPickle.load(file)
 file.close()
 reverse_dictionary = model.reverse_dictionary
+dictionary = model.dictionary
 final_embeddings = model.final_embeddings
 
 print('beginning clustering')
 
 import time
 start_time = time.time()
-clusters = model.cluster(final_embeddings)
+clustered_synonyms, final_embeddings, low_dim_embs = model.cluster(final_embeddings)
 print("--- %s seconds ---" % (time.time() - start_time))
+
+print('now testing re_clustering with target_keyword=dictatorship')
+target_keyword='dictatorship'
+clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary)
+
+print('The new list of words')
+print(new_reverse_dictionary)
+
 #==Plot clusters. Output: tsne.png==
 '''
 try:
