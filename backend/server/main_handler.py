@@ -56,7 +56,7 @@ class MainHandler(object):
     def get(self, user_id):
         keywords = getUserKeywords(user_id)
 
-        links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword a particular link is associated with
+        links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword *list* a particular link is associated with
         random_index = randrange(0,len(links)) #get a random keyword
         article_link = links[random_index]
         article_content, article_name = getLinkContent(article_link)
@@ -82,7 +82,7 @@ class MainHandler(object):
 #TODO TEST
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
-        final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename)
+        final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
         PklModels.objects.get(user_fbid=user_id).pkl_model = model #update db model
         PklModels.objects.get(user_fbid=user_id).pkl_model.save()
 
