@@ -3,7 +3,7 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 import django
 django.setup()
-
+import sys
 import modules.skipgram
 import modules.webcrawler
 from modules.webcrawler import WebCrawler
@@ -15,6 +15,7 @@ import bz2
 import zipfile
 import json
 from random import randrange
+import time
 
 
 #TODO CHange based on models, Test modularly everything
@@ -46,22 +47,18 @@ class MainHandler(object):
 #TODO: TEST
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
-        user_id = user_id
-        keyword_list = keywords_list #should already be filtered
-        try:
-            orig_keyword_list = getUserKeywords()
-
-        except PklModels.DoesNotExist:
-            print('failed to get model')
-
-        orig_keyword_list.append(keywords_list)
-        PklModels.objects.get(user_fbid=user_id).save()
-
+        user_model = PklModels.objects.get(user_fbid=user_id)
+        orig_keyword_list = user_model.user_keywords
+        jsonDec = json.decoder.JSONDecoder()
+        myOrigList = jsonDec.decode(orig_keyword_list)
+        myOrigList.extend(keywords_list)
+        user_model.user_keywords = json.dumps(myOrigList)
+        user_model.save()
 
 #TODO FINISH
 #when asked for next article (one), frontend makes a get request, probably move parts of this to views.py
     def get(self, user_id):
-        keywords = getUserKeywords(user_id)
+        keywords = self.getUserKeywords(user_id)
 
         links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword *list* a particular link is associated with TODO change
         random_index = randrange(0,len(links)) #get a random keyword
@@ -91,7 +88,7 @@ class MainHandler(object):
     def trainUserModel(self, model, text_corpus_filename, user_id):
         #TODO add check for byte size
         final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
-        PklModels.objects.get(user_fbid=user_id).pkl_model = model #update db model
+        PklModels.objects.get(user_fbid=user_id).pkl_model = model
         PklModels.objects.get(user_fbid=user_id).pkl_model.save()
 
     def getLinks(self, keywords):
@@ -108,7 +105,8 @@ class MainHandler(object):
 '''Modular Testing'''
 
 mh = MainHandler()
-#Tested User Init
+'''
+#Tested User Init, added to views.py
 user_id = 136341273775461
 name = "JanicChan"
 propic_link = "http://www.google.com"
@@ -123,15 +121,41 @@ myOrigList = jsonDec.decode(Users.objects.get(user_fbid=user_id).articles)
 
 #Tested: To update user's article list,
 user = Users.objects.get(user_fbid=user_id)
-myOrigList.append("hello")
+myOrigList.append("hello") #'append' is used for individual additions, 'extend' for lists
 newUser.articles = json.dumps(myOrigList)
 newUser.save()
+'''
+'''
+#Test Pkl Model Creation
+print('here', time.time())
+userSkipGramModel = PklModels()
+userSkipGramModel.user_fbid = 1363412733775461
+print('getting model',  time.time())
+userSkipGramModel.pkl_model = mh.getDefaultModel()
+print('got model', time.time())
+userSkipGramModel.user_keywords = json.dumps([])
+userSkipGramModel.save()
+print('done', time.time())
 
-#Test Pkl Model and training
-# userSkipGramModel = PklModels()
-# userSkipGramModel.user_fbid = 1363412733775461
-# userSkipGramModel.pkl_model = mh.getDefaultModel()
-# userSkipGramModel.user_keywords = json.dumps([])
-# userSkipGramModel.save()
+#Check model size is the same - ok
+model = PklModels.objects.get(user_fbid=1363412733775461).pkl_model
+print sys.getsizeof(model)
+print sys.getsizeof(mh.getDefaultModel())
+'''
+'''
+#Tested add keywords
+mh.addKeywords(["keywordssss","listttt"], 1363412733775461)
+#Check that it's there
+orig_keyword_list = mh.getUserKeywords(1363412733775461)
+jsonDec = json.decoder.JSONDecoder()
+myOrigList = jsonDec.decode(orig_keyword_list)
+print(myOrigList)
+'''
+
+'''
+#REMAINING TODO:
+#Test Pkl Model Add Training Data & train user model
 # mh.addTrainingData()
 
+#Test article fetch  & Write optimization
+'''
