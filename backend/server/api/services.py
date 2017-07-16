@@ -15,8 +15,11 @@ import main_handler
 
 FilterSetContainer()
 
+
 class ArticleRetriever(object):
     webcrawler = WebCrawler()
+
+    #constants
     userPageLimit = 25
     feedPostLimit = 50
     categories=['News & Media Website', 'Newspaper']
@@ -26,6 +29,9 @@ class ArticleRetriever(object):
         self.user_id = user_id
         self.facebook = facebook
         self.liked_pages = []
+
+        #keywords = individual words 
+        #content = coherent paragraphs
         self.keywords = []
         self.content = []
 
@@ -56,9 +62,6 @@ class ArticleRetriever(object):
             [thread.start() for thread in threads]
             [thread.join() for thread in threads]
 
-            #debug
-            print(self.liked_pages)
-
             threads[:] = []
 
             #== Get Feeds for each page and get Liked Posts==
@@ -71,6 +74,7 @@ class ArticleRetriever(object):
             [thread.start() for thread in threads]
             [thread.join() for thread in threads]    
 
+            #debug
             print self.keywords
             print self.content
 
@@ -92,6 +96,7 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
         self.content = liked_posts
     
     def run(self):
+        #checks for relevant liked pages (if the page's category is in the specified categories)
         if self.threadType is "category":
             allLikes = self.response['data']
 
@@ -104,6 +109,7 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                 if response[page_id]['category'] in ArticleRetriever.categories:
                     self.liked_pages.append(page_id)
         
+        #spawns threads to scrape like data from each page of the feed
         elif self.threadType is "feed":
             threads = []
             hasNextPage = True
@@ -126,6 +132,8 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
             [thread.start() for thread in threads]
             [thread.join() for thread in threads]     
 
+        #checks every post on the feed page they are given to see if user has liked the post
+        #and then adds the keywords to the array
         elif self.threadType is "likes":
             #get all likes
             likeIds = ''.join([post['id']+"," for post in self.response])[:-1]
@@ -139,7 +147,8 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         #get link content and filter
                         linkParagraphs = ArticleRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
                         for paragraph in linkParagraphs:
-                            self.content.append(self.filterWords(paragraph))
+                            self.content.append(paragraph)
+                            self.keywords.append(self.filterWords(paragraph))
                     #otherwise just filter the message body
                     self.keywords.append(self.filterWords(likes[post_id]['message']))
 
