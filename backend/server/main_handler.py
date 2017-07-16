@@ -1,7 +1,9 @@
+
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 import django
 django.setup()
+
 import modules.skipgram
 import modules.webcrawler
 from modules.webcrawler import WebCrawler
@@ -11,7 +13,12 @@ import requests
 import cPickle
 import bz2
 import zipfile
+import json
 from random import randrange
+
+
+#TODO CHange based on models, Test modularly everything
+#TODO  test integration
 
 class MainHandler(object):
     def __init__(self):
@@ -56,7 +63,7 @@ class MainHandler(object):
     def get(self, user_id):
         keywords = getUserKeywords(user_id)
 
-        links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword *list* a particular link is associated with
+        links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword *list* a particular link is associated with TODO change
         random_index = randrange(0,len(links)) #get a random keyword
         article_link = links[random_index]
         article_content, article_name = getLinkContent(article_link)
@@ -82,7 +89,7 @@ class MainHandler(object):
 #TODO TEST
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
-        #add check for byte size
+        #TODO add check for byte size
         final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
         PklModels.objects.get(user_fbid=user_id).pkl_model = model #update db model
         PklModels.objects.get(user_fbid=user_id).pkl_model.save()
@@ -98,12 +105,33 @@ class MainHandler(object):
         content = self.crawler.grabContent(link)
         return content #list of paragraphs
 
-'''Testing'''
+'''Modular Testing'''
+
 mh = MainHandler()
-userSkipGramModel = PklModels()
-userSkipGramModel.user_fbid = 1363412733775461
-userSkipGramModel.pkl_model = mh.getDefaultModel()
-# userSkipGramModel.user_keywords = []
+#Tested User Init
+user_id = 136341273775461
+name = "JanicChan"
+propic_link = "http://www.google.com"
+newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
+articles_list = []
+newUser.articles = json.dumps(articles_list)
+newUser.save()
+
+#Tested: To get user's article list,
+jsonDec = json.decoder.JSONDecoder()
+myOrigList = jsonDec.decode(Users.objects.get(user_fbid=user_id).articles)
+
+#Tested: To update user's article list,
+user = Users.objects.get(user_fbid=user_id)
+myOrigList.append("hello")
+newUser.articles = json.dumps(myOrigList)
+newUser.save()
+
+#Test Pkl Model and training
+# userSkipGramModel = PklModels()
+# userSkipGramModel.user_fbid = 1363412733775461
+# userSkipGramModel.pkl_model = mh.getDefaultModel()
+# userSkipGramModel.user_keywords = json.dumps([])
 # userSkipGramModel.save()
 # mh.addTrainingData()
 

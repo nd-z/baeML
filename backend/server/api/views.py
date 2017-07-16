@@ -1,5 +1,5 @@
 from .models import Users, PklModels
-from .services import LikesRetriever
+from .services import ArticleRetriever
 from .serializers import UserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -46,9 +46,11 @@ class UsersView(APIView):
         name = me['name']
 
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
+        articles_list = []
+        newUser.articles = json.dumps(articles_list)
         newUser.save()
 
-        retriever = LikesRetriever(user_id, facebook)
+        retriever = ArticleRetriever(user_id, facebook)
         retriever.get_likes()
 
         response = {'name': name, 'propic': propic_link}

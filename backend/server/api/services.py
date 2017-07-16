@@ -81,7 +81,7 @@ class ArticleRetriever(object):
                 return self.keywords, self.content
 
 #delegate most of the work to multithreading to speed things up 
-class ThreadRunner(threading.Thread, LikesRetriever):
+class ThreadRunner(threading.Thread, ArticleRetriever):
     def __init__(self, response, facebook, threadType, liked_pages, keywords, liked_posts):
         threading.Thread.__init__(self)
         self.response = response
@@ -101,7 +101,7 @@ class ThreadRunner(threading.Thread, LikesRetriever):
 
             #check which pages are in the appropriate category
             for page_id in response:
-                if response[page_id]['category'] in LikesRetriever.categories:
+                if response[page_id]['category'] in ArticleRetriever.categories:
                     self.liked_pages.append(page_id)
         
         elif self.threadType is "feed":
@@ -110,7 +110,7 @@ class ThreadRunner(threading.Thread, LikesRetriever):
             feedPageCount = 0
 
             #limit to page_limit of feed pages
-            while feedPageCount <= LikesRetriever.page_limit and hasNextPage is True:
+            while feedPageCount <= ArticleRetriever.page_limit and hasNextPage is True:
                 #start threads for retrieving likes
                 threads.append(ThreadRunner(self.response['data'], self.facebook, "likes", self.liked_pages, self.keywords, self.content))
                 
@@ -118,7 +118,7 @@ class ThreadRunner(threading.Thread, LikesRetriever):
                 if 'paging' in self.response:
                     page_id = self.extractPageID(self.response['paging']['next'])
                     cursor_next = self.response['paging']['cursors']['after']
-                    self.response = self.facebook.get(link="/" + page_id +"/feed", params={"after" : cursor_next, "limit": LikesRetriever.userPageLimit})
+                    self.response = self.facebook.get(link="/" + page_id +"/feed", params={"after" : cursor_next, "limit": ArticleRetriever.userPageLimit})
                 else: 
                     hasNextPage = False
                 feedPageCount+=1
@@ -137,7 +137,7 @@ class ThreadRunner(threading.Thread, LikesRetriever):
                     print "ayus"
                     if 'link' in likes[post_id]:
                         #get link content and filter
-                        linkParagraphs = LikesRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
+                        linkParagraphs = ArticleRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
                         for paragraph in linkParagraphs:
                             self.content.append(self.filterWords(paragraph))
                     #otherwise just filter the message body
