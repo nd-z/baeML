@@ -11,7 +11,7 @@
 	+ Python package for web scraping
 + [Synonym Clustering with KMeans](http://cs229.stanford.edu/proj2013/DaoKellerBejnood-AlternateEquivalentSubstitutes.pdf)
 	+ Due to computational restrictions, our implementation for synonym clustering relied on a cascading-style approach, loosely inspired by binary search.
-+ [Skip-thoughts for Sentiment Analysis](https://github.com/tensorflow/models/tree/master/skip_thoughts)
++ [Skip-thoughts for Sentiment Analysis](https://github.com/ryankiros/skip-thoughts)
 	+ For future improvements, we can use this to detect sentiment bias in article content, and perhaps make modifications for political bias detection.
 
 # Project Overview
