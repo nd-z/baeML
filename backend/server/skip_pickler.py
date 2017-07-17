@@ -1,7 +1,7 @@
 from modules.skipgram import SkipGram
 import cPickle
 import bz2
-
+import time
 
 #FOR PICKLING THE DEFAULT MODEL
 '''
@@ -29,19 +29,41 @@ clustered_synonyms = model.clustered_synonyms
 '''
 print('beginning clustering')
 
-import time
 start_time = time.time()
 clustered_synonyms, final_embeddings, low_dim_embs = model.cluster(final_embeddings)
-print("--- %s seconds ---" % (time.time() - start_time))
 '''
 
 #FOR TESTING CASCADING CLUSTERING
 print('now testing re_clustering with target_keyword=dictatorship')
+start_time = time.time()
 target_keyword='dictatorship'
-clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary)
+clustered_synonyms, new_lowdim_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary)
 
-print('The new list of words')
-print(new_reverse_dictionary)
+while len(new_reverse_dictionary) > 100:
+	clustered_synonyms, new_lowdim_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(new_lowdim_embeddings, clustered_synonyms, target_keyword, new_dictionary, new_reverse_dictionary)
+
+#print('The new list of words')
+#print(new_reverse_dictionary)
+'''
+def extractSynonyms(clustered_synonyms, target_keyword, dictionary, reverse_dictionary):
+	index = dictionary[target_keyword]
+	labels = clustered_synonyms.labels_
+
+	target_label = labels[index]
+
+	synonyms = ['']
+
+	for i in range(len(labels)):
+		if labels[i] == target_label:
+			word = reverse_dictionary[i]
+			synonyms.append(word)
+
+	return synonyms
+'''
+synonyms = model.extractSynonyms(clustered_synonyms, target_keyword, new_dictionary, new_reverse_dictionary)
+print("--- %s seconds ---" % (time.time() - start_time))
+print('synonyms for '+target_keyword)
+print(synonyms)
 
 
 #FOR PICKLING THE REVERSE DICTIONARY
