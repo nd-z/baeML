@@ -306,7 +306,7 @@ class SkipGram(object):
 		index = dictionary[target_keyword]
 		target_embedding = low_dim_embs[index]
 
-		print(target_keyword + ': ' + str(target_embedding))
+		#print(target_keyword + ': ' + str(target_embedding))
 
 		#labels is a index-to-index correspondence of each word vector's label/cluster
 		labels = clustered_synonyms.labels_
@@ -358,6 +358,22 @@ class SkipGram(object):
 		clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(new_embeddings)
 
 		return clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary
+
+	def extractSynonyms(self, clustered_synonyms, target_keyword, dictionary, reverse_dictionary):
+		index = dictionary[target_keyword]
+		labels = clustered_synonyms.labels_
+
+		target_label = labels[index]
+
+		synonyms = ['']
+
+		for i in range(len(labels)):
+			if labels[i] == target_label:
+				word = reverse_dictionary[i]
+				synonyms.append(word)
+
+		return synonyms
+
 
 #==Load saved skipgram model==
 '''
