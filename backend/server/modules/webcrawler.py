@@ -89,9 +89,13 @@ class WebCrawler(object):
         normalized = []
 
         for unicodeStr in unicodeStrings:
-            normalized.append(unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore'))
+            tempStr = unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore')
+            tempStr = re.sub('\s+', ' ', tempStr)
+            tempStr = tempStr.strip()
+            normalized.append(tempStr)
 
         return normalized
+
 '''
 crawler = WebCrawler()
 keywords = ['global', 'warming']
