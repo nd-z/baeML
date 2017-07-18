@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'api'
 ]
 
-MEDIA_ROOT = '/home/media'
+MEDIA_ROOT = './media'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
