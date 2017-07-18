@@ -1,8 +1,8 @@
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
-import django
-django.setup()
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings") #comment out
+import django #comment out
+django.setup() #comment out
 import sys
 import modules.skipgram
 import modules.webcrawler
@@ -39,14 +39,12 @@ class MainHandler(object):
             f.write(' ')
         f.close()
         
-        with zipfile.ZipFile("./media/{0}_training_data.zip".format(user_id, file_number), "a") as myzip:
-            myzip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
+        with zipfile.ZipFile("./media/training_data/{0}_training_data.zip".format(user_id),"a") as training_data_zip:
+            training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
-        userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id)))
+        userSkipGramModel.text_corpus = File(open("./media/training_data/{0}_training_data.zip".format(user_id)))
         skipgram_model = self.getUserModel(user_id)
-        # PklModels.objects.get(user_fbid=user_id).text_corpus = #TODO IDK. check it's there
-        # PklModels.objects.get(user_fbid=user_id).save() #save updated text-corpus
-        # trainUserModel(skipgram_model, idkkkkkk) #TODO IDk
+        # self.trainUserModel(skipgram_model, "./media/training_data/{0}_training_data.zip".format(user_id), user_id) 
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
@@ -93,10 +91,10 @@ class MainHandler(object):
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
 
-        #TODO add check for byte size
-        final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
-        PklModels.objects.get(user_fbid=user_id).pkl_model = model
-        PklModels.objects.get(user_fbid=user_id).save()
+        if os.stat(text_corpus_filename).st_size > 500: #file size in bytes
+            final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
+            PklModels.objects.get(user_fbid=user_id).pkl_model = model
+            PklModels.objects.get(user_fbid=user_id).save()
 
     def getLinks(self, keywords):
         query = 'http://www.bing.com/search?q='
@@ -148,7 +146,7 @@ os.remove("empty") #remove temp files
 
 #TODO make sure textcorpus contains both , train user model works
 
-userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) #TODO idk
+userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
 os.remove("{0}_training_data.zip".format(user_id))
 userSkipGramModel.save()
 
@@ -167,7 +165,7 @@ print(myOrigList)
 '''
 
 #==Testing Pkl Model Add Training Data & train user model==
-# mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
+mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
 #TODO Check text corpus field
 
 '''
