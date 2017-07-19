@@ -25,11 +25,6 @@ class MainHandler(object):
         self.crawler = WebCrawler()
 
     def addTrainingData(self, training_data, user_id):
-        # try:
-        #     text_corpus = self.getUserTextCorpus(user_id)
-        # except PklModels.DoesNotExist:
-        #     print('failed to get model')
-        #     pass
         file_number = int(time.time())
         f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
         
@@ -43,7 +38,6 @@ class MainHandler(object):
         with zipfile.ZipFile(training_data_path,"a") as training_data_zip:
             training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
-        # PklModels.objects.get(user_fbid=user_id).text_corpus = File(open("./media/training_data/{0}_training_data.zip".format(user_id)))
         skipgram_model = self.getUserModel(user_id)
         self.trainUserModel(skipgram_model, training_data_path, user_id) 
 
@@ -91,7 +85,7 @@ class MainHandler(object):
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
         print('train')
-        if os.stat(text_corpus_filename).st_size > 5: #file size in bytes, 5mb
+        if os.stat(text_corpus_filename).st_size > 5000000: #file size in bytes, 5mb
             final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
             PklModels.objects.get(user_fbid=user_id).pkl_model = model
             PklModels.objects.get(user_fbid=user_id).save()
@@ -159,8 +153,8 @@ myOrigList = jsonDec.decode(orig_keyword_list)
 print(myOrigList)
 '''
 
-#==Testing Pkl Model Add Training Data & train user model==
-mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
+#==Tested Pkl Model Add Training Data & train user model==
+# mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
 
 '''
 #REMAINING TODO:
