@@ -1,8 +1,8 @@
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
-import django
-django.setup()
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings") #comment out
+import django #comment out
+django.setup() #comment out
 import sys
 import modules.skipgram
 import modules.webcrawler
@@ -16,10 +16,7 @@ import zipfile
 import json
 from random import randrange
 import time
-
-
-#TODO CHange based on models, Test modularly everything
-#TODO  test integration
+from django.core.files import File
 
 class MainHandler(object):
     def __init__(self):
@@ -27,24 +24,23 @@ class MainHandler(object):
         self.default_model = cPickle.load(file) #loads a random model for the user's first login
         self.crawler = WebCrawler()
 
-#TODO: TEST
     def addTrainingData(self, training_data, user_id):
-        try:
-            skipgram_model = getUserModel(user_id)
-
-        except PklModels.DoesNotExist:
-            print('failed to get model')
-        f = open('training_data/' + user_id,'w+') #temp file
+        file_number = int(time.time())
+        f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
         
         for content in training_data:
             f.write(content)
+            f.write(' ')
         f.close()
-        with ZipFile('training_data/' + user_id + '.zip', 'w') as myzip:
-            myzip.write('training_data/' + user_id)#zip file to make compatible w/ skipgram module
-        trainUserModel(skipgram_model, 'training_data/' + user_id + '.zip', user_id)
-        os.remove('training_data/' + user_id + '.zip')
+        training_data_path = PklModels.objects.get(user_fbid=user_id).text_corpus.path
+        print(training_data_path, 'aaaa')
 
-#TODO: TEST
+        with zipfile.ZipFile(training_data_path,"a") as training_data_zip:
+            training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
+        os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
+        skipgram_model = self.getUserModel(user_id)
+        self.trainUserModel(skipgram_model, training_data_path, user_id) 
+
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
         user_model = PklModels.objects.get(user_fbid=user_id)
@@ -83,13 +79,16 @@ class MainHandler(object):
     def getUserKeywords(self, user_id):
         return PklModels.objects.get(user_fbid=user_id).user_keywords
 
-#TODO TEST
+    def getUserTextCorpus(self,user_id):
+    	return PklModels.objects.get(user_fbid=user_id).text_corpus
+
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
-        #TODO add check for byte size
-        final_embeddings, reverse_dictionary, similarity, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
-        PklModels.objects.get(user_fbid=user_id).pkl_model = model
-        PklModels.objects.get(user_fbid=user_id).pkl_model.save()
+        print('train')
+        if os.stat(text_corpus_filename).st_size > 5000000: #file size in bytes, 5mb
+            final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
+            PklModels.objects.get(user_fbid=user_id).pkl_model = model
+            PklModels.objects.get(user_fbid=user_id).save()
 
     def getLinks(self, keywords):
         query = 'http://www.bing.com/search?q='
@@ -106,7 +105,7 @@ class MainHandler(object):
 
 mh = MainHandler()
 '''
-#Tested User Init, added to views.py
+#==Tested User Init, added to views.py==
 user_id = 136341273775461
 name = "JanicChan"
 propic_link = "http://www.google.com"
@@ -115,35 +114,37 @@ articles_list = []
 newUser.articles = json.dumps(articles_list)
 newUser.save()
 
-#Tested: To get user's article list,
+#==Tested: To get user's article list,==
 jsonDec = json.decoder.JSONDecoder()
 myOrigList = jsonDec.decode(Users.objects.get(user_fbid=user_id).articles)
 
 #Tested: To update user's article list,
 user = Users.objects.get(user_fbid=user_id)
-myOrigList.append("hello") #'append' is used for individual additions, 'extend' for lists
+myOrigList.extend(['hello']) #'append' is used for individual additions, 'extend' for lists
 newUser.articles = json.dumps(myOrigList)
 newUser.save()
 '''
-'''
-#Test Pkl Model Creation
-print('here', time.time())
-userSkipGramModel = PklModels()
-userSkipGramModel.user_fbid = 1363412733775461
-print('getting model',  time.time())
-userSkipGramModel.pkl_model = mh.getDefaultModel()
-print('got model', time.time())
-userSkipGramModel.user_keywords = json.dumps([])
-userSkipGramModel.save()
-print('done', time.time())
+# #==Tested Pkl Model Creation==
+# user_id  = 1363412733775461
+# userSkipGramModel = PklModels()
+# userSkipGramModel.user_fbid = user_id
+# userSkipGramModel.pkl_model = mh.getDefaultModel()
+# userSkipGramModel.user_keywords = json.dumps([])
+# empty_file = open("empty","w+")
+# empty_file.close()
+# with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+#         myzip.write("empty")
+# os.remove("empty") #remove temp files
+# userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+# os.remove("{0}_training_data.zip".format(user_id))
+# userSkipGramModel.save()
 
 #Check model size is the same - ok
-model = PklModels.objects.get(user_fbid=1363412733775461).pkl_model
-print sys.getsizeof(model)
-print sys.getsizeof(mh.getDefaultModel())
+# model = PklModels.objects.get(user_fbid=1363412733775461).pkl_model
+# print sys.getsizeof(model)
+# print sys.getsizeof(mh.getDefaultModel())
 '''
-'''
-#Tested add keywords
+#==Tested add keywords==
 mh.addKeywords(["keywordssss","listttt"], 1363412733775461)
 #Check that it's there
 orig_keyword_list = mh.getUserKeywords(1363412733775461)
@@ -152,10 +153,10 @@ myOrigList = jsonDec.decode(orig_keyword_list)
 print(myOrigList)
 '''
 
+#==Tested Pkl Model Add Training Data & train user model==
+# mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
+
 '''
 #REMAINING TODO:
-#Test Pkl Model Add Training Data & train user model
-# mh.addTrainingData()
-
-#Test article fetch  & Write optimization
+#Test article fetch  & Write optimization (account for json keywords list w/ json methods)
 '''

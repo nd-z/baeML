@@ -49,13 +49,21 @@ class SkipGram(object):
 
 	# Read the data into a list of strings.
 	def read_data(self, filename):
+		print(filename, 'reading dataaaaa')
 		"""Extract the first file enclosed in a zip file as a list of words."""
 		with zipfile.ZipFile(filename) as f:
-			data = tf.compat.as_str(f.read(f.namelist()[0])).split()
+			print (f.namelist()[0])
+			if (f.namelist()[0]=="empty"):
+				data = ['']
+			else:
+				data = tf.compat.as_str(f.read(f.namelist()[0])).split()
 			index = 1
 			while index < len(f.namelist()):
-				moredata = tf.compat.as_str(f.read(f.namelist()[index])).split()
-				data = data.extend(moredata)
+				print(f.namelist()[index])
+				if (f.namelist()[index]!="empty"):
+				    moredata = tf.compat.as_str(f.read(f.namelist()[index])).split()
+				    data.extend(moredata)
+				index = index + 1
 
 		return data
 
