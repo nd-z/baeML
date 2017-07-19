@@ -36,7 +36,7 @@ clustered_synonyms, final_embeddings, low_dim_embs = model.cluster(final_embeddi
 #FOR TESTING CASCADING CLUSTERING
 print('now testing re_clustering with target_keyword=dictatorship')
 start_time = time.time()
-target_keyword='dictatorship'
+target_keyword='computer'
 clustered_synonyms, new_lowdim_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary)
 
 while len(new_reverse_dictionary) > 100:

@@ -42,9 +42,6 @@ class WebCrawler(object):
         
         return paragraphs
 
-        #TODO modify to grab content off an article webpage for keyword clustering
-        #Actual TODO: filter out gunk
-
     def isValidUrl(self, url):
         if self.regex.match(url) is not None:
             return True;
@@ -95,6 +92,22 @@ class WebCrawler(object):
             normalized.append(tempStr)
 
         return normalized
+
+    #replaces all instances of non-alpha characters with spaces
+    #normalize first with normalizeParagraphs()!
+    @staticmethod
+    def replace_nonalpha(norm_paragraphs):
+        check = re.compile('[^a-zA-Z]')
+        alpha_par = []
+
+        for paragraph in norm_paragraphs:
+            paragraph = check.sub(' ', paragraph)
+            paragraph = re.sub('\s+', ' ', paragraph)
+            paragraph = paragraph.strip()
+            alpha_par.append(paragraph)
+
+        return alpha_par
+
 
 '''
 crawler = WebCrawler()
