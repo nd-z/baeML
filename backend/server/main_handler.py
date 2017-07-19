@@ -24,13 +24,12 @@ class MainHandler(object):
         self.default_model = cPickle.load(file) #loads a random model for the user's first login
         self.crawler = WebCrawler()
 
-#TODO: TEST
     def addTrainingData(self, training_data, user_id):
-        try:
-            text_corpus = self.getUserTextCorpus(user_id)
-        except PklModels.DoesNotExist:
-            print('failed to get model')
-            pass
+        # try:
+        #     text_corpus = self.getUserTextCorpus(user_id)
+        # except PklModels.DoesNotExist:
+        #     print('failed to get model')
+        #     pass
         file_number = int(time.time())
         f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
         
@@ -38,13 +37,15 @@ class MainHandler(object):
             f.write(content)
             f.write(' ')
         f.close()
-        
-        with zipfile.ZipFile("./media/training_data/{0}_training_data.zip".format(user_id),"a") as training_data_zip:
+        training_data_path = PklModels.objects.get(user_fbid=user_id).text_corpus.path
+        print(training_data_path, 'aaaa')
+
+        with zipfile.ZipFile(training_data_path,"a") as training_data_zip:
             training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
-        userSkipGramModel.text_corpus = File(open("./media/training_data/{0}_training_data.zip".format(user_id)))
+        # PklModels.objects.get(user_fbid=user_id).text_corpus = File(open("./media/training_data/{0}_training_data.zip".format(user_id)))
         skipgram_model = self.getUserModel(user_id)
-        # self.trainUserModel(skipgram_model, "./media/training_data/{0}_training_data.zip".format(user_id), user_id) 
+        self.trainUserModel(skipgram_model, training_data_path, user_id) 
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
@@ -87,11 +88,10 @@ class MainHandler(object):
     def getUserTextCorpus(self,user_id):
     	return PklModels.objects.get(user_fbid=user_id).text_corpus
 
-#TODO TEST
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
-
-        if os.stat(text_corpus_filename).st_size > 500: #file size in bytes
+        print('train')
+        if os.stat(text_corpus_filename).st_size > 5: #file size in bytes, 5mb
             final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
             PklModels.objects.get(user_fbid=user_id).pkl_model = model
             PklModels.objects.get(user_fbid=user_id).save()
@@ -130,25 +130,20 @@ myOrigList.extend(['hello']) #'append' is used for individual additions, 'extend
 newUser.articles = json.dumps(myOrigList)
 newUser.save()
 '''
-#==Test Pkl Model Creation==
-user_id  = 1363412733775461
-userSkipGramModel = PklModels()
-userSkipGramModel.user_fbid = user_id
-userSkipGramModel.pkl_model = mh.getDefaultModel()
-userSkipGramModel.user_keywords = json.dumps([])
-empty_file = open("empty","w+")
-empty_file.close()
-
-with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
-        myzip.write("empty")
-os.remove("empty") #remove temp files
-
-
-#TODO make sure textcorpus contains both , train user model works
-
-userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
-os.remove("{0}_training_data.zip".format(user_id))
-userSkipGramModel.save()
+# #==Tested Pkl Model Creation==
+# user_id  = 1363412733775461
+# userSkipGramModel = PklModels()
+# userSkipGramModel.user_fbid = user_id
+# userSkipGramModel.pkl_model = mh.getDefaultModel()
+# userSkipGramModel.user_keywords = json.dumps([])
+# empty_file = open("empty","w+")
+# empty_file.close()
+# with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+#         myzip.write("empty")
+# os.remove("empty") #remove temp files
+# userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+# os.remove("{0}_training_data.zip".format(user_id))
+# userSkipGramModel.save()
 
 #Check model size is the same - ok
 # model = PklModels.objects.get(user_fbid=1363412733775461).pkl_model
@@ -166,7 +161,6 @@ print(myOrigList)
 
 #==Testing Pkl Model Add Training Data & train user model==
 mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
-#TODO Check text corpus field
 
 '''
 #REMAINING TODO:

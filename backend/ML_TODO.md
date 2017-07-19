@@ -1,4 +1,3 @@
-## Additional ML Features Needed!
-+ optimizations on clustering, specifically performance improvements on the number of words that can be clustered
-	+ TEST CLUSTERING WITH 50K WORDS, 2 CLUSTERS
+## TODO
++ further optimizations to clustering should focus on workarounds to PCA on word sets of size 50k+
 + implement bias detection if possible; maybe resort to sentiment analysis instead; note that computation time will probably increase significantly

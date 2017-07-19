@@ -27,6 +27,7 @@ class SkipGram(object):
 		self.dictionary = None
 		self.reverse_dictionary = None
 		self.final_embeddings = None
+		self.low_dim_embs = None
 		self.clustered_synonyms = None
 		self.batch = None
 		self.labels = None
@@ -51,6 +52,10 @@ class SkipGram(object):
 		"""Extract the first file enclosed in a zip file as a list of words."""
 		with zipfile.ZipFile(filename) as f:
 			data = tf.compat.as_str(f.read(f.namelist()[0])).split()
+			index = 1
+			while index < len(f.namelist()):
+				moredata = tf.compat.as_str(f.read(f.namelist()[index])).split()
+				data = data.extend(moredata)
 
 		return data
 
@@ -134,8 +139,6 @@ class SkipGram(object):
 		'''from the vocabulary, extract @vocabulary_size words which are most common to construct the dataset'''
 		self.data, self.count, self.dictionary, self.reverse_dictionary = self.build_dataset(vocabulary, vocabulary_size)
 		del vocabulary  # Hint to reduce memory.
-
-		print(dictionary)
 
 		print('Most common words (+UNK)', self.count[:5])
 		print('Sample data', self.data[:10], [self.reverse_dictionary[i] for i in self.data[:10]])
@@ -255,8 +258,14 @@ class SkipGram(object):
 		    '''
 		  final_embeddings = normalized_embeddings.eval()
 		  self.final_embeddings = final_embeddings
-		  clustered_synonyms, final_embeddings, low_dim_embs = self.cluster(final_embeddings, len(self.reverse_dictionary))
-		  return final_embeddings, self.reverse_dictionary, similarity, clustered_synonyms
+		  
+		  #tbh there's no point in returning the final_embeddings bc
+		  #they are identical; but whatever
+		  clustered_synonyms, final_embeddings, low_dim_embs = self.cluster(final_embeddings)
+		  self.low_dim_embs = low_dim_embs
+
+		  #print(self.reverse_dictionary)
+		  return final_embeddings, low_dim_embs, self.reverse_dictionary, clustered_synonyms
 
 	# the direct result of clustering the first time is
 	#a KMeans object containing the labeled word vectors (in 2D space)
@@ -264,20 +273,20 @@ class SkipGram(object):
 	#the reduced-dimension low_dim_embs matrix, which has the same rows as final_embeddings, but only two cols
 	# in short, cluster() transforms final_embeddings -> low_dim_embs; and clusters low_dim_embs -> synonyms
 	def cluster(self, final_embeddings):
-			#reduce dimension to perform kmeans
-			tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
-			#TODO rectify this number
-			cap = 12000
+		#reduce dimension to perform kmeans
+		tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+		#TODO rectify this number
+		cap = 12000
 
-			#this 'flattens' the words so they can be represented as 2D vectors
-			low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
+		#this 'flattens' the words so they can be represented as 2D vectors
+		low_dim_embs = tsne.fit_transform(final_embeddings[:cap,:])
 
-			#now we cluster those words with kmeans
-			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
+		#now we cluster those words with kmeans
+		clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(low_dim_embs)
 
-			self.clustered_synonyms = clustered_synonyms
+		self.clustered_synonyms = clustered_synonyms
 
-			return clustered_synonyms, final_embeddings, low_dim_embs
+		return clustered_synonyms, final_embeddings, low_dim_embs
 
 	# this should be called ONLY after already calling cluster on the original final_embeddings
 	#because it returns low_dim_embs, aka nx2 dimensional matrix of word vectors
@@ -287,91 +296,89 @@ class SkipGram(object):
 	# NOTE: the first time you call re_cluster(), reverse_dictionary will be the same reverse_dictionary
 	#you get from calling train(); re_clustering afterwards, use the new_reverse_dictionary returned
 	def re_cluster(self, low_dim_embs, clustered_synonyms, target_keyword, dictionary, reverse_dictionary):
-			#we must assume that the reverse dictionary gives us the index
-			#of the word in the embeddings matrix
+		#we must assume that the reverse dictionary gives us the index
+		#of the word in the embeddings matrix
 
-			#NOTE: index-to-word is reverse_dictionary
-			#      word-to-index is dictionary
+		#NOTE: index-to-word is reverse_dictionary
+		#      word-to-index is dictionary
 
-			#find the keyword embedding
-			index = dictionary[target_keyword]
-			target_embedding = low_dim_embs[index]
+		#find the keyword embedding
+		index = dictionary[target_keyword]
+		target_embedding = low_dim_embs[index]
 
-			print(target_keyword + ': ' + str(target_embedding))
+		#print(target_keyword + ': ' + str(target_embedding))
 
-			#labels is a index-to-index correspondence of each word vector's label/cluster
-			labels = clustered_synonyms.labels_
+		#labels is a index-to-index correspondence of each word vector's label/cluster
+		labels = clustered_synonyms.labels_
 
-			#find label of target_embedding
-			target_label = labels[index]
+		#find label of target_embedding
+		target_label = labels[index]
 
-			#find the starting index of that label in labels
-			start = 0
-			for i in range(len(labels)):
-				if labels[i] == target_label:
-					start = i
-					break
+		#find the starting index of that label in labels
+		start = 0
+		for i in range(len(labels)):
+			if labels[i] == target_label:
+				start = i
+				break
 
-			#for each index with that label number, append an embedding from the corresponding index in low_dim_embs to a new matrix
-			new_embeddings = []
+		#for each index with that label number, append an embedding from the corresponding index in low_dim_embs to a new matrix
+		new_embeddings = []
 
-			#we must also build a new reverse dictionary representing the word:index pairs
+		#we must also build a new reverse dictionary representing the word:index pairs
 
-			#build a new reverse dictionary to keep indices consistent with the new clustered_synonyms.labels_
-			#aka this is to ensure we can still match the ith label with the ith word in new_reverse_dictionary,
-			#as well as the ith row in the new_embeddings matrix
-			new_reverse_dictionary = dict()
-			new_dictionary = dict()
-			index = 0
+		#build a new reverse dictionary to keep indices consistent with the new clustered_synonyms.labels_
+		#aka this is to ensure we can still match the ith label with the ith word in new_reverse_dictionary,
+		#as well as the ith row in the new_embeddings matrix
+		new_reverse_dictionary = dict()
+		new_dictionary = dict()
+		index = 0
 
-			to_append = low_dim_embs[start]
-			word = reverse_dictionary[start]
-			new_embeddings = [to_append]
-			new_reverse_dictionary[index] = word
-			new_dictionary[word] = index
-			index += 1
+		to_append = low_dim_embs[start]
+		word = reverse_dictionary[start]
+		new_embeddings = [to_append]
+		new_reverse_dictionary[index] = word
+		new_dictionary[word] = index
+		index += 1
+		start += 1
+
+		while start < len(labels):
+			if labels[start] == target_label:
+				#to_append is just a row vector representing the embedded word
+				to_append = low_dim_embs[start]
+
+				#TODO verify that this is correct
+				word = reverse_dictionary[start]
+				new_embeddings = np.append(new_embeddings, [to_append], axis=0)
+				new_reverse_dictionary[index] = word
+				new_dictionary[word] = index
+				index += 1
 			start += 1
 
-			while start < len(labels):
-				if labels[start] == target_label:
-					#to_append is just a row vector representing the embedded word
-					to_append = low_dim_embs[start]
+		#cluster
+		clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(new_embeddings)
 
-					#TODO verify that this is correct
-					word = reverse_dictionary[start]
-					new_embeddings = np.append(new_embeddings, [to_append], axis=0)
-					new_reverse_dictionary[index] = word
-					new_dictionary[word] = index
-					index += 1
-				start += 1
+		return clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary
 
-			#cluster
-			clustered_synonyms = KMeans(n_clusters=2, random_state=0, algorithm='elkan').fit(new_embeddings)
+	def extractSynonyms(self, clustered_synonyms, target_keyword, dictionary, reverse_dictionary):
+		index = dictionary[target_keyword]
+		labels = clustered_synonyms.labels_
 
-			return clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary
+		target_label = labels[index]
 
+		synonyms = ['']
 
-#==Retrain and create a compressed pickled model==
-'''
-We are using the last compression & pickle modules from the last config
+		for i in range(len(labels)):
+			if labels[i] == target_label:
+				word = reverse_dictionary[i]
+				synonyms.append(word)
 
-Compression Module: pickle, gzip (without print statements)
-Time: 16:47:12.076797 -> 17:00:38.599300 (13 min)
-Size: 250MB -> 90 MB
-
-Compression Module: cpickle, gzip (without print statements)
-Time: 17:12:12.884811 -> 17:22:09.276334 (10 min)
-Size: 250MB -> 89.9 MB
-=======
-Compression Module: cpickle, bz2, level 9 (without print statements)
-Time:  17:34:11.500617 -> 17:41:11.234482 (7 min)
-Size: 250MB -> 75.5 MB
-'''
+		return synonyms
 
 
 #==Load saved skipgram model==
-
-file = bz2.BZ2File('./model.pkl.bz2', 'rb')
+'''
+#==Code for testing clustering==
+file = bz2.BZ2File('./modules/default_skipgram.pkl.bz','rb')
 model = cPickle.load(file)
 file.close()
 reverse_dictionary = model.reverse_dictionary
@@ -391,7 +398,7 @@ clustered_synonyms, new_embeddings, new_dictionary, new_reverse_dictionary = mod
 
 print('The new list of words')
 print(new_reverse_dictionary)
-
+'''
 #==Plot clusters. Output: tsne.png==
 '''
 try:
