@@ -89,9 +89,9 @@ class WebCrawler(object):
         normalized = []
 
         for unicodeStr in unicodeStrings:
-            tempStr = unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore')
-            tempStr = re.sub('\s+', ' ', tempStr)
-            tempStr = tempStr.strip()
+            tempStr = unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore') #normalize to ascii
+            tempStr = re.sub('\s+', ' ', tempStr) #clear all internal whitespace
+            tempStr = tempStr.strip() #clear all trailing whitespace
             normalized.append(tempStr)
 
         return normalized
