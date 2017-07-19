@@ -42,6 +42,15 @@ class WebCrawler(object):
         
         return paragraphs
 
+    def grabTitle(self, url):
+        req = urllib2.Request(url, headers={'User-Agent': "Magic Browser"})
+
+        pagesource = urllib2.urlopen(req)
+        s = pagesource.read()
+        soup = BeautifulSoup.BeautifulSoup(s)
+
+        return soup.title.string
+
     def isValidUrl(self, url):
         if self.regex.match(url) is not None:
             return True;
@@ -117,4 +126,5 @@ links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=
 paragraphs = crawler.grabContent(links[3])
 
 print WebCrawler.normalizeParagraphs(paragraphs)
+print crawler.grabTitle(links[3])
 '''
