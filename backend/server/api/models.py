@@ -14,25 +14,3 @@ class PklModels(models.Model):
     pkl_model = PickledObjectField() #automatically pickles and unpickles the skipgram model
     user_keywords = models.TextField(null=True)
     text_corpus = models.FileField(upload_to='training_data')
-
-    # @property
-    # def file_path(self):
-    #    return os.path.abspath(self.text_corpus.name)
-       
-class article(models.Model): #stores one article per user per row
-                             #used to optimize, if users have the same interest
-    user_fbid = models.IntegerField()
-    article_name = models.CharField(max_length=45)
-    article_id = models.IntegerField()
-    article_content = models.TextField(null=True)
-    user_rating = models.SmallIntegerField()
-    article_link = models.URLField(max_length=400)
-
-class Tags(models.Model): #stores the number for the keyword, maps keyword to article like a hash table
-    keyword_id = models.IntegerField()
-    article_id = models.IntegerField()  
-
-class Keywords(models.Model):  #has a field keyword id by default
-    keyword = models.CharField(max_length=45)
-
-

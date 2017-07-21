@@ -1,8 +1,8 @@
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings") #comment out
-import django #comment out
-django.setup() #comment out
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings") #comment out
+# import django #comment out
+# django.setup() #comment out
 import sys
 import modules.skipgram
 import modules.webcrawler
@@ -17,6 +17,7 @@ import json
 from random import randrange
 import time
 from django.core.files import File
+from django.http import HttpResponse, JsonResponse
 
 class MainHandler(object):
     def __init__(self):
@@ -27,16 +28,16 @@ class MainHandler(object):
     def addTrainingData(self, training_data, user_id):
         file_number = int(time.time())
         f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
-        
-        for content in training_data:
+        normalized_data = WebCrawler.normalizeParagraphs(training_data)
+        final_training_data = WebCrawler.replace_nonalpha(normalized_data)
+        for content in final_training_data:
             f.write(content)
             f.write(' ')
         f.close()
-        training_data_path = PklModels.objects.get(user_fbid=user_id).text_corpus.path
-        print(training_data_path, 'aaaa')
 
-        with zipfile.ZipFile(training_data_path,"a") as training_data_zip:
-            training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number)) #zip file to make compatible w/ skipgram module
+        training_data_path = PklModels.objects.get(user_fbid=user_id).text_corpus.path
+        with zipfile.ZipFile(training_data_path,"a") as training_data_zip:  #zip file to make compatible w/ skipgram module
+            training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number))
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
         skipgram_model = self.getUserModel(user_id)
         self.trainUserModel(skipgram_model, training_data_path, user_id) 
@@ -51,24 +52,49 @@ class MainHandler(object):
         user_model.user_keywords = json.dumps(myOrigList)
         user_model.save()
 
-#TODO FINISH
-#when asked for next article (one), frontend makes a get request, probably move parts of this to views.py
-    def get(self, user_id):
+#TODO TEST
+#when asked for next article (one), frontend makes a post request,
+    def get_article(self, request):
+        '''
+        get keywords, get an article
+        check that the link isn't in the user dict, rating as 0
+        add content to text corpus, call  normalizeParagraphs(), then remove_nonalpha() from webcralwer
+        return the content
+        '''
+        req = json.loads(request.body)
+        user_id = req['user_id']
         keywords = self.getUserKeywords(user_id)
-
-        links, linked_keywords = getLinks(keywords) #assuming webcrawler can return the keyword *list* a particular link is associated with TODO change
-        random_index = randrange(0,len(links)) #get a random keyword
-        article_link = links[random_index]
-        article_content, article_name = getLinkContent(article_link)
-        article_keyword = linked_keywords[random_index]
-# check if link exists  in tags model, then check read vs unread; while read, then get another keyword; if link doesn't exist then fetch link content
-#update keywords
-        articleModel = article(user_fbid=user_id, article_name=article_name, article_content=article_content, user_rating=0, article_link=article_link)
-        articleModel.save()
-
-        tagModel = Tags(keyword_id=Keywords.objects.get(keyword=article_keyword).pk, article_link=article_link, article_id=article.get(articleModel).pk)
-        tagModel.save()
-        return article_content, article_link
+        user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        jsonDec = json.decoder.JSONDecoder()
+        decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        links = getLinks(keywords)
+        for link in links:
+            if link not in decoded_user_article_dict:
+               article_link = link 
+               decoded_user_article_dict[article_link] = 0
+               Users.objects.get(user_fbid=user_id).articles = user_article_dict
+               Users.objects.get(user_fbid=user_id).save()
+               article_content = getLinkContent(article_link)
+               break
+            else: #return error/ refresh
+                return JsonResponse("Error fetching new article", status=404)
+        self.addTrainingData(article_content, user_id)
+        response = {'article_link': article_link, 'article': article_content}
+        return JsonResponse(response, status=200)
+#TODO TEST
+#when user rates an article,
+    def post(self, request):
+        req = json.loads(request.body)
+        user_id = req['user_id']
+        article_link = req['article_link']
+        user_rating = req['user_rating']
+        user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        jsonDec = json.decoder.JSONDecoder()
+        decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        decoded_user_article_dict[article_link] = user_rating
+        Users.objects.get(user_fbid=user_id).articles = decoded_user_article_dict
+        Users.objects.get(user_fbid=user_id).save()
+        return JsonResponse("Ok", status=200)
 
     def getDefaultModel(self):
         return self.default_model
@@ -78,9 +104,6 @@ class MainHandler(object):
 
     def getUserKeywords(self, user_id):
         return PklModels.objects.get(user_fbid=user_id).user_keywords
-
-    def getUserTextCorpus(self,user_id):
-    	return PklModels.objects.get(user_fbid=user_id).text_corpus
 
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
@@ -103,27 +126,17 @@ class MainHandler(object):
 
 '''Modular Testing'''
 
-mh = MainHandler()
-'''
+# mh = MainHandler()
+
 #==Tested User Init, added to views.py==
-user_id = 136341273775461
-name = "JanicChan"
-propic_link = "http://www.google.com"
-newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
-articles_list = []
-newUser.articles = json.dumps(articles_list)
-newUser.save()
+# user_id = 136341273775461
+# name = "JanicChan"
+# propic_link = "http://www.google.com"
+# newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
+# articles_list = {}
+# newUser.articles = json.dumps(articles_list)
+# newUser.save()
 
-#==Tested: To get user's article list,==
-jsonDec = json.decoder.JSONDecoder()
-myOrigList = jsonDec.decode(Users.objects.get(user_fbid=user_id).articles)
-
-#Tested: To update user's article list,
-user = Users.objects.get(user_fbid=user_id)
-myOrigList.extend(['hello']) #'append' is used for individual additions, 'extend' for lists
-newUser.articles = json.dumps(myOrigList)
-newUser.save()
-'''
 # #==Tested Pkl Model Creation==
 # user_id  = 1363412733775461
 # userSkipGramModel = PklModels()
@@ -158,5 +171,5 @@ print(myOrigList)
 
 '''
 #REMAINING TODO:
-#Test article fetch  & Write optimization (account for json keywords list w/ json methods)
+#Create new user, Test article fetch  & ratings post 
 '''
