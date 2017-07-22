@@ -51,27 +51,29 @@ class UsersView(APIView):
         articles_list = {}
         newUser.articles = json.dumps(articles_list)
         newUser.save()
-        print "'user saved to db'"
 
-        #creates zip file for default model to save
-        # mainHandler = MainHandler()
-        # userSkipGramModel = PklModels()
-        # userSkipGramModel.user_fbid = user_id
-        # userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
-        # userSkipGramModel.user_keywords = json.dumps([])
-        # empty_file = open("empty","w+")
-        # empty_file.close()
-        # with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
-        #         myzip.write("empty")
-        # os.remove("empty") #remove temp files
-        # userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
-        # os.remove("{0}_training_data.zip".format(user_id))
-        # userSkipGramModel.save()
-        print 'model saved'
+        creates zip file for default model to save
+        mainHandler = MainHandler()
+        userSkipGramModel = PklModels()
+        userSkipGramModel.user_fbid = user_id
+        userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
+        userSkipGramModel.user_keywords = json.dumps([])
+        empty_file = open("empty","w+")
+        empty_file.close()
+        with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+                myzip.write("empty")
+        os.remove("empty") #remove temp files
+        userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+        os.remove("{0}_training_data.zip".format(user_id))
+        userSkipGramModel.save()
         #=========== Get the articles==========
 
         retriever = ArticleRetriever(user_id, facebook)
         response = retriever.return_articles()
+
+        if (typeof(response) is str):
+            return JsonResponse({'message': response}, status=400)
+
         response.update({'name': name, 'propic': propic_link})
 
         return JsonResponse(response, status=201)
