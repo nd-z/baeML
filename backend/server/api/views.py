@@ -10,7 +10,7 @@ import sys
 import os
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
-import main_handler
+from main_handler import MainHandler
 
 class UsersView(APIView):
     serializer_class = UserSerializer
@@ -32,11 +32,11 @@ class UsersView(APIView):
 
     #/api/init
     def post(self, request):
-        #========= Save User to DB =========
 
+        #========= Save User to DB =========
         req = json.loads(request.body)
         access_token = req['token']
-        user_id = req['user_ID']
+        user_id = req['user_id']
         size = str(req['size'])
 
         facebook = FacebookAPI(access_token)
@@ -46,12 +46,58 @@ class UsersView(APIView):
         name = me['name']
 
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
-        articles_list = []
+        articles_list = {}
         newUser.articles = json.dumps(articles_list)
         newUser.save()
 
-        retriever = ArticleRetriever(user_id, facebook)
-        retriever.get_likes()
+        #creates zip file for default model to save
+        mainHandler = MainHandler()
+        userSkipGramModel = PklModels()
+        userSkipGramModel.user_fbid = user_id
+        userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
+        userSkipGramModel.user_keywords = json.dumps([])
+        empty_file = open("empty","w+")
+        empty_file.close()
+        with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+                myzip.write("empty")
+        os.remove("empty") #remove temp files
+        userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+        os.remove("{0}_training_data.zip".format(user_id))
+        userSkipGramModel.save()
 
-        response = {'name': name, 'propic': propic_link}
+        #=========== Get the articles==========
+
+        retriever = ArticleRetriever(user_id, facebook)
+        response = retriever.return_articles()
+        response.update({'name': name, 'propic': propic_link})
+
         return JsonResponse(response, status=201)
+
+class ArticlesView(APIView):
+    mainHandler = MainHandler()
+    #when asked for next article (one), frontend makes a post request,
+    def get(self, request):
+        '''
+        get keywords, get an article
+        check that the link isn't in the user dict, rating as 0
+        add content to text corpus, call  normalizeParagraphs(), then remove_nonalpha() from webcralwer
+        return the content
+        '''
+        user_id = request.GET.get('user_id')
+        response = mainHandler.get_article(user_id)        
+        return JsonResponse(response, status=200)
+
+#TODO TEST
+#when user rates an article,
+    def post(self, request):
+        req = json.loads(request.body)
+        user_id = req['user_id']
+        article_link = req['article_link']
+        user_rating = req['user_rating']
+        user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        jsonDec = json.decoder.JSONDecoder()
+        decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        decoded_user_article_dict[article_link] = user_rating
+        Users.objects.get(user_fbid=user_id).articles = decoded_user_article_dict
+        Users.objects.get(user_fbid=user_id).save()
+        return JsonResponse("Ok", status=200)
