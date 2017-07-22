@@ -8,6 +8,8 @@ from facebook_api_handler import FacebookAPI
 import json
 import sys
 import os
+import zipfile
+from django.core.files import File
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
 from main_handler import MainHandler

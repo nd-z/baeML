@@ -52,50 +52,6 @@ class MainHandler(object):
         user_model.user_keywords = json.dumps(myOrigList)
         user_model.save()
 
-#TODO TEST
-#when asked for next article (one), frontend makes a post request,
-    def get_article(self, request):
-        '''
-        get keywords, get an article
-        check that the link isn't in the user dict, rating as 0
-        add content to text corpus, call  normalizeParagraphs(), then remove_nonalpha() from webcralwer
-        return the content
-        '''
-        req = json.loads(request.body)
-        user_id = req['user_id']
-        keywords = self.getUserKeywords(user_id)
-        user_article_dict = Users.objects.get(user_fbid=user_id).articles
-        jsonDec = json.decoder.JSONDecoder()
-        decoded_user_article_dict = jsonDec.decode(user_article_dict)
-        links = self.getLinks(keywords)
-        for link in links:
-            if link not in decoded_user_article_dict:
-               article_link = link 
-               decoded_user_article_dict[article_link] = 0
-               Users.objects.get(user_fbid=user_id).articles = user_article_dict
-               Users.objects.get(user_fbid=user_id).save()
-               article_content = self.getLinkContent(article_link)
-               break
-            else: #return error/ refresh
-                return JsonResponse("Error fetching new article", status=404)
-        self.addTrainingData(article_content, user_id)
-        response = {'article_link': article_link, 'article': article_content}
-        return JsonResponse(response, status=200)
-#TODO TEST
-#when user rates an article,
-    def post(self, request):
-        req = json.loads(request.body)
-        user_id = req['user_id']
-        article_link = req['article_link']
-        user_rating = req['user_rating']
-        user_article_dict = Users.objects.get(user_fbid=user_id).articles
-        jsonDec = json.decoder.JSONDecoder()
-        decoded_user_article_dict = jsonDec.decode(user_article_dict)
-        decoded_user_article_dict[article_link] = user_rating
-        Users.objects.get(user_fbid=user_id).articles = decoded_user_article_dict
-        Users.objects.get(user_fbid=user_id).save()
-        return JsonResponse("Ok", status=200)
-
     def getDefaultModel(self):
         return self.default_model
 
@@ -123,6 +79,35 @@ class MainHandler(object):
     def getLinkContent(self, link):
         content = self.crawler.grabContent(link)
         return content #list of paragraphs
+
+    def get_article(self, user_id):
+        keywords = self.getUserKeywords(user_id)
+        user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        jsonDec = json.decoder.JSONDecoder()
+        decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        links = self.getLinks(keywords)
+        article_content = None
+        article_link = None
+        print links
+        print keywords
+        for link in links:
+            if link not in decoded_user_article_dict:
+               article_link = link 
+               decoded_user_article_dict[article_link] = 0
+               Users.objects.get(user_fbid=user_id).articles = user_article_dict
+               Users.objects.get(user_fbid=user_id).save()
+               article_content = self.getLinkContent(article_link)
+               break
+            else: #return error/ refresh
+                print 'broke here'
+                return "Error fetching new article"
+        if (article_content is not None and article_link is not None):
+            self.addTrainingData(article_content, user_id)
+        else:
+            print 'broke at end'
+            return "Error fetching new article"
+        response = {'article_link': article_link, 'article': article_content}
+        return response
 
 '''Modular Testing'''
 

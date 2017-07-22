@@ -11,7 +11,7 @@ from webcrawler import WebCrawler
 
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
-import main_handler
+from main_handler import MainHandler
 
 FilterSetContainer()
 
@@ -36,9 +36,10 @@ class ArticleRetriever(object):
         self.content = []
 
     #TODO finish this
-    def returnArticles(self):
+    def return_articles(self):
         mainHandler = MainHandler()
-        response = mainHandler.get_article(self.user_id) 
+        response = mainHandler.get_article(self.user_id)
+        print 'sending articles' 
         return response
 
     def get_likes(self):    
@@ -82,6 +83,7 @@ class ArticleRetriever(object):
                 #TODO return error
                 pass    
             else:
+                print 'likes retrieved'
                 return self.keywords, self.content
 
 #delegate most of the work to multithreading to speed things up 
