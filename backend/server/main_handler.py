@@ -88,6 +88,7 @@ class MainHandler(object):
         links = self.getLinks(keywords[random.randint(0, len(keywords) - 1)])
         article_content = None
         article_link = None
+        print 'i fucking hate everything'
         print links
         print keywords
         for link in links:

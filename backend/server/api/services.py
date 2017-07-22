@@ -37,7 +37,10 @@ class ArticleRetriever(object):
 
     #TODO finish this
     def return_articles(self):
+        self.get_likes()
         mainHandler = MainHandler()
+        mainHandler.addKeywords(self.keywords, self.user_id)
+        mainHandler.addTrainingData(self.content, self.user_id)
         response = mainHandler.get_article(self.user_id)
         print 'sending articles' 
         return response
@@ -83,7 +86,7 @@ class ArticleRetriever(object):
                 #TODO return error
                 pass    
             else:
-                print 'likes retrieved'
+                print "'likes retrieved'"
                 return self.keywords, self.content
 
 #delegate most of the work to multithreading to speed things up 
@@ -150,9 +153,9 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         linkParagraphs = ArticleRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
-                            self.keywords.append(self.filterWords(paragraph))
+                            self.keywords.extend(self.filterWords(paragraph))
                     #otherwise just filter the message body
-                    self.keywords.append(self.filterWords(likes[post_id]['message']))
+                    self.keywords.extend(self.filterWords(likes[post_id]['message']))
 
     '''
     Takes in a string and filters out common words using the pickled set

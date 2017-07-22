@@ -51,22 +51,23 @@ class UsersView(APIView):
         articles_list = {}
         newUser.articles = json.dumps(articles_list)
         newUser.save()
+        print "'user saved to db'"
 
         #creates zip file for default model to save
-        mainHandler = MainHandler()
-        userSkipGramModel = PklModels()
-        userSkipGramModel.user_fbid = user_id
-        userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
-        userSkipGramModel.user_keywords = json.dumps([])
-        empty_file = open("empty","w+")
-        empty_file.close()
-        with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
-                myzip.write("empty")
-        os.remove("empty") #remove temp files
-        userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
-        os.remove("{0}_training_data.zip".format(user_id))
-        userSkipGramModel.save()
-
+        # mainHandler = MainHandler()
+        # userSkipGramModel = PklModels()
+        # userSkipGramModel.user_fbid = user_id
+        # userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
+        # userSkipGramModel.user_keywords = json.dumps([])
+        # empty_file = open("empty","w+")
+        # empty_file.close()
+        # with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+        #         myzip.write("empty")
+        # os.remove("empty") #remove temp files
+        # userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+        # os.remove("{0}_training_data.zip".format(user_id))
+        # userSkipGramModel.save()
+        print 'model saved'
         #=========== Get the articles==========
 
         retriever = ArticleRetriever(user_id, facebook)

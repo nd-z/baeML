@@ -70,8 +70,9 @@ class WebCrawler(object):
             skiplink = False
 
             for word in keywords:
-                str_l = str(l)
-                if str_l.find(word) == -1:
+                uni_l = unicode(l)
+                uni_word = unicode(word)
+                if uni_l.find(uni_word) == -1:
                     #print('no match')
                     skiplink = True
                     break
