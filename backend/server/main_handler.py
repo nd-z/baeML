@@ -18,7 +18,7 @@ from random import randrange
 import time
 from django.core.files import File
 from django.http import HttpResponse, JsonResponse
-
+import random
 class MainHandler(object):
     def __init__(self):
         file = bz2.BZ2File('./modules/default_skipgram.pkl.bz','rb')
@@ -85,7 +85,7 @@ class MainHandler(object):
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
-        links = self.getLinks(keywords)
+        links = self.getLinks(keywords[random.randint(0, len(keywords) - 1)])
         article_content = None
         article_link = None
         print links
