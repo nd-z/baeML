@@ -70,7 +70,7 @@ class MainHandler(object):
             PklModels.objects.get(user_fbid=user_id).save()
 
     def getLinks(self, keywords):
-        query = 'http://www.bing.com/search?q='
+        query = 'http://www.bing.com/news/search?q='
         for kw in keywords:
             query += str(kw)+'+'
         links = self.crawler.crawl(query+'&go=Submit&qs=bs&form=QBLH', keywords)
