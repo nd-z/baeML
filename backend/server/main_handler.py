@@ -67,14 +67,14 @@ class MainHandler(object):
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
-        links = getLinks(keywords)
+        links = self.getLinks(keywords)
         for link in links:
             if link not in decoded_user_article_dict:
                article_link = link 
                decoded_user_article_dict[article_link] = 0
                Users.objects.get(user_fbid=user_id).articles = user_article_dict
                Users.objects.get(user_fbid=user_id).save()
-               article_content = getLinkContent(article_link)
+               article_content = self.getLinkContent(article_link)
                break
             else: #return error/ refresh
                 return JsonResponse("Error fetching new article", status=404)
