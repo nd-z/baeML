@@ -18,8 +18,8 @@ class WebCrawler(object):
 
     def grabContent(self, url):
         req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-
-        pagesource = urllib2.urlopen(req)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        pagesource = urllib2.urlopen(req, context=context)
         s = pagesource.read()
         soup = BeautifulSoup.BeautifulSoup(s)
         
@@ -39,7 +39,7 @@ class WebCrawler(object):
             #check that string is not empty
             if processedParagraph and not processedParagraph == 'None':
                 paragraphs.append(processedParagraph)
-        
+        pagesource.close()
         return paragraphs
     
     @staticmethod
