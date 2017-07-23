@@ -104,9 +104,13 @@ class MainHandler(object):
     def get_article(self, user_id):
         keywords = self.getUserKeywords(user_id)
         print(keywords, "get article keywords")
+        
+        #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        print(user_article_dict)
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        #decoded_user_article_dict = json.loads(user_article_dict)
         print('decoded_user_article_dict')
         print(decoded_user_article_dict)
         links = self.getLinks(keywords[random.randint(0, len(keywords) - 1)])
@@ -132,6 +136,7 @@ class MainHandler(object):
                 
         
         if (article_content is not None and article_link is not None):
+            print('adding training data')
             self.addTrainingData(article_content, user_id)
         else:
             print 'broke at end'

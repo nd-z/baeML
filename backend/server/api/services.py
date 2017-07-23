@@ -154,7 +154,7 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
                             self.keywords.extend(ThreadRunner.filterWords(paragraph))
-                        title = Webcrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
+                        title = WebCrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
                         self.keywords.extend(ThreadRunner.filterWords(title))
 
     '''

@@ -17,6 +17,7 @@ from main_handler import MainHandler
 from webcrawler import WebCrawler
 class UsersView(APIView):
     serializer_class = UserSerializer
+    mainHandler = MainHandler()
 
     #/api/login
     def get(self, request):
@@ -26,20 +27,19 @@ class UsersView(APIView):
         user_fbid = request.GET.get('user_ID')
         try:
             #print(user_fbid)
-            entry = Users.objects.get(user_fbid=user_fbid)
-            #print('didnt break at entry=...')
+            print(user_fbid)
+            print(type(user_fbid))
             #print(type(user_fbid))
-            #print(entry)
-
             #=========== Get the article ==========
-            mh = MainHandler()
-
             #response is a dictionary!!
-            response = mh.get_article(user_fbid)
+            response = self.mainHandler.get_article(user_fbid)
+            print('didnt break getting a response; here is the response')
+            print(response)
 
             if len(response['article_link']) == 0:
                 return JsonResponse({'message': 'could not retrieve article'}, status=400)
 
+            entry = Users.objects.get(user_fbid=user_fbid)
             response.update({'name': entry.name, 'propic': entry.propic_link})
 
             return JsonResponse(response, status=200)
@@ -68,10 +68,9 @@ class UsersView(APIView):
         newUser.save()
 
         #creates zip file for default model to save
-        mainHandler = MainHandler()
         userSkipGramModel = PklModels()
         userSkipGramModel.user_fbid = user_id
-        userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
+        userSkipGramModel.pkl_model = self.mainHandler.getDefaultModel()
         userSkipGramModel.user_keywords = json.dumps(['government'])
         empty_file = open("empty","w+")
         empty_file.close()
@@ -104,7 +103,7 @@ class ArticlesView(APIView):
         return the content
         '''
         user_id = request.GET.get('user_id')
-        response = mainHandler.get_article(user_id)        
+        response = self.mainHandler.get_article(user_id)        
         return JsonResponse(response, status=200)
 
 #TODO TEST
@@ -118,8 +117,10 @@ class ArticlesView(APIView):
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
         decoded_user_article_dict[article_link] = user_rating
-        Users.objects.get(user_fbid=user_id).articles = decoded_user_article_dict
-        Users.objects.get(user_fbid=user_id).save()
+        user = Users.objects.get(user_fbid=user_id)
+        user.articles = json.dumps(decoded_user_article_dict)
+        user.save()
+
         article_title = WebCrawler.grabTitle(article_link)
         new_keywords_list = ThreadRunner.filterWords(article_title) #process keywords in title
         self.mainHandler.addKeywords(new_keywords_list, user_id)
