@@ -39,14 +39,10 @@ class MainHandler(object):
             training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number))
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
         skipgram_model = self.getUserModel(user_id)
-        self.trainUserModel(skipgram_model, training_data_path, user_id) 
+        self.trainUserModel(skipgram_model, training_data_path, user_id)        
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
-
-        #TODO run synonym extraction using the custom user model
-        #and add the synonyms as keywords
-        
         user_model = PklModels.objects.get(user_fbid=user_id)
         orig_keyword_list = user_model.user_keywords
         jsonDec = json.decoder.JSONDecoder()
@@ -73,6 +69,23 @@ class MainHandler(object):
             final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
             PklModels.objects.get(user_fbid=user_id).pkl_model = model
             PklModels.objects.get(user_fbid=user_id).save()
+
+            #update keywords list with clustered synonyms
+            user_model = PklModels.objects.get(user_fbid=user_id)
+            orig_keyword_list = user_model.user_keywords
+            jsonDec = json.decoder.JSONDecoder()
+            myOrigList = jsonDec.decode(orig_keyword_list)
+            
+            #run synonym extraction using the custom user model
+            #and add the synonyms as keywords
+            generated_keywords = self.generateNewKeywords(model, myOrigList)
+
+            #add the generated keywords to the user keyword list and update model
+            myOrigList.extend(generated_keywords)
+
+            user_model.user_keywords = json.dumps(myOrigList)
+            user_model.save()
+
 
     def getLinks(self, keywords):
         query = 'http://www.bing.com/news/search?q='
@@ -116,6 +129,32 @@ class MainHandler(object):
             return "Error fetching new article"
         response = {'article_link': article_link, 'article': article_content}
         return response
+
+    def generateNewKeywords(model, known_keywords):
+
+        #the generated keyword list
+        new_keyword_list = []
+
+        reverse_dictionary = model.reverse_dictionary
+        dictionary = model.dictionary
+        final_embeddings = model.final_embeddings
+        low_dim_embs = model.low_dim_embs
+        clustered_synonyms = model.clustered_synonyms
+
+        for kw in known_keywords:
+            new_clustered_synonyms, new_lowdim_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(low_dim_embs, clustered_synonyms, kw, dictionary, reverse_dictionary)
+
+            while len(new_reverse_dictionary) > 10:
+                new_clustered_synonyms, new_lowdim_embeddings, new_dictionary, new_reverse_dictionary = model.re_cluster(new_lowdim_embeddings, new_clustered_synonyms, kw, new_dictionary, new_reverse_dictionary)
+
+            synonyms = model.extractSynonyms(new_clustered_synonyms, kw, new_dictionary, new_reverse_dictionary)
+
+            synonyms.remove('')
+            synonyms.remove(kw)
+
+            new_keyword_list.extend(synonyms)
+
+        return new_keyword_list
 
 '''Modular Testing'''
 

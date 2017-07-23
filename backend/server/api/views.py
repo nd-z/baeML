@@ -24,16 +24,13 @@ class UsersView(APIView):
 
         user_fbid = request.GET.get('user_ID')
         try:
-            print(user_fbid)
+            #print(user_fbid)
             entry = Users.objects.get(user_fbid=user_fbid)
-            print('didnt break at entry=...')
-            print(type(user_fbid))
-            print(entry)
+            #print('didnt break at entry=...')
+            #print(type(user_fbid))
+            #print(entry)
 
             #=========== Get the article ==========
-
-            #retriever = ArticleRetriever(user_fbid, facebook)
-            #response = retriever.return_articles()
             mh = MainHandler()
 
             #response is a dictionary!!
