@@ -52,6 +52,8 @@ class UsersView(APIView):
 class InitView(APIView):
     #checks if this user needs to be initialized
     #/api/status
+    mainHandler = MainHandler()
+
     def get(self, request):
         try: 
             entry = Users.objects.get(user_fbid=user_fbid)
@@ -115,7 +117,7 @@ class ArticlesView(APIView):
         '''
         user_id = request.GET.get('user_id')
         response = self.mainHandler.get_article(user_id)        
-        return JsonResponse(response, status=200)
+        return JsonResponse(response, status=200, safe=False)
 #TODO TEST
 #when user rates an article,
     def post(self, request):

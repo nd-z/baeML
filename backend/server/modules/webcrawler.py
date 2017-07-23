@@ -4,6 +4,7 @@ import urllib2
 from urlparse import urlparse
 import BeautifulSoup
 import unicodedata
+import ssl
 
 
 class WebCrawler(object):
