@@ -77,13 +77,13 @@ class MainHandler(object):
             myOrigList = jsonDec.decode(orig_keyword_list)
             
             #run synonym extraction using the custom user model
-            #and add the synonyms as keywords
+            # and replace keywords with the synonyms
+            #rationale: we don't want to keep outdated keywords, because the
+            # new keywords allow for greater accuracy/relevance to the user
             generated_keywords = self.generateNewKeywords(model, myOrigList)
 
             #add the generated keywords to the user keyword list and update model
-            myOrigList.extend(generated_keywords)
-
-            user_model.user_keywords = json.dumps(myOrigList)
+            user_model.user_keywords = json.dumps(generated_keywords)
             user_model.save()
 
 
