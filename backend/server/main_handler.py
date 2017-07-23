@@ -27,8 +27,7 @@ class MainHandler(object):
     def addTrainingData(self, training_data, user_id):
         file_number = int(time.time())
         f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
-        normalized_data = WebCrawler.normalizeParagraphs(training_data)
-        final_training_data = WebCrawler.replace_nonalpha(normalized_data)
+        final_training_data = WebCrawler.filter_content(training_data)
         for content in final_training_data:
             f.write(content)
             f.write(' ')
