@@ -97,7 +97,7 @@ function Sidebar(props) {
           <h1>{props.name}</h1>
         </div>
         <img id="profilepic" alt="Profile pic" src={props.imgurl} />
-        <Logout history={props.history}/>
+        <Logout loginStatus={props.loginStatus}/>
       </div>
     );
 }
@@ -111,20 +111,23 @@ class Logout extends React.Component {
   fbLogout(){
       window.FB.getLoginStatus((response) => { 
         if (response.status === 'connected') {
-            window.FB.logout((response) => {});
-            this.props.history.push('/', {loggedIn: false});
+            window.FB.logout((response) => {
+              //call loginStatus to update login status
+              this.props.loginStatus();
+            });
           }
         });
   }
 
   render() { 
-    return (<div id="fbLogout">
-    <button className="fbButton" onClick={(e) => this.fbLogout()}>
-   Logout</button></div>)
+    return (
+      <div id="fbLogout">
+        <button className="fbButton" onClick={(e) => this.fbLogout()}>
+        Logout
+        </button>
+      </div>)
   }
-
 }
-
 
 class Feed extends React.Component {
   constructor(props){
@@ -212,7 +215,7 @@ class Feed extends React.Component {
 
     return (
       <div className="row">
-        <Sidebar name={this.state.name} imgurl={this.state.profilepic} history={this.props.history}/>
+        <Sidebar name={this.state.name} imgurl={this.state.profilepic} loginStatus={this.props.loginStatus}/>
         <ArticleContainer articles={this.state.articles} />
       </div>
     );
