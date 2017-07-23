@@ -41,8 +41,9 @@ class WebCrawler(object):
                 paragraphs.append(processedParagraph)
         
         return paragraphs
-
-    def grabTitle(self, url):
+    
+    @staticmethod
+    def grabTitle(url):
         req = urllib2.Request(url, headers={'User-Agent': "Magic Browser"})
 
         pagesource = urllib2.urlopen(req)

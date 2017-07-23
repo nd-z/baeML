@@ -59,8 +59,8 @@ class LoginComponent extends React.Component {
 				})
 				var userID = response.authResponse.userID
 				var accessToken = response.authResponse.accessToken
-				//console.log(userID)
-				//console.log(accessToken)
+				console.log(userID)
+				console.log(accessToken)
 				/**log user into our server**/
 				axios.get('http://localhost:3333/api/login/', {
 					params: {
