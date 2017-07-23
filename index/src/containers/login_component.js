@@ -68,9 +68,9 @@ class LoginComponent extends React.Component {
 					console.log(error.response)
 					this.displayError(error);
 				});
-		//upon login, call loginstatus to reflect user logged in via FB
-		this.props.loginStatus();
-		}
+			//upon login, call loginstatus to reflect user logged in via FB
+			this.props.loginStatus();
+			}
 		}, {scope: 'public_profile,user_likes'});
 	}
 

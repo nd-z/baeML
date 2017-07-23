@@ -27,8 +27,7 @@ class MainHandler(object):
     def addTrainingData(self, training_data, user_id):
         file_number = int(time.time())
         f = open("{0}_training_data_{1}".format(user_id, file_number),"w+") #temp file
-        normalized_data = WebCrawler.normalizeParagraphs(training_data)
-        final_training_data = WebCrawler.replace_nonalpha(normalized_data)
+        final_training_data = WebCrawler.filter_content(training_data)
         for content in final_training_data:
             f.write(content)
             f.write(' ')
@@ -67,8 +66,9 @@ class MainHandler(object):
         print('train')
         if os.stat(text_corpus_filename).st_size > 5000000: #file size in bytes, 5mb
             final_embeddings, low_dim_embs, reverse_dictionary, clustered_synonyms = model.train(text_corpus_filename) #train after a threshold. add a field to the model to keep text corpus
-            PklModels.objects.get(user_fbid=user_id).pkl_model = model
-            PklModels.objects.get(user_fbid=user_id).save()
+            user_model = PklModels.objects.get(user_fbid=user_id)
+            user_model.pkl_model = model
+            user_model.save()
 
             #update keywords list with clustered synonyms
             user_model = PklModels.objects.get(user_fbid=user_id)
@@ -91,15 +91,18 @@ class MainHandler(object):
         query = 'http://www.bing.com/news/search?q='
         for kw in keywords:
             query += str(kw)+'+'
+            print(kw, "keyyyy")
         links = self.crawler.crawl(query+'&go=Submit&qs=bs&form=QBLH', keywords)
         return links
 
     def getLinkContent(self, link):
+        print("getting link contnet", link)
         content = self.crawler.grabContent(link)
         return content #list of paragraphs
 
     def get_article(self, user_id):
         keywords = self.getUserKeywords(user_id)
+        print(keywords, "get article keywords")
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
@@ -112,16 +115,21 @@ class MainHandler(object):
         print links
         print keywords
         for link in links:
+
             if link not in decoded_user_article_dict:
                 article_link = link 
                 decoded_user_article_dict[article_link] = 0
-                Users.objects.get(user_fbid=user_id).articles = json.dumps(decoded_user_article_dict)
-                Users.objects.get(user_fbid=user_id).save()
-                article_content = self.getLinkContent(article_link)
-                break
-            else: #return error/ refresh
-                print 'broke here'
-                return "Error fetching new article"
+                print('in main handler', decoded_user_article_dict)
+                user = Users.objects.get(user_fbid=user_id)
+                user.articles = json.dumps(decoded_user_article_dict)
+                try:
+                    article_content = self.getLinkContent(article_link)
+                    user.save()
+                    break
+                except:
+                    continue
+                
+        
         if (article_content is not None and article_link is not None):
             self.addTrainingData(article_content, user_id)
         else:

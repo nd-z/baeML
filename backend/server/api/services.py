@@ -82,9 +82,9 @@ class ArticleRetriever(object):
             print self.keywords
             print self.content
 
-            if not self.keywords:
-                #TODO return error
-                pass    
+            if not self.keywords: #user has not liked anything recently
+                self.keywords.append("government")
+                return self.keywords, self.content
             else:
                 print "'likes retrieved'"
                 return self.keywords, self.content
@@ -153,14 +153,15 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         linkParagraphs = ArticleRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
-                            self.keywords.extend(self.filterWords(paragraph))
-                        title = ArticleRetriever.webcrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
-                        self.keywords.extend(self.filterWords(title))
+                            self.keywords.extend(ThreadRunner.filterWords(paragraph))
+                        title = Webcrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
+                        self.keywords.extend(ThreadRunner.filterWords(title))
 
     '''
     Takes in a string and filters out common words using the pickled set
     '''
-    def filterWords(self, text):
+    @staticmethod
+    def filterWords(text):
         #get only alphanumeric characters
         alnum = re.compile('([^\s\w]|_)+')
         alnumText = alnum.sub('', text).lower()

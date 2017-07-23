@@ -1,5 +1,6 @@
 from .models import Users, PklModels
 from .services import ArticleRetriever
+from .services import ThreadRunner
 from .serializers import UserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -13,7 +14,7 @@ from django.core.files import File
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
 from main_handler import MainHandler
-
+from webcrawler import WebCrawler
 class UsersView(APIView):
     serializer_class = UserSerializer
 
@@ -129,4 +130,7 @@ class ArticlesView(APIView):
         decoded_user_article_dict[article_link] = user_rating
         Users.objects.get(user_fbid=user_id).articles = decoded_user_article_dict
         Users.objects.get(user_fbid=user_id).save()
-        return JsonResponse("Ok", status=200)
+        article_title = WebCrawler.grabTitle(article_link)
+        new_keywords_list = ThreadRunner.filterWords(article_title) #process keywords in title
+        self.mainHandler.addKeywords(new_keywords_list, user_id)
+        return JsonResponse({'':''}, status=200)
