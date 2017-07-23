@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Switch, Route, BrowserRouter } from 'react-router-dom'
 import Feed from './App';
 import LoginComponent from '../containers/login_component.js';
@@ -12,21 +12,73 @@ import LoginComponent from '../containers/login_component.js';
 //   saveState(store.getState());
 // })
 
-const Main = () => (
-  <main>
-    <Switch>
-      <Route exact path='/' component={LoginComponent}/>
-      <Route path='/feed' component={Feed}/>
-      <Route render={
-        function() {
-          return (<p> Not Found </p>)
-        }
-      }/>
-    </Switch>
-  </main>
-)
+class Main extends Component {
 
-const Root = ({ store }) => (
+  constructor(props){
+    super(props);
+    this.state = {
+      loggedIn: null,
+    }
+    this.getLoginState = this.getLoginState.bind(this);
+  }
+
+  componentDidMount() {
+    window['getLoginState'] = this.getLoginState;
+    window.fbAsyncInit = function(){
+       window.FB.init({
+        appId            : '1992517710981460',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        cookie           : true,
+        status         : true,
+        version          : 'v2.9'
+      });
+     this.getLoginState();
+    };
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  }
+
+
+  //calls FB API's getLoginStatus to determine user login status
+  getLoginState() { 
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        this.setState({
+            loggedIn: true
+        });
+      } else {
+        this.setState({
+            loggedIn: false
+        });
+      }
+    });  
+  }
+
+  //render props will handle redirection 
+  render(){
+    console.log(this.state.loggedIn)
+    return ( this.state.loggedIn !== null ?
+        (<Switch>  
+          <Route exact path='/' render={()=> (
+              this.state.loggedIn ? <Feed loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
+            )
+          }/>
+          <Route render={
+            function() {
+              return (<p> Not Found </p>)
+            }
+          }/>
+        </Switch>) : null);
+  }
+}
+
+const Root = () => (
   // <Provider store={store}>
     <BrowserRouter>
       <Main />
