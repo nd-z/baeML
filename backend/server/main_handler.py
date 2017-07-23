@@ -118,7 +118,7 @@ class MainHandler(object):
         target_kw = keywords[random.randint(0, len(keywords) - 1)]
         print(target_kw)
 
-        links = self.getLinks()
+        links = self.getLinks(target_kw)
         article_content = None
         article_link = None
         print 'i fucking hate everything'
