@@ -154,8 +154,8 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
                             self.keywords.extend(self.filterWords(paragraph))
-                    #otherwise just filter the message body
-                    self.keywords.extend(self.filterWords(likes[post_id]['message']))
+                        title = ArticleRetriever.webcrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
+                        self.keywords.extend(self.filterWords(title))
 
     '''
     Takes in a string and filters out common words using the pickled set
