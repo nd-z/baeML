@@ -21,8 +21,7 @@ from django.http import HttpResponse, JsonResponse
 import random
 class MainHandler(object):
     def __init__(self):
-        file = bz2.BZ2File('./modules/default_skipgram.pkl.bz','rb')
-        self.default_model = cPickle.load(file) #loads a random model for the user's first login
+        #first login
         self.crawler = WebCrawler()
 
     def addTrainingData(self, training_data, user_id):
@@ -44,6 +43,10 @@ class MainHandler(object):
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
+
+        #TODO run synonym extraction using the custom user model
+        #and add the synonyms as keywords
+        
         user_model = PklModels.objects.get(user_fbid=user_id)
         orig_keyword_list = user_model.user_keywords
         jsonDec = json.decoder.JSONDecoder()
@@ -53,6 +56,8 @@ class MainHandler(object):
         user_model.save()
 
     def getDefaultModel(self):
+        file = bz2.BZ2File('./modules/default_skipgram.pkl.bz','rb')
+        self.default_model = cPickle.load(file) #loads a random model for the user's 
         return self.default_model
 
     def getUserModel(self, user_id):
@@ -85,6 +90,8 @@ class MainHandler(object):
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        print('decoded_user_article_dict')
+        print(decoded_user_article_dict)
         links = self.getLinks(keywords[random.randint(0, len(keywords) - 1)])
         article_content = None
         article_link = None
@@ -93,12 +100,12 @@ class MainHandler(object):
         print keywords
         for link in links:
             if link not in decoded_user_article_dict:
-               article_link = link 
-               decoded_user_article_dict[article_link] = 0
-               Users.objects.get(user_fbid=user_id).articles = user_article_dict
-               Users.objects.get(user_fbid=user_id).save()
-               article_content = self.getLinkContent(article_link)
-               break
+                article_link = link 
+                decoded_user_article_dict[article_link] = 0
+                Users.objects.get(user_fbid=user_id).articles = json.dumps(decoded_user_article_dict)
+                Users.objects.get(user_fbid=user_id).save()
+                article_content = self.getLinkContent(article_link)
+                break
             else: #return error/ refresh
                 print 'broke here'
                 return "Error fetching new article"

@@ -22,14 +22,31 @@ class UsersView(APIView):
 
         #commented out to test initializing user
 
-        # user_fbid = request.GET.get('user_ID')
-        # try:
-        #   print(user_fbid)
-        #   entry = Users.objects.get(user_fbid=user_fbid)
-        #   response = {'name': z.name, 'propic': entry.propic_link}
-        #   return JsonResponse(response, status=200)
-        # except:
-        #   print("ahhh")
+        user_fbid = request.GET.get('user_ID')
+        try:
+            print(user_fbid)
+            entry = Users.objects.get(user_fbid=user_fbid)
+            print('didnt break at entry=...')
+            print(type(user_fbid))
+            print(entry)
+
+            #=========== Get the article ==========
+
+            #retriever = ArticleRetriever(user_fbid, facebook)
+            #response = retriever.return_articles()
+            mh = MainHandler()
+
+            #response is a dictionary!!
+            response = mh.get_article(user_fbid)
+
+            if len(response['article_link']) == 0:
+                return JsonResponse({'message': 'could not retrieve article'}, status=400)
+
+            response.update({'name': entry.name, 'propic': entry.propic_link})
+
+            return JsonResponse(response, status=200)
+        except:
+            print("ahhh")
         return HttpResponse(status=204)
 
     #/api/init
@@ -57,7 +74,7 @@ class UsersView(APIView):
         userSkipGramModel = PklModels()
         userSkipGramModel.user_fbid = user_id
         userSkipGramModel.pkl_model = mainHandler.getDefaultModel()
-        userSkipGramModel.user_keywords = json.dumps([])
+        userSkipGramModel.user_keywords = json.dumps(['government'])
         empty_file = open("empty","w+")
         empty_file.close()
         with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
@@ -71,7 +88,7 @@ class UsersView(APIView):
         retriever = ArticleRetriever(user_id, facebook)
         response = retriever.return_articles()
 
-        if (typeof(response) is str):
+        if (type(response) is str):
             return JsonResponse({'message': response}, status=400)
 
         response.update({'name': name, 'propic': propic_link})
