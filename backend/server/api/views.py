@@ -52,7 +52,7 @@ class UsersView(APIView):
         newUser.articles = json.dumps(articles_list)
         newUser.save()
 
-        creates zip file for default model to save
+        #creates zip file for default model to save
         mainHandler = MainHandler()
         userSkipGramModel = PklModels()
         userSkipGramModel.user_fbid = user_id
