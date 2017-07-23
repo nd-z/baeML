@@ -97,8 +97,6 @@ class WebCrawler(object):
 
         for unicodeStr in unicodeStrings:
             tempStr = unicodedata.normalize('NFKD', unicodeStr).encode('ascii', 'ignore') #normalize to ascii
-            tempStr = re.sub('\s+', ' ', tempStr) #clear all internal whitespace
-            tempStr = tempStr.strip() #clear all trailing whitespace
             normalized.append(tempStr)
 
         return normalized
@@ -118,6 +116,25 @@ class WebCrawler(object):
 
         return alpha_par
 
+    #method for doing full conversion and filtering of crawled content
+    @staticmethod
+    def filter_content(unfiltered_content):
+        #run normalization
+        normalized = WebCrawler.normalizeParagraphs(unfiltered_content)
+
+        #filter out any string that does not contain at least 2 sentences with +5 words
+        filter = re.compile(r"(((\b[a-zA-Z]+\b)[^a-zA-Z.?!]+){4,}(\b[a-zA-Z]+\b)[.?!])+")
+
+        filtered = []
+
+        for paragraph in normalized:
+            if(filter.match(paragraph)):
+                filtered.append(paragraph)
+
+        #strip nonalpha characters
+        filtered = WebCrawler.replace_nonalpha(filtered)
+
+        return filtered
 
 '''
 crawler = WebCrawler()
@@ -126,6 +143,6 @@ links = crawler.crawl('http://www.bing.com/search?q=global+warming&go=Submit&qs=
 #print links
 paragraphs = crawler.grabContent(links[3])
 
-print WebCrawler.normalizeParagraphs(paragraphs)
+print WebCrawler.filter_content(paragraphs)
 print crawler.grabTitle(links[3])
 '''
