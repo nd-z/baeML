@@ -32,8 +32,6 @@ class LoginComponent extends React.Component {
 		}
 		this.login = this.login.bind(this);
 		this.displayError = this.displayError.bind(this);
-		// this.getLoginState = this.getLoginState.bind(this);
-		// this.statusChangeCallback = this.statusChangeCallback.bind(this);
 	}
 
 	//handles logging into FB 
@@ -47,47 +45,41 @@ class LoginComponent extends React.Component {
 				})
 				var userID = response.authResponse.userID
 				var accessToken = response.authResponse.accessToken
-				// //console.log(userID)
-				// //console.log(accessToken)
-				// /**log user into our server**/
-				// axios.get('http://localhost:3333/api/login/', {
-				// 	params: {
-				// 		user_ID: userID,
-				// 	}
-				// })
-				// .then((response) => { 
-				// 	if (response.status === 200) { //returning user
-		  //       		console.log('contacted server');
-		  //       		this.props.history.push('/feed', response.data); 
-		  //       	} else if (response.status === 204) {
-		  //       		console.log('new user');
-		  //       		axios.post('http://localhost:3333/api/init/', {
-				// 			user_ID: userID,
-				// 			token: accessToken,
-				// 			size: Math.round(window.screen.width*.37)
-				// 		})
-				// 		.then((response) => {
-				// 			console.log("hi")
-				// 			this.props.history.push('/feed', response.data);
-				// 		})
-		  //       	}
-		  //   	})
-				// .catch((error) => {
-				// 	this.displayError();
-				// });
-			//upon login, call loginstatus to reflect user logged in via FB
-			this.props.loginStatus();
+
+				axios.get('/api/status/', {
+					params: {
+						user_ID: userID,
+					}
+				})
+				.then((response) => { 
+					if (response.status === 204) {
+		        		console.log('new user');
+		        		axios.post('/api/init/', {
+							user_ID: userID,
+							token: accessToken,
+							size: Math.round(window.screen.width*.37)
+						})
+						.then((response) => {
+							console.log("hi")	
+						})
+	        		}
+		    	})
+				.catch((error) => {
+					console.log(error.response)
+					this.displayError(error);
+				});
+		//upon login, call loginstatus to reflect user logged in via FB
+		this.props.loginStatus();
 		}
 		}, {scope: 'public_profile,user_likes'});
 	}
 
-	displayError(){
+	displayError(message){
 		this.setState({
 			isDisabled: false,
-			textDisplay: "An error occurred in retrieving your feed, please try again later."
+			textDisplay: message
 		})
 	}
-
 
 	//renders the landing page
 	render () {
