@@ -89,6 +89,7 @@ class MainHandler(object):
 
     def getLinks(self, keywords):
         query = 'http://www.bing.com/news/search?q='
+        print('keywords for links: '+keywords)
         for kw in keywords:
             query += str(kw)+'+'
             print(kw, "keyyyy")
@@ -103,12 +104,21 @@ class MainHandler(object):
     def get_article(self, user_id):
         keywords = self.getUserKeywords(user_id)
         print(keywords, "get article keywords")
+        
+        #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
+        #print(user_article_dict)
         jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = jsonDec.decode(user_article_dict)
-        print('decoded_user_article_dict')
-        print(decoded_user_article_dict)
-        links = self.getLinks(keywords[random.randint(0, len(keywords) - 1)])
+        #decoded_user_article_dict = json.loads(user_article_dict)
+        #print('decoded_user_article_dict')
+        #print(decoded_user_article_dict)
+
+        #breaks when keyword is a letter or some nonsensical thing
+        target_kw = keywords[random.randint(0, len(keywords) - 1)]
+        print(target_kw)
+
+        links = self.getLinks(target_kw)
         article_content = None
         article_link = None
         print 'i fucking hate everything'
@@ -131,9 +141,12 @@ class MainHandler(object):
                 
         
         if (article_content is not None and article_link is not None):
+            print('adding training data')
             self.addTrainingData(article_content, user_id)
         else:
             print 'broke at end'
+            print(article_link)
+            print(article_content)
             return "Error fetching new article"
         response = {'article_link': article_link, 'article': article_content}
         return response
