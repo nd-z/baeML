@@ -15,7 +15,6 @@ from main_handler import MainHandler
 
 FilterSetContainer()
 
-
 class ArticleRetriever(object):
     webcrawler = WebCrawler()
 
@@ -151,7 +150,22 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
                         title = WebCrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
-                        self.keywords.extend(ThreadRunner.filterWords(title))
+                        self.keywords.extend(ThreadRunner.filterKeywords(title))
+
+    '''
+    Takes in a string and filters out common words using the pickled set
+    '''
+    def filterKeywords(text):
+        #get only alphanumeric characters
+        alnum = re.compile('([^\s\w]|_)+')
+        alnumText = alnum.sub('', text).lower()
+        print alnumText
+        #filter
+        words = alnumText.split(' ')
+        for word in words:
+            if word in FilterSetContainer.filtered_set or len(word) <= 4:
+                words.remove(word)
+        return words 
 
     '''
     Takes in a string and filters out common words using the pickled set
