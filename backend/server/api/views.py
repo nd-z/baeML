@@ -15,8 +15,8 @@ path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
 from main_handler import MainHandler
 from webcrawler import WebCrawler
+
 class UsersView(APIView):
-    serializer_class = UserSerializer
 
     #/api/login
     def get(self, request):
@@ -44,16 +44,16 @@ class UsersView(APIView):
             return JsonResponse(response, status=200)
         except:
             print("ahhh")
-        return HttpResponse(status=204)
-
-    
-
+        return HttpResponse(status=404)
 
 class InitView(APIView):
+
+    serializer_class = UserSerializer
     #checks if this user needs to be initialized
     #/api/status
     def get(self, request):
         try: 
+            user_fbid = request.GET.get('user_ID')
             entry = Users.objects.get(user_fbid=user_fbid)
             return HttpResponse(status=200)
         except:
@@ -72,7 +72,6 @@ class InitView(APIView):
         propic_link = facebook.get(link="/me/picture", params={"redirect": False, "width": size, "height": size})['data']['url']
         me = facebook.get(link="/me")
         name = me['name']
-
         newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
         articles_list = {}
         newUser.articles = json.dumps(articles_list)
@@ -102,6 +101,8 @@ class InitView(APIView):
 
         response.update({'name': name, 'propic': propic_link})
 
+        #make sure user is not saved until the call is successful
+        
         return JsonResponse(response, status=201)
 
 class ArticlesView(APIView):

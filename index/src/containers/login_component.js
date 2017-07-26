@@ -52,24 +52,30 @@ class LoginComponent extends React.Component {
 					}
 				})
 				.then((response) => { 
-					if (response.status === 204) {
+					if (response.status === 200){
+						this.props.loginStatus();
+					} else if (response.status === 204) {
 		        		console.log('new user');
 		        		axios.post('/api/init/', {
-							user_ID: userID,
+							user_id: userID,
 							token: accessToken,
 							size: Math.round(window.screen.width*.37)
 						})
 						.then((response) => {
-							console.log("hi")	
+							console.log("hi")
+							this.props.loginStatus();	
 						})
 	        		}
 		    	})
 				.catch((error) => {
 					console.log(error.response)
-					this.displayError(error);
+					var message =  "An error occurred in retrieving your feed, please try again later.";
+					if (typeof(error.response) !== undefined){
+						message = error.response.data.message;
+					}
+					this.displayError(message);
 				});
 			//upon login, call loginstatus to reflect user logged in via FB
-			this.props.loginStatus();
 			}
 		}, {scope: 'public_profile,user_likes'});
 	}

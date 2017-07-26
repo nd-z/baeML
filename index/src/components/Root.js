@@ -18,7 +18,10 @@ class Main extends Component {
     super(props);
     this.state = {
       loggedIn: null,
+      userID: null
     }
+
+    this.getUserID = this.getUserID.bind(this);
     this.getLoginState = this.getLoginState.bind(this);
   }
 
@@ -50,7 +53,8 @@ class Main extends Component {
     window.FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
         this.setState({
-            loggedIn: true
+            loggedIn: true,
+            userID: response.authResponse.userID
         });
       } else {
         this.setState({
@@ -60,13 +64,17 @@ class Main extends Component {
     });  
   }
 
+  getUserID() {
+    return this.state.userID;
+  }
+
   //render props will handle redirection 
   render(){
     console.log(this.state.loggedIn)
     return ( this.state.loggedIn !== null ?
         (<Switch>  
           <Route exact path='/' render={()=> (
-              this.state.loggedIn ? <Feed loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
+              this.state.loggedIn ? <Feed userID={this.getUserID} loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
             )
           }/>
           <Route render={

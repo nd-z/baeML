@@ -1,4 +1,5 @@
 import re
+import ssl
 import httplib
 import urllib2
 from urlparse import urlparse

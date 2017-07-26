@@ -145,65 +145,22 @@ class Feed extends React.Component {
   }
 
   componentDidMount() {
-    window['getProfileInfo'] = this.getProfileInfo
-    //if undefined, then reload SDK and call API from there
-    if (window.FB === undefined){
-
-      window.fbAsyncInit = () => {
-        window.FB.init({
-          appId      : '1992517710981460',
-          cookie     : true,  // enable cookies to allow the server to access 
-                          // the session
-          xfbml      : true,  // parse social plugins on this page
-          version    : 'v2.9' // use graph api version 2.9
-        });
-        this.getProfileInfo();
-        (function(d, s, id) {
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) return;
-          js = d.createElement(s); js.id = id;
-          js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1992517710981460";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+    axios.get('/api/login', { 
+      params: {
+        user_ID: this.props.userID,
       }
-    } 
-    else {
-      this.getProfileInfo();
-    }
-
-    window.addEventListener('popstate', function () {
-    window.location.reload();});
-    window.addEventListener('error', function() {alert('Error loading page. Please refresh.')});
-
-    }
-    
-  //retrieves the profile information
-  getProfileInfo() {
-    //scale profile pic to screen resolution
-    var size = Math.round(window.screen.width*.37);
-    window.FB.getLoginStatus((response) => {
-      if (response.status === 'connected') { // the user is logged in and has authenticated the app
-        //update name in feed
-        window.FB.api('/me', (response) => { 
-          this.setState({
-            name: response.name
-          });
-        });
-
-        //update picture on feed
-        window.FB.api('/me/picture?height=' + size + '&width=' + size, (response) => {
-          this.setState({ 
-            profilepic: response.data.url,
-            loading: false
-          });
-        });
-      } else {
-        alert('Error logging in. Please refresh the page and try again.');
-        window.location.reload();
-      }
-    });
+      }).then((response)=>{
+        console.log(response);
+        this.setState({
+          loading: false
+        })
+      }).catch((error)=>{
+        console.log(error)
+        this.setState({
+          loading: false
+        })
+      });
   }
-
 
   render() {
     if (this.state.loading){
