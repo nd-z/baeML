@@ -53,15 +53,18 @@ class InitView(APIView):
     def get(self, request):
         try: 
             user_fbid = request.GET.get('user_ID')
-            entry = Users.objects.get(user_fbid=user_fbid).values()
-            print(entry)
-            return HttpResponse(status=200)
+            entry = Users.objects.get(user_fbid=user_fbid)
+            isComplete = entry.init_complete
+            if isComplete:
+                return HttpResponse(status=200)
+            return HttpResponse(status=204)
         except:
             return HttpResponse(status=204)
+
     #/api/init
     def post(self, request):
 
-        #========= Save User to DB =========
+        #Save user to the DB
         req = json.loads(request.body)
         access_token = req['token']
         user_id = req['user_id']
@@ -77,32 +80,30 @@ class InitView(APIView):
         newUser.articles = json.dumps(articles_list)
         newUser.save()
 
-        #creates zip file for default model to save
-        # userSkipGramModel = PklModels()
-        # userSkipGramModel.user_fbid = user_id
-        # userSkipGramModel.pkl_model = self.mainHandler.getDefaultModel()
-        # userSkipGramModel.user_keywords = json.dumps(['government'])
-        # empty_file = open("empty","w+")
-        # empty_file.close()
-        # with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
-        #         myzip.write("empty")
-        # os.remove("empty") #remove temp files
-        # userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
-        # os.remove("{0}_training_data.zip".format(user_id))
-        # userSkipGramModel.save()
-        #=========== Get the articles==========
+        #Train the model, creates zip file for default model to save
+        userSkipGramModel = PklModels()
+        userSkipGramModel.user_fbid = user_id
+        userSkipGramModel.pkl_model = self.mainHandler.getDefaultModel()
+        userSkipGramModel.user_keywords = json.dumps(['government'])
+        empty_file = open("empty","w+")
+        empty_file.close()
+        with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
+                myzip.write("empty")
+        os.remove("empty") #remove temp files
+        userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
+        os.remove("{0}_training_data.zip".format(user_id))
+        userSkipGramModel.save()
 
+        #Initialize user's likes and content
         retriever = ArticleRetriever(user_id, facebook)
-        response = retriever.return_articles()
+        retriever.initialize()
 
-        if (type(response) is str):
-            return JsonResponse({'message': response}, status=400)
-
-        response.update({'name': name, 'propic': propic_link})
-
-        #make sure user is not saved until the call is successful
+        #init has completed, reflect this in the DB
+        user = Users.objects.get(user_fbid=user_id)
+        user.init_complete = True
+        user.save()
         
-        return JsonResponse(response, status=201)
+        return HttpResponse(status=204)
 
 class ArticlesView(APIView):
     mainHandler = MainHandler()

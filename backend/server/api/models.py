@@ -8,6 +8,7 @@ class Users(models.Model):
     name = models.CharField(max_length=45)
     propic_link = models.URLField(max_length=400)
     articles = models.TextField(null=True) #list of article links
+    init_complete = models.BooleanField(default=False)
 
 class PklModels(models.Model):
     user_fbid = models.BigIntegerField(primary_key=True)

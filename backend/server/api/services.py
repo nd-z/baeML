@@ -35,15 +35,12 @@ class ArticleRetriever(object):
         self.keywords = []
         self.content = []
 
-    #TODO finish this
-    def return_articles(self):
+    #init keywords and content
+    def initialize(self):
         self.get_likes()
         mainHandler = MainHandler()
         mainHandler.addKeywords(self.keywords, self.user_id)
         mainHandler.addTrainingData(self.content, self.user_id)
-        response = mainHandler.get_article(self.user_id)
-        print 'sending articles' 
-        return response
 
     def get_likes(self):    
         #========= Get Likes =========
