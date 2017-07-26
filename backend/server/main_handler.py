@@ -14,6 +14,7 @@ import cPickle
 import bz2
 import zipfile
 import json
+import ast
 from random import randrange
 import time
 from django.core.files import File
@@ -56,10 +57,10 @@ class MainHandler(object):
         return self.default_model
 
     def getUserModel(self, user_id):
-        return PklModels.objects.get(user_fbid=user_id).pkl_model 
+        return PklModels.objects.get(user_fbid=user_id).pkl_model
 
     def getUserKeywords(self, user_id):
-        return PklModels.objects.get(user_fbid=user_id).user_keywords
+        return str(PklModels.objects.get(user_fbid=user_id).user_keywords)
 
     #NOTE: text_corpus should be a giant combination of all the content from processed links. The filename refers to a zip
     def trainUserModel(self, model, text_corpus_filename, user_id):
@@ -88,11 +89,18 @@ class MainHandler(object):
 
 
     def getLinks(self, keywords):
+        print(keywords)
         query = 'http://www.bing.com/news/search?q='
         print('keywords for links: '+keywords)
-        for kw in keywords:
-            query += str(kw)+'+'
-            print(kw, "keyyyy")
+        
+        #if keywords is a string, it will take it char by char
+        if (type(keywords) is list):
+            for kw in keywords:
+                query += str(kw)+'+'
+                print(kw, "keyyyy")
+        else:
+            query += keywords
+        print query
         links = self.crawler.crawl(query+'&go=Submit&qs=bs&form=QBLH', keywords)
         return links
 
@@ -103,7 +111,10 @@ class MainHandler(object):
 
     def get_article(self, user_id):
         keywords = self.getUserKeywords(user_id)
-        print(keywords, "get article keywords")
+
+        #keywords from db is a skipgram obj, cvt to string then to list
+        keywords = ast.literal_eval(keywords)
+        
         
         #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
@@ -115,8 +126,7 @@ class MainHandler(object):
         #print(decoded_user_article_dict)
 
         #breaks when keyword is a letter or some nonsensical thing
-        target_kw = keywords[random.randint(0, len(keywords) - 1)]
-        print(target_kw)
+        target_kw = random.choice(keywords)
 
         links = self.getLinks(target_kw)
         article_content = None
