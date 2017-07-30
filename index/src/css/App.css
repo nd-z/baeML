@@ -2,17 +2,30 @@
 .article {
   display: block;
   border: solid;
-  border-radius:25px;
+  border-radius:15px;
   margin: 5%;
   padding-left:1%;
   padding-right:1%;
   position: relative; /**cannot be static**/
   
 }
-.btn {
+
+/**article**/
+.ratings-container {
+  display: block;
   border: none;
+  border-radius:15px;
+  margin: 5%;
+  padding-left:1%;
+  padding-right:1%;
+  position: relative; /**cannot be static**/
+  
+}
+
+.btn {
+  border: black;
   color: black;
-  background: none;
+  background: black;
 }
 
 /*.like{
@@ -28,12 +41,13 @@
   color:red;
 }*/
 
+/*
 .ratings-container{
   position: absolute;
   margin-right: 8%;
   margin-bottom: 6%;
   display: inline-block;
-}
+}*/
 
 .rating{
   border: none;

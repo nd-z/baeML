@@ -49,13 +49,13 @@ class Article extends React.Component {
       <div className="col-md-8">
         <div className="article">
           <h1> {this.props.title} </h1>
-          <p> {this.props.summary} </p>
+          <p> {this.props.content} </p>
           <p> read more about the article at this <a href={this.props.link}>LINK</a> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
-          
-          <div className='ratings-container' className='text-right'>
-            <p> Rate this article: </p> <span> <form>{
+        </div>
+        <div className='ratings-container'>
+            <p> Rate articles for better content! </p> <span> <form> {
             ratings.map((rating, index)=> {
-            return(
+            return (
 
                 <label key={index}>
                    <input  name="rating-scale" className="radio-btn" type="radio" key={index} onClick={(e) => this.setRating(rating)}/>
@@ -65,18 +65,18 @@ class Article extends React.Component {
               )
           })
           }</form></span></div>
-        </div>
       </div>
     );
   }
 }
 
+// TODO change from article-list to something else; that's where the weird dot comes from
 function ArticleContainer(props){
   return (
     <ul className='article-list'>{props.articles.map((article, index) => {
       return (
         <li key={index} className='article-item'>
-          <Article title={article.title} link={article.link} summary={article.summary}/>
+          <Article title={article.title} link={article.link} content={article.content}/>
         </li>
         )
     })}
@@ -139,7 +139,7 @@ class Feed extends React.Component {
       articles: [{
           "title": "example",
           "link": "http://www.cs.cornell.edu/courses/cs2112/2016fa/",
-          "summary": "dexter kozen!!!!"
+          "content": "article content goes here!"
         }]
     };
   }
