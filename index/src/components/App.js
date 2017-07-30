@@ -152,6 +152,8 @@ class Feed extends React.Component {
       }).then((response)=>{
         console.log(response);
         this.setState({
+          name: response.name,
+          profilepic: response.propic,
           loading: false
         })
       }).catch((error)=>{
