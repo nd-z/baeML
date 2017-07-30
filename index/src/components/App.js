@@ -147,13 +147,21 @@ class Feed extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props.userID())
     axios.get('/api/login', { 
       params: {
-        user_ID: this.props.userID,
+        user_ID: this.props.userID(),
       }
       }).then((response)=>{
         console.log(response);
         this.setState({
+          name: response.data.name,
+          profilepic: response.data.propic,
+          articles: [{
+            "title": "",
+            "link": response.data.article_link,
+            "content": response.data.article
+          }],
           loading: false
         })
       }).catch((error)=>{
