@@ -20,6 +20,7 @@ class Article extends React.Component {
     this.setRating = this.setRating.bind(this);
   }
 
+  // TODO add nextArticle() function and link to the button
 
   setRating(rating){
     this.setState({
@@ -48,7 +49,7 @@ class Article extends React.Component {
     return (
       <div className="col-md-8">
         <div className="article">
-          <h1> {this.props.title} </h1>
+          <h2> {this.props.title} </h2>
           <p> {this.props.content} </p>
           <p> read more about the article at this <a href={this.props.link}>LINK</a></p>
           <button className="button"><span>next</span></button>
