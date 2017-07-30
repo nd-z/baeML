@@ -50,10 +50,11 @@ class Article extends React.Component {
         <div className="article">
           <h1> {this.props.title} </h1>
           <p> {this.props.content} </p>
-          <p> read more about the article at this <a href={this.props.link}>LINK</a> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> </p>
+          <p> read more about the article at this <a href={this.props.link}>LINK</a></p>
+          <button className="button"><span>next</span></button>
         </div>
         <div className='ratings-container'>
-            <p> Rate articles for better content! </p> <span> <form> {
+            <p> rate article </p> <span> <form> {
             ratings.map((rating, index)=> {
             return (
 
