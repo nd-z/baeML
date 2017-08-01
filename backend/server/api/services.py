@@ -5,6 +5,7 @@ import threading
 import re
 import sys
 import os
+
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'modules')
 sys.path.append(path)
 from webcrawler import WebCrawler
@@ -147,6 +148,9 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
                     if 'link' in likes[post_id]:
                         #get link content and filter
                         linkParagraphs = ArticleRetriever.webcrawler.grabContent(likes[post_id]['link'].replace("\"", ''))      
+                        #if no content retrieved, ignore this like
+                        if len(linkParagraphs) == 0:
+                            continue
                         for paragraph in linkParagraphs:
                             self.content.append(paragraph)
                         title = WebCrawler.grabTitle(likes[post_id]['link'].replace("\"", ''))
@@ -155,6 +159,7 @@ class ThreadRunner(threading.Thread, ArticleRetriever):
     '''
     Takes in a string and filters out common words using the pickled set
     '''
+    @staticmethod
     def filterKeywords(text):
         #get only alphanumeric characters
         alnum = re.compile('([^\s\w]|_)+')

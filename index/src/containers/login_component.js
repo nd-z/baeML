@@ -52,19 +52,37 @@ class LoginComponent extends React.Component {
 					}
 				})
 				.then((response) => { 
+					//if user has been init before, log them in
 					if (response.status === 200){
 						this.props.loginStatus();
 					} else if (response.status === 204) {
+						//otherwise, new user, init them
 		        		console.log('new user');
 		        		axios.post('/api/init/', {
 							user_id: userID,
 							token: accessToken,
 							size: Math.round(window.screen.width*.37)
-						})
-						.then((response) => {
-							console.log("hi")
-							this.props.loginStatus();	
-						})
+						}).then((response)=>console.log(response.status))
+
+						//run call every 45s to check if it is complete yet
+						var interval = 45 * 1000
+						var interval_id = setInterval(()=> {
+							console.log("checking...")
+							axios.get('/api/status/', {
+								params: {
+									user_ID: userID,
+								}
+							}).then((response) => {
+								//on complete, redirect to login
+								if (response.status === 200){
+									console.log("yay!")
+									this.props.loginStatus();
+									clearInterval(interval_id)
+								} else {
+									console.log("nope")
+								}
+							})
+						}, interval)
 	        		}
 		    	})
 				.catch((error) => {
