@@ -10,6 +10,7 @@ import json
 import sys
 import os
 import zipfile
+import threading
 from django.core.files import File
 path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.append(path)
@@ -63,7 +64,11 @@ class InitView(APIView):
 
     #/api/init
     def post(self, request):
+        thread = InitView.InitThread(self.initialize, request)
+        thread.start()
+        return HttpResponse(status=204)
 
+    def initialize(self, request):
         #Save user to the DB
         req = json.loads(request.body)
         access_token = req['token']
@@ -102,8 +107,15 @@ class InitView(APIView):
         user = Users.objects.get(user_fbid=user_id)
         user.init_complete = True
         user.save()
-        
-        return HttpResponse(status=204)
+
+    class InitThread(threading.Thread):
+        def __init__(self, target, request):
+            threading.Thread.__init__(self)
+            self.target = target
+            self.request = request
+
+        def run(self):
+            self.target(self.request)
 
 class ArticlesView(APIView):
     mainHandler = MainHandler()
