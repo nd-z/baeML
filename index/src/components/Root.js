@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Switch, Route, BrowserRouter } from 'react-router-dom'
 import Feed from './App';
 import LoginComponent from '../containers/login_component.js';
+import axios from 'axios'
 
 // const persistedState = loadState();
 // const store = createStore(
@@ -50,12 +51,28 @@ class Main extends Component {
 
   //calls FB API's getLoginStatus to determine user login status
   getLoginState() { 
+    console.log("hi")
     window.FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
-        this.setState({
-            loggedIn: true,
-            userID: response.authResponse.userID
-        });
+        var user_id = response.authResponse.userID
+        axios.get('/api/status/', {
+          params: {
+            user_ID: user_id,
+          }
+        })
+        .then((response) => { 
+          //if user has been init before, log them in
+          if (response.status === 200){
+            this.setState({
+                loggedIn: true,
+                userID: user_id
+            });
+          } else {
+              this.setState({
+              loggedIn: false
+              });
+            }
+          });
       } else {
         this.setState({
             loggedIn: false
