@@ -55,7 +55,7 @@ class Article extends React.Component {
           <button className="button"><span>next</span></button>
         </div>
         <div className='ratings-container'>
-            <p> rate article </p> <span> <form> {
+            <p> Like/dislike what you read? Rate it for better accuracy next time! </p> <span> <form> {
             ratings.map((rating, index)=> {
             return (
 
