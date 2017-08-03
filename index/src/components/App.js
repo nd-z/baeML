@@ -7,30 +7,64 @@ import axios from 'axios';
 class Article extends React.Component {
 
   constructor(props){
-    //TODO setup
-    //TODO grab title?
   	//fetch article
     super(props);
     this.state = {
       loaded_article: false,
-      rating: 10,
-      article_id: 11111, //dummy var
-      user_id: 22222 //dummy var
+      // rating: 10,
+      // article_id: 11111, //dummy var
+      // user_id: 22222 //dummy var
+      article_link: 'jej', //dummy var
+      user_id: 100 //dummy var
     };
 
     // This binding is necessary to make `this` work in the callback
     this.setRating = this.setRating.bind(this);
   }
+  componentDidMount() {
+   this.setState({
+          user_id: this.props.user_ID,
+          loaded_article: true,
+          article_link: this.props.link,
+         
+        });
+  }
 
-  // TODO add nextArticle() function and link to the button
+  // TODO test
+  getNextArticle() {
+  	axios.get('/api/users/next_article', { 
+    	params: {
+			user_ID: this.props.userID
+		}
+    })
+    .then(function (response) {
+      if (response.status === 200) {
+        console.log('got next article in app.js'); 
+        this.setState({
+        	"title": response.data.article_title,
+            "link": response.data.article_link,
+            "content": response.data.article
+        });
+      }
+      else{
+        alert ('rip');
+      }
+
+    })
+    .catch(function (error) {
+      alert('error');
+    });    
+  }
 
   setRating(rating){
     this.setState({
       rating: rating
       });
 
-    axios.post('http://private-cb421-baeml.apiary-mock.com/article/{user_id}/{article_id}/rate', { //TODO update
-    	"rating": {rating}
+    axios.post('/api/users/rate_article', { //TODO test
+    	"user_id": this.state.user_id,
+    	"article_link": this.state.link,
+    	"user_rating": {rating}
     })
     .then(function (response) {
       if (response.status === 201) {
@@ -51,10 +85,10 @@ class Article extends React.Component {
     return (
       <div className="col-md-8">
         <div className="article">
-          <h2> {this.props.title} </h2>
-          <p> {this.props.content} </p>
-          <p> read more about the article at this <a href={this.props.link}>LINK</a></p>
-          <button className="button"><span>next</span></button>
+          <h2> {this.state.title} </h2>
+          <p> {this.state.content} </p>
+          <p> Read more about the article at this <a href={this.state.link}>LINK</a></p>
+          <button className="button" onclick="this.getNextArticle"><span>next</span></button>
         </div>
         <div className='ratings-container'>
             <p> rate article </p> <span> <form> {
@@ -79,7 +113,7 @@ function ArticleContainer(props){
     <div>{props.articles.map((article, index) => {
       return (
         <div key={index}>
-          <Article title={article.title} link={article.link} content={article.content}/>
+          <Article title={article.title} link={article.link} content={article.content} user_id={props.user_ID}/>
         </div>
         )
     })}
@@ -135,7 +169,7 @@ class Logout extends React.Component {
 class Feed extends React.Component {
   constructor(props){
     super(props);
-    this.state = { //TODO fix
+    this.state = { 
       loading: true,
       name: "",
       profilepic: "",
@@ -184,7 +218,7 @@ class Feed extends React.Component {
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} loginStatus={this.props.loginStatus}/>
-        <ArticleContainer articles={this.state.articles} />
+        <ArticleContainer articles={this.state.articles} user_ID={this.props.userID()}/>
       </div>
     );
   }
