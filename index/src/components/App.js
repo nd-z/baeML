@@ -7,6 +7,8 @@ import axios from 'axios';
 class Article extends React.Component {
 
   constructor(props){
+    //TODO setup
+    //TODO grab title?
   	//fetch article
     super(props);
     this.state = {
@@ -27,7 +29,7 @@ class Article extends React.Component {
       rating: rating
       });
 
-    axios.post('http://private-cb421-baeml.apiary-mock.com/article/{user_id}/{article_id}/rate', {
+    axios.post('http://private-cb421-baeml.apiary-mock.com/article/{user_id}/{article_id}/rate', { //TODO update
     	"rating": {rating}
     })
     .then(function (response) {
@@ -72,17 +74,16 @@ class Article extends React.Component {
   }
 }
 
-// TODO change from article-list to something else; that's where the weird dot comes from
 function ArticleContainer(props){
   return (
-    <ul className='article-list'>{props.articles.map((article, index) => {
+    <div>{props.articles.map((article, index) => {
       return (
-        <li key={index} className='article-item'>
+        <div key={index}>
           <Article title={article.title} link={article.link} content={article.content}/>
-        </li>
+        </div>
         )
     })}
-    </ul>
+    </div>
     )
 }
 
@@ -134,7 +135,7 @@ class Logout extends React.Component {
 class Feed extends React.Component {
   constructor(props){
     super(props);
-    this.state = {
+    this.state = { //TODO fix
       loading: true,
       name: "",
       profilepic: "",
@@ -158,7 +159,7 @@ class Feed extends React.Component {
           name: response.data.name,
           profilepic: response.data.propic,
           articles: [{
-            "title": "",
+            "title": response.data.article_title,
             "link": response.data.article_link,
             "content": response.data.article
           }],

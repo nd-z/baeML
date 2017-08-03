@@ -4,14 +4,7 @@ import Feed from './App';
 import LoginComponent from '../containers/login_component.js';
 import axios from 'axios'
 
-// const persistedState = loadState();
-// const store = createStore(
-//   feed, persistedState
-// );
 
-// store.subscribe(() => {
-//   saveState(store.getState());
-// })
 
 class Main extends Component {
 
