@@ -130,7 +130,7 @@ class ArticlesView(APIView):
         user_id = request.GET.get('user_id')
         response = self.mainHandler.get_article(user_id)        
         return JsonResponse(response, status=200, safe=False)
-#TODO TEST
+
 #when user rates an article,
     def post(self, request):
         req = json.loads(request.body)

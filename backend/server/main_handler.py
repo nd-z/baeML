@@ -24,6 +24,7 @@ class MainHandler(object):
     def __init__(self):
         #first login
         self.crawler = WebCrawler()
+        self.jsonDec = json.decoder.JSONDecoder()
 
     def addTrainingData(self, training_data, user_id):
         file_number = int(time.time())
@@ -39,14 +40,14 @@ class MainHandler(object):
             training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number))
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
         skipgram_model = self.getUserModel(user_id)
-        self.trainUserModel(skipgram_model, training_data_path, user_id)        
+        self.trainUserModel(skipgram_model, training_data_path, user_id)
+        
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
         user_model = PklModels.objects.get(user_fbid=user_id)
         orig_keyword_list = user_model.user_keywords
-        jsonDec = json.decoder.JSONDecoder()
-        myOrigList = jsonDec.decode(orig_keyword_list)
+        myOrigList = self.jsonDec.decode(orig_keyword_list)
         myOrigList.extend(keywords_list)
         user_model.user_keywords = json.dumps(myOrigList)
         user_model.save()
@@ -74,8 +75,7 @@ class MainHandler(object):
             #update keywords list with clustered synonyms
             user_model = PklModels.objects.get(user_fbid=user_id)
             orig_keyword_list = user_model.user_keywords
-            jsonDec = json.decoder.JSONDecoder()
-            myOrigList = jsonDec.decode(orig_keyword_list)
+            myOrigList = self.jsonDec.decode(orig_keyword_list)
             
             #run synonym extraction using the custom user model
             # and replace keywords with the synonyms
@@ -110,6 +110,21 @@ class MainHandler(object):
         return content #list of paragraphs
 
     def get_article(self, user_id):
+        # print('trying to optimize')    
+        # user = Users.objects.get(user_fbid=user_id) #optimization: return unread articles first
+        # all_user_articles = user.articles
+        # all_articles_dict = self.jsonDec.decode(all_user_articles)
+        # print('got all articles')
+        # for article in all_articles_dict:
+        #     print('in for loop')
+        #     print(article)
+        #     if all_articles_dict[article] == 0:
+        #         article_link = all_articles_dict[article]
+        #         article_content = self.getLinkContent(article_link)
+        #         article_title = WebCrawler.grabTitle(article_link)
+        #         response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
+        #         return response
+        # print('exited for loop..should be good')
         keywords = self.getUserKeywords(user_id)
 
         #keywords from db is a skipgram obj, cvt to string then to list
@@ -119,8 +134,7 @@ class MainHandler(object):
         #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
         #print(user_article_dict)
-        jsonDec = json.decoder.JSONDecoder()
-        decoded_user_article_dict = jsonDec.decode(user_article_dict)
+        decoded_user_article_dict = self.jsonDec.decode(user_article_dict)
         #decoded_user_article_dict = json.loads(user_article_dict)
         #print('decoded_user_article_dict')
         #print(decoded_user_article_dict)
@@ -158,7 +172,8 @@ class MainHandler(object):
             print(article_link)
             print(article_content)
             return "Error fetching new article"
-        response = {'article_link': article_link, 'article': article_content}
+        article_title = WebCrawler.grabTitle(article_link)
+        response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
         return response
 
     def generateNewKeywords(model, known_keywords):
