@@ -12,7 +12,7 @@ class Main extends Component {
     super(props);
     this.state = {
       loggedIn: null,
-      userID: null
+      user_id: null
     }
 
     this.getUserID = this.getUserID.bind(this);
@@ -50,7 +50,7 @@ class Main extends Component {
         var user_id = response.authResponse.userID
         axios.get('/api/status/', {
           params: {
-            user_ID: user_id,
+            user_id: user_id,
           }
         })
         .then((response) => { 
@@ -58,7 +58,7 @@ class Main extends Component {
           if (response.status === 200){
             this.setState({
                 loggedIn: true,
-                userID: user_id
+                user_id: user_id
             });
           } else {
               this.setState({
@@ -75,7 +75,7 @@ class Main extends Component {
   }
 
   getUserID() {
-    return this.state.userID;
+    return this.state.user_id;
   }
 
   //render props will handle redirection 

@@ -43,12 +43,12 @@ class LoginComponent extends React.Component {
 					isDisabled: true,
 					textDisplay: "Setting up your feed..."
 				})
-				var userID = response.authResponse.userID
+				var user_id = response.authResponse.userID
 				var accessToken = response.authResponse.accessToken
 
 				axios.get('/api/status/', {
 					params: {
-						user_ID: userID,
+						user_ID: user_id,
 					}
 				})
 				.then((response) => { 
@@ -59,7 +59,7 @@ class LoginComponent extends React.Component {
 						//otherwise, new user, init them
 		        		console.log('new user');
 		        		axios.post('/api/init/', {
-							user_id: userID,
+							user_id: user_id,
 							token: accessToken,
 							size: Math.round(window.screen.width*.37)
 						}).then((response)=>console.log(response.status))
@@ -70,7 +70,7 @@ class LoginComponent extends React.Component {
 							console.log("checking...")
 							axios.get('/api/status/', {
 								params: {
-									user_ID: userID,
+									user_id: user_id,
 								}
 							}).then((response) => {
 								//on complete, redirect to login

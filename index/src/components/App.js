@@ -23,7 +23,7 @@ class Article extends React.Component {
   }
   componentDidMount() {
    this.setState({
-          user_id: this.props.user_ID,
+          user_id: this.props.user_id,
           loaded_article: true,
           article_link: this.props.link,
          
@@ -34,7 +34,7 @@ class Article extends React.Component {
   getNextArticle() {
   	axios.get('/api/users/next_article', { 
     	params: {
-			user_ID: this.props.userID
+			user_id: this.props.user_id
 		}
     })
     .then(function (response) {
@@ -113,7 +113,7 @@ function ArticleContainer(props){
     <div>{props.articles.map((article, index) => {
       return (
         <div key={index}>
-          <Article title={article.title} link={article.link} content={article.content} user_id={props.user_ID}/>
+          <Article title={article.title} link={article.link} content={article.content} user_id={props.user_id}/>
         </div>
         )
     })}
@@ -182,10 +182,10 @@ class Feed extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.userID())
+    console.log(this.props.userID)
     axios.get('/api/login', { 
       params: {
-        user_ID: this.props.userID(),
+        user_id: this.props.userID
       }
       }).then((response)=>{
         console.log(response);
@@ -218,7 +218,7 @@ class Feed extends React.Component {
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} loginStatus={this.props.loginStatus}/>
-        <ArticleContainer articles={this.state.articles} user_ID={this.props.userID()}/>
+        <ArticleContainer articles={this.state.articles} user_id={this.props.userID}/>
       </div>
     );
   }

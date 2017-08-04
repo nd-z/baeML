@@ -25,7 +25,7 @@ class UsersView(APIView):
     def get(self, request):
 
         #commented out to test initializing user
-        user_fbid = request.GET.get('user_ID')
+        user_fbid = request.GET.get('user_id')
         try:
             #=========== Get the article ==========
             #response is a dictionary!!
@@ -53,7 +53,7 @@ class InitView(APIView):
 
     def get(self, request):
         try: 
-            user_fbid = request.GET.get('user_ID')
+            user_fbid = request.GET.get('user_id')
             entry = Users.objects.get(user_fbid=user_fbid)
             isComplete = entry.init_complete
             if isComplete:

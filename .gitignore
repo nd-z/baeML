@@ -90,3 +90,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# training data
+*_training_data_*.zip
+*_training_data.zip
