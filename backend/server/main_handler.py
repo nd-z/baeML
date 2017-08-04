@@ -38,7 +38,8 @@ class MainHandler(object):
             training_data_zip.write("{0}_training_data_{1}".format(user_id, file_number))
         os.remove("{0}_training_data_{1}".format(user_id, file_number)) #remove temp files
         skipgram_model = self.getUserModel(user_id)
-        self.trainUserModel(skipgram_model, training_data_path, user_id)        
+        self.trainUserModel(skipgram_model, training_data_path, user_id)
+        
 
 #when given new keywords,
     def addKeywords(self, keywords_list, user_id):
@@ -107,18 +108,21 @@ class MainHandler(object):
         return content #list of paragraphs
 
     def get_article(self, user_id):
+        print('trying to optimize')    
         user = Users.objects.get(user_fbid=user_id) #optimization: return unread articles first
         all_user_articles = user.articles
         all_articles_dict = self.jsonDec.decode(all_user_articles)
+        print('got all articles')
         for article in all_articles_dict:
+            print('in for loop')
+            print(article)
             if all_articles_dict[article] == 0:
-                article_link = all_articles_dict[article]
+                article_link = article
                 article_content = self.getLinkContent(article_link)
                 article_title = WebCrawler.grabTitle(article_link)
-
                 response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
                 return response
-       
+        print('exited for loop..should be good')
         keywords = self.getUserKeywords(user_id)
 
 
@@ -128,12 +132,7 @@ class MainHandler(object):
         
         #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
-        #print(user_article_dict)
-        # jsonDec = json.decoder.JSONDecoder()
         decoded_user_article_dict = self.jsonDec.decode(user_article_dict)
-        #decoded_user_article_dict = json.loads(user_article_dict)
-        #print('decoded_user_article_dict')
-        #print(decoded_user_article_dict)
 
         #breaks when keyword is a letter or some nonsensical thing
         target_kw = random.choice(keywords)

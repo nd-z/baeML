@@ -84,7 +84,7 @@ class Main extends Component {
     return ( this.state.loggedIn !== null ?
         (<Switch>  
           <Route exact path='/' render={()=> (
-              this.state.loggedIn ? <Feed userID={this.getUserID} loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
+              this.state.loggedIn ? <Feed userID={this.state.userID} loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
             )
           }/>
           <Route render={
