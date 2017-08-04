@@ -107,21 +107,21 @@ class MainHandler(object):
         return content #list of paragraphs
 
     def get_article(self, user_id):
-        # print('trying to optimize')    
-        # user = Users.objects.get(user_fbid=user_id) #optimization: return unread articles first
-        # all_user_articles = user.articles
-        # all_articles_dict = self.jsonDec.decode(all_user_articles)
-        # print('got all articles')
-        # for article in all_articles_dict:
-        #     print('in for loop')
-        #     print(article)
-        #     if all_articles_dict[article] == 0:
-        #         article_link = article
-        #         article_content = self.getLinkContent(article_link)
-        #         article_title = WebCrawler.grabTitle(article_link)
-        #         response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
-        #         return response
-        # print('exited for loop..should be good')
+        print('trying to optimize')    
+        user = Users.objects.get(user_fbid=user_id) #optimization: return unread articles first
+        all_user_articles = user.articles
+        all_articles_dict = self.jsonDec.decode(all_user_articles)
+        print('got all articles')
+        for article in all_articles_dict:
+            print('in for loop')
+            print(article)
+            if all_articles_dict[article] == 0:
+                article_link = article
+                article_content = self.getLinkContent(article_link)
+                article_title = WebCrawler.grabTitle(article_link)
+                response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
+                return response
+        print('exited for loop..should be good')
         keywords = self.getUserKeywords(user_id)
 
         #keywords from db is a skipgram obj, cvt to string then to list

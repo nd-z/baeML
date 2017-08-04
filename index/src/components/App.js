@@ -42,13 +42,12 @@ class Article extends React.Component {
   getNextArticle() {
     var self = this;
     axios.get('/api/users/next_article', { 
-       params: {
-                user_id: self.props.user_id
-               }
+      params: {
+        user_id: self.props.user_id
+      }
     })
     .then(function (response) {
       if (response.status === 200) {
-        console.log('got next article in app.js'); 
         self.setNextArticle(response)
       }
       else{
