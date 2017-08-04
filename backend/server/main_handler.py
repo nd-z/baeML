@@ -1,8 +1,5 @@
 
 import os
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings") #comment out
-# import django #comment out
-# django.setup() #comment out
 import sys
 import modules.skipgram
 import modules.webcrawler
@@ -119,7 +116,7 @@ class MainHandler(object):
         #     print('in for loop')
         #     print(article)
         #     if all_articles_dict[article] == 0:
-        #         article_link = all_articles_dict[article]
+        #         article_link = article
         #         article_content = self.getLinkContent(article_link)
         #         article_title = WebCrawler.grabTitle(article_link)
         #         response = {'article_link': article_link, 'article': article_content, 'article_title': article_title}
@@ -133,11 +130,8 @@ class MainHandler(object):
         
         #user_article_dict is a unicode string
         user_article_dict = Users.objects.get(user_fbid=user_id).articles
-        #print(user_article_dict)
         decoded_user_article_dict = self.jsonDec.decode(user_article_dict)
-        #decoded_user_article_dict = json.loads(user_article_dict)
-        #print('decoded_user_article_dict')
-        #print(decoded_user_article_dict)
+
 
         #breaks when keyword is a letter or some nonsensical thing
         target_kw = random.choice(keywords)
@@ -201,53 +195,3 @@ class MainHandler(object):
             new_keyword_list.extend(synonyms)
 
         return new_keyword_list
-
-'''Modular Testing'''
-
-# mh = MainHandler()
-
-#==Tested User Init, added to views.py==
-# user_id = 136341273775461
-# name = "JanicChan"
-# propic_link = "http://www.google.com"
-# newUser = Users(user_fbid=user_id, name=name, propic_link=propic_link)
-# articles_list = {}
-# newUser.articles = json.dumps(articles_list)
-# newUser.save()
-
-# #==Tested Pkl Model Creation==
-# user_id  = 1363412733775461
-# userSkipGramModel = PklModels()
-# userSkipGramModel.user_fbid = user_id
-# userSkipGramModel.pkl_model = mh.getDefaultModel()
-# userSkipGramModel.user_keywords = json.dumps([])
-# empty_file = open("empty","w+")
-# empty_file.close()
-# with zipfile.ZipFile("{0}_training_data.zip".format(user_id), "w") as myzip:
-#         myzip.write("empty")
-# os.remove("empty") #remove temp files
-# userSkipGramModel.text_corpus = File(open("{0}_training_data.zip".format(user_id))) 
-# os.remove("{0}_training_data.zip".format(user_id))
-# userSkipGramModel.save()
-
-#Check model size is the same - ok
-# model = PklModels.objects.get(user_fbid=1363412733775461).pkl_model
-# print sys.getsizeof(model)
-# print sys.getsizeof(mh.getDefaultModel())
-'''
-#==Tested add keywords==
-mh.addKeywords(["keywordssss","listttt"], 1363412733775461)
-#Check that it's there
-orig_keyword_list = mh.getUserKeywords(1363412733775461)
-jsonDec = json.decoder.JSONDecoder()
-myOrigList = jsonDec.decode(orig_keyword_list)
-print(myOrigList)
-'''
-
-#==Tested Pkl Model Add Training Data & train user model==
-# mh.addTrainingData(['I am adding a paragraph for training data', 'testing with coherent sentences'], 1363412733775461)
-
-'''
-#REMAINING TODO:
-#Create new user, Test article fetch  & ratings post 
-'''

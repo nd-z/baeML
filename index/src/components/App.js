@@ -10,14 +10,21 @@ class Article extends React.Component {
   	//fetch article
     super(props);
     this.state = {
-      loaded_article: false,
-      rating: 10,
-      article_id: 11111, //dummy var
-      user_id: 22222 //dummy var
+      article_link: 'jej', //dummy var
+      user_id: 100 //dummy var
     };
 
     // This binding is necessary to make `this` work in the callback
     this.setRating = this.setRating.bind(this);
+  }
+
+  componentDidMount() {
+   this.setState({
+          user_id: this.props.user_id,
+          loaded_article: true,
+          article_link: this.props.link,
+         
+        });
   }
 
   // TODO add nextArticle() function and link to the button
@@ -75,14 +82,14 @@ class Article extends React.Component {
 // TODO change from article-list to something else; that's where the weird dot comes from
 function ArticleContainer(props){
   return (
-    <ul className='article-list'>{props.articles.map((article, index) => {
+    <div>{props.articles.map((article, index) => {
       return (
-        <li key={index} className='article-item'>
-          <Article title={article.title} link={article.link} content={article.content}/>
-        </li>
-        )
-    })}
-    </ul>
+        <div key={index}>
+          <Article title={article.title} link={article.link} content={article.content} user_id={props.user_id}/>
+        </div>
+         )
+     })}
+    </div>
     )
 }
 
@@ -158,7 +165,7 @@ class Feed extends React.Component {
           name: response.data.name,
           profilepic: response.data.propic,
           articles: [{
-            "title": "",
+            "title": response.data.article_title,
             "link": response.data.article_link,
             "content": response.data.article
           }],
@@ -183,7 +190,7 @@ class Feed extends React.Component {
     return (
       <div className="row">
         <Sidebar name={this.state.name} imgurl={this.state.profilepic} loginStatus={this.props.loginStatus}/>
-        <ArticleContainer articles={this.state.articles} />
+        <ArticleContainer articles={this.state.articles} user_id={this.props.userID}/>
       </div>
     );
   }
