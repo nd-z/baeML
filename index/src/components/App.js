@@ -15,7 +15,6 @@ class Article extends React.Component {
     // };
 
     this.state = {
-      user_id: this.props.user_id,
           loaded_article: true,
           article_link: this.props.link,
           title: this.props.title,
@@ -23,6 +22,8 @@ class Article extends React.Component {
         };
     // This binding is necessary to make `this` work in the callback
     this.setRating = this.setRating.bind(this);
+    this.getNextArticle = this.getNextArticle.bind(this);
+    this.setNextArticle = this.setNextArticle.bind(this);
   }
 
   componentDidMount() {
@@ -38,23 +39,50 @@ class Article extends React.Component {
   }
 
   // TODO add nextArticle() function and link to the button
+  getNextArticle() {
+    var self = this;
+    axios.get('/api/users/next_article', { 
+       params: {
+                user_id: self.props.user_id
+               }
+    })
+    .then(function (response) {
+      if (response.status === 200) {
+        console.log('got next article in app.js'); 
+        self.setNextArticle(response)
+      }
+      else{
+        alert ('rip');
+      }
+
+    })
+    .catch(function (error) {
+      alert('error');
+      console.log(error);
+    });    
+  }
+
+  setNextArticle(response) {
+    this.setState({
+            "title": response.data.article_title,
+            "article_link": response.data.article_link,
+            "content": response.data.article
+        });
+  }
 
   setRating(rating){
     this.setState({
       rating: rating
       });
-    console.log(this.state.user_id)
-        console.log(this.state.article_link)
-            console.log({rating})
-
+   
 
     axios.post('/api/users/rate_article', { //TODO test
-       "user_id": this.state.user_id,
+       "user_id": this.props.user_id,
        "article_link": this.state.article_link,
        "user_rating": {rating}
     })
     .then(function (response) {
-      if (response.status === 201) {
+      if (response.status === 200) {
         console.log('rated'); //good
       }
       else{
@@ -75,7 +103,8 @@ class Article extends React.Component {
           <h2> {this.state.title} </h2>
           <p> {this.state.content} </p>
           <p> read more about the article at this <a href={this.state.article_link}>LINK</a></p>
-          <button className="button"><span>next</span></button>
+          <button className="button" onClick={(e) => this.getNextArticle()}><span>next</span></button>
+
         </div>
         <div className='ratings-container'>
             <p> Like/dislike what you read? Rate it for better accuracy next time! </p> <span> <form> { 
