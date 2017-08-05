@@ -33,6 +33,8 @@ Further Note: This also assumes you have Node.js and the package manager `npm` i
 
 More Notes: You also need PostgreSQL installed. It's all straightforward stuff though, so no worries.
 
+Last Note: As in we would recommend that you look up how to install the aforementioned software that we assume you have, because even though we took a UNIX course in college, we would prefer not to be the cause of your computer's demise.
+
 ## Running the Server
 The server is what makes everything work! But before that, we need to set up the database.
 
@@ -89,6 +91,11 @@ You know how a bunch of websites tell you the loading part might take a while, b
 
 Anyway, when the backend is done doing its magic, you will see the wonderful setup that we have created for you to consume your personalized content. It's quite uncomplicated, but hey, we're just students working for fun. If you want to incentivize us, we take anything from food, money, gum, even the stray cat in your backyard.
 
+If you don't like the way the text renders on your browser, you can also click on the link to the article to read from the original webpage.
+
+Getting the next article can be achieved in spectacularly normal fashion by clicking the "next" button at the bottom of the displayed article content. This will be a little slow, as the backend needs to update various modules with data for future use, but we assure you the next article will arrive faster than you can say the Pledge of Allegiance.
+
 If you use this often enough, you might notice that it will take reaaaaallllyyyy long to get your next article. That's because we have a wonderful M A C H I N E L E A R N I N G model trying its very best to adjust itself to your tastes (however weird they might be). So please don't think that our code is super bad and that it doesn't work!
 
-Anyway, that's basically the gig. We hope this README wasn't as boring as some of the other ones that Andy had to go through this summer. We would also like to stress that if this README gave you the wrong impression about its author, it's Andy's fault for not being funnier.
+# Addendum
+Anyway, that's basically the gig. We hope this README wasn't as boring as some of the other ones that Andy had to go through this summer. We would also like to stress that if this README gave you the wrong impression about its author, it's Andy's fault for not being funnier (but it's also our fault for not being funny enough to compensate).
