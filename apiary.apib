@@ -7,10 +7,8 @@ API allowing users to retrieve articles from the database and indicate their pre
 
 ## Login [/api]
 To retrieve personalized feed
-### Login User [GET /api/login/{user_ID}]
-+ Parameters
-    + user_ID user ID
-    
+### Login User [GET /api/login/?={user_id}]
+
 + Response 200 (application/json)
 
     + Body
@@ -28,77 +26,49 @@ To retrieve personalized feed
 
 + Response 404
 
-### Login Status [GET /api/status]
-+ Request (application/json)
+### Login Status [GET /api/status/?={user_id}]
 
-        {
-            "user_ID": userID, //create new user in db
-            "size": profile_pic_size,
-            "token": accessToken
-        }
-
-+ Response 201 (application/json)
-    
++ Response 200 
     + Body
             {
-                "name": "Eric Feng",
-                "propic": "https://scontent.xx.fbcdn.net/v/t1.0-9/16105780_1519742721384372_2956350876286001393_n.jpg?oh=5a9e6f608fe4d5533c53c889719e4ae9&oe=5A0E799A"
             }
+
++ Response 204 //not ready yet
 
 ### First Time Login [POST /api/init]
 + Request (application/json)
 
         {
-            "user_ID": userID, //create new user in db
+            "user_id": userID, //create new user in db
             "size": profile_pic_size,
             "token": accessToken
         }
 
-+ Response 201 (application/json)
-    
-    + Body
-            {
-                "name": "Eric Feng",
-                "propic": "https://scontent.xx.fbcdn.net/v/t1.0-9/16105780_1519742721384372_2956350876286001393_n.jpg?oh=5a9e6f608fe4d5533c53c889719e4ae9&oe=5A0E799A"
-            }
++ Response 204
 
-## Article Collection [/api]
-### Retrieve Article [POST /api/users/next_article/]
-+ Request (application/json)
-
-+ Response 201 
-
-### Rate Article [POST /api/article/{user_id}/{article_id}/rate]
-+ Request (application/json)
-
-    + Headers
-    
-    + Body
-    
-            {
-                "rating": rating
-            }
-
-+ Response 201 (text/plain)
-    
-    + Body 
-            
-            Ok, rating added
-
-
-
-### Retrieve Articles List [GET /api/list]
+## Article Collection [/api/users]
+### Retrieve Article [GET /api/users/next_article/?={user_id}]
 + Response 200 (application/json)
+
+    + Body
+            {
+                "article_link": "article_link", 
+                "article": "article_content", 
+                "article_title": "article_title"
+            
+            }
+
+
+### Rate Article [POST /api/users/rate_article/]
+
++ Request (application/json)
+
     + Body
     
             {
-                "articles": [
-                    {
-                        "title": "Why is ReactJS so annoying",
-                        "link": "http://link",
-                        
-                        ...
-                    },
-                    ...
-                ]
+                "user_rating": rating,
+                "user_id": user_id,
+                "article_link" : "article_link"
             }
+
++ Response 200
