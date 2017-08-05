@@ -20,7 +20,7 @@ class WebCrawler(object):
 
     def grabContent(self, url):
         req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         pagesource = urllib2.urlopen(req, context=context)
         s = pagesource.read()
         soup = BeautifulSoup.BeautifulSoup(s)

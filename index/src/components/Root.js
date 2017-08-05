@@ -44,7 +44,6 @@ class Main extends Component {
 
   //calls FB API's getLoginStatus to determine user login status
   getLoginState() { 
-    console.log("hi")
     window.FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
         var user_id = response.authResponse.userID
@@ -56,9 +55,10 @@ class Main extends Component {
         .then((response) => { 
           //if user has been init before, log them in
           if (response.status === 200){
+            console.log("hi" + user_id)
             this.setState({
                 loggedIn: true,
-                user_ID: user_id
+                user_id: user_id
             });
           } else {
               this.setState({
@@ -84,7 +84,7 @@ class Main extends Component {
     return ( this.state.loggedIn !== null ?
         (<Switch>  
           <Route exact path='/' render={()=> (
-              this.state.loggedIn ? <Feed userID={this.state.userID} loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
+              this.state.loggedIn ? <Feed userID={this.state.user_id} loginStatus={this.getLoginState}/> : <LoginComponent fb={window.FB} loginStatus={this.getLoginState}/>
             )
           }/>
           <Route render={
