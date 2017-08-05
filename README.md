@@ -50,7 +50,7 @@ Now, depending on how you installed PostgreSQL, there are different ways to run 
 
 If you used Homebrew to install it, the command is `brew services start postgresql`
 + Intuitively, the command to stop the server is `brew services stop postgresql`
-+ It might be intuitive to you, but I didn't know this and suffered greatly.
+	+ It might be intuitive to you, but I didn't know this and suffered greatly.
 
 If you used a different way, uh, we don't really know, but Google does!
 
