@@ -148,4 +148,4 @@ class ArticlesView(APIView):
         article_title = WebCrawler.grabTitle(article_link)
         new_keywords_list = ThreadRunner.filterWords(article_title) #process keywords in title
         self.mainHandler.addKeywords(new_keywords_list, user_id)
-        return JsonResponse({'':''}, status=200)
+        return HttpResponse(status=200)
