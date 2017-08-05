@@ -37,7 +37,7 @@ class Article extends React.Component {
     var self = this;
     axios.get('/api/users/next_article', { 
       params: {
-        user_id: self.props.user_id
+        user_ID: self.props.user_id
       }
     })
     .then(function (response) {
@@ -71,7 +71,7 @@ class Article extends React.Component {
 
     axios.post('/api/users/rate_article', { //TODO test
 
-       "user_id": this.props.user_id,
+       "user_ID": this.props.user_id,
        "article_link": this.state.article_link,
        "user_rating": {rating}
     })
