@@ -25,7 +25,7 @@ class UsersView(APIView):
     def get(self, request):
 
         #commented out to test initializing user
-        user_fbid = request.GET.get('user_id')
+        user_fbid = request.GET.get('user_ID')
         try:
             #=========== Get the article ==========
             #response is a dictionary!!
@@ -53,7 +53,7 @@ class InitView(APIView):
 
     def get(self, request):
         try: 
-            user_fbid = request.GET.get('user_id')
+            user_fbid = request.GET.get('user_ID')
             entry = Users.objects.get(user_fbid=user_fbid)
             isComplete = entry.init_complete
             if isComplete:
@@ -72,7 +72,7 @@ class InitView(APIView):
         #Save user to the DB
         req = json.loads(request.body)
         access_token = req['token']
-        user_id = req['user_id']
+        user_id = req['user_ID']
         size = str(req['size'])
 
         facebook = FacebookAPI(access_token)
@@ -127,14 +127,14 @@ class ArticlesView(APIView):
         add content to text corpus, call  normalizeParagraphs(), then remove_nonalpha() from webcralwer
         return the content
         '''
-        user_id = request.GET.get('user_id')
+        user_id = request.GET.get('user_ID')
         response = self.mainHandler.get_article(user_id)        
         return JsonResponse(response, status=200, safe=False)
 
     #when user rates an article,
     def post(self, request):
         req = json.loads(request.body)
-        user_id = req['user_id']
+        user_id = req['user_ID']
         article_link = req['article_link']
         user_rating = req['user_rating']
         user_article_dict = Users.objects.get(user_fbid=user_id).articles

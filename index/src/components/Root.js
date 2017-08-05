@@ -50,7 +50,7 @@ class Main extends Component {
         var user_id = response.authResponse.userID
         axios.get('/api/status/', {
           params: {
-            user_id: user_id,
+            user_ID: user_id,
           }
         })
         .then((response) => { 
@@ -58,7 +58,7 @@ class Main extends Component {
           if (response.status === 200){
             this.setState({
                 loggedIn: true,
-                user_id: user_id
+                user_ID: user_id
             });
           } else {
               this.setState({
