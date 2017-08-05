@@ -4,8 +4,11 @@ Hello there! Welcome to our project. If you're here, that means at least one thi
 
 + We were unable to deploy our project due to practical concerns.
 + You want to have our source code on hand, and possibly improve our project.
+	+ If this is the case, feel free to check out the project specifications Markdown file `overview.md` in the same directory as this README.
 + You're an employer who wants to give all of us cushy 6-figure jobs.
 	+ Pls...
+
+In any case, we're glad that you're interested! Briefly, we started this project with the goal of breaking the so-called echo-chamber effect of social media. We aim to deliver content that appeals to your interests but avoids reinforcing your echo chamber. We hope that you find this helpful, if not a fresher take on news delivery platforms.
 
 And so, we have this lovely little guide on how to build and run baeML. We hope it is as fun as it is easy to follow.
 
@@ -67,4 +70,10 @@ Unlike the backend, the frontend is very straightforward to run (if you have ins
 
 Voila! Now you have the frontend running and connected to the backend! You'll notice an option (it's not really an option, you kinda have to do it) to sign in with your Facebook account. Do that, and you'll be directed to a waiting page.
 
-You know how a bunch of websites tell you the loading part might take a while? 
+You know how a bunch of websites tell you the loading part might take a while, but you never really expect it to? Well we actually need a few minutes because we have this really fancy M A C H I N E L E A R N I N G model that we need to load and use to deliver wonderful relevant content to you. So please don't think that our code is super bad and that it doesn't work!
+
+Anyway, when the backend is done doing its magic, you will see the wonderful setup that we have created for you to consume your personalized content. It's quite uncomplicated, but hey, we're just students working for fun. If you want to incentivize us, we take anything from food, money, gum, even the stray cat in your backyard.
+
+If you use this often enough, you might notice that it will take reaaaaallllyyyy long to get your next article. That's because we have a wonderful M A C H I N E L E A R N I N G model trying its very best to adjust itself to your tastes (however weird they might be). So please don't think that our code is super bad and that it doesn't work!
+
+Anyway, that's basically the gig. We hope this README wasn't as boring as some of the other ones that Andy had to go through this summer. We would also like to stress that if this README gave you the wrong impression about its author, it's Andy's fault for not being funnier.
