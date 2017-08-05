@@ -16,7 +16,8 @@
 
 # Project Overview
 ![Project Overview](https://i.imgur.com/NZzHoOD.png)
-	+ Note: A little outdated, but still generally correct
+
++ Note: A little outdated, but still generally correct
 
 ## Important Requirements (continously updated)
 + Python 2.7
