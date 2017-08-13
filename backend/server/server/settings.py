@@ -28,7 +28,7 @@ SECRET_KEY = ')37%c(p(e4)25=1f#k(ow513+z#l%pc7cirpvko)$pi18sv3zm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://baeml.herokuapp.com/']
 
 
 # Application definition
