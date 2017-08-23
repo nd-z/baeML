@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_facebook',
     'rest_framework',
     'corsheaders',
     'api'
@@ -93,11 +92,11 @@ AUTHENTICATION_BACKENDS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'baeml_db',
-        'USER': 'admin',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'dft8483b3vbqio',
+        'USER': 'chqjmuvsjgywnm',
+        'PASSWORD': 'bf8c9e3578cfb78bc9a09e5a68592be46390637599b5389fecda480650eeb74c',
+        'HOST': 'ec2-54-225-118-55.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 

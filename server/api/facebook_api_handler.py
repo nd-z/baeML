@@ -1,4 +1,11 @@
-from open_facebook.api import FacebookConnection
+import os
+import sys
+
+#need to import modified django_facebook module
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(path)
+
+from open_facebook import FacebookConnection
 from django.utils.http import urlencode
 from django.http import QueryDict
 

@@ -4,9 +4,10 @@ from django_facebook.exceptions import FacebookException
 from django_facebook.utils import get_user_model, mass_get_or_create, \
     cleanup_oauth_url, get_profile_model, parse_signed_request, hash_key, \
     try_get_profile, get_user_attribute
-from open_facebook import exceptions as open_facebook_exceptions
-from open_facebook.exceptions import OpenFacebookException
-from open_facebook.utils import send_warning, validate_is_instance
+
+import exceptions as open_facebook_exceptions
+from exceptions import OpenFacebookException
+from utils import send_warning, validate_is_instance
 import datetime
 import json
 import logging
