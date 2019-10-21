@@ -29,5 +29,5 @@ sklearn==0.0
 tensorflow==1.2.1
 Unidecode==0.4.21
 urllib3==1.22
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 whitenoise==3.3.0
